@@ -192,3 +192,50 @@ SMODS.Joker {
     end
   end
 }
+
+--TODO: description
+SMODS.Joker {
+  key = 'mossy_joker',
+  loc_txt = {
+    name = 'Mossy Joker',
+    text = {
+      "On last hand, turn a random card in hand into a copy of a random played card"
+    }
+  },
+  rarity = 3,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 1, y = 2 },
+  cost = 6,
+  calculate = function(self, card, context)
+    if G.GAME.current_round.hands_left == 0 and context.cardarea == G.jokers and context.final_scoring_step then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
+          if removed_card.ability.name == 'Glass Card' then
+            removed_card:shatter()
+          else
+            removed_card:start_dissolve(nil, removed_card)
+          end
+
+          G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+            func = function()
+              local copied_card = copy_card(pseudorandom_element(context.scoring_hand, pseudoseed('mossy_joker')), nil, nil, G.playing_card)
+              copied_card:add_to_deck()
+              copied_card:set_sprites(copied_card.config.center, copied_card.config.card)
+              table.insert(G.playing_cards, copied_card)
+              G.hand:emplace(copied_card)
+            return true
+            end
+          }))
+          return true
+        end
+      }))      
+      return {
+        message = localize('k_copied_ex'),
+        colour = G.C.CHIPS,
+        card = card,
+      }
+    end
+  end
+}
