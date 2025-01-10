@@ -166,3 +166,29 @@ SMODS.Joker {
     end
   end
 }
+
+--TODO: find a way to change the color
+SMODS.Joker {
+  key = 'calculator',
+  loc_txt = {
+    name = 'Calculator',
+    text = {
+      "Swaps {C:chips}Chips{} and {C:mult}Mult{}"
+    }
+  },
+  rarity = 3,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 0, y = 0 },
+  cost = 6,
+  calculate = function(self, card, context)
+    if context.joker_main and context.cardarea == G.jokers then
+      return 
+      {
+        message = 'Swap!',
+        mult_mod = hand_chips - mult,
+        chip_mod = mult - hand_chips
+      }
+    end
+  end
+}
