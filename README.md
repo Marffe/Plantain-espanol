@@ -1,2 +1,2 @@
 # Plantain
- An aggressively vanilla balatro content mod
+ An aggressively vanilla Balatro content mod
