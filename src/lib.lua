@@ -1,0 +1,4 @@
+Plantain = {}
+Plantain.INIT = {
+    Jokers = {}
+}
