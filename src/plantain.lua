@@ -368,6 +368,7 @@ SMODS.Joker {
   rarity = 1,
   atlas = 'plantain',
   blueprint_compat = true,
+  eternal_compat = false,
   pos = { x = 0, y = 0 },
   cost = 4,
   config = { extra = { Xmult = 1 } },
@@ -422,6 +423,33 @@ SMODS.Joker {
         Xmult_mod = card.ability.extra.Xmult,
         focus = context.other_joker
     }
+    end
+  end
+}
+
+SMODS.Joker {
+  key = 'jim',
+  loc_txt = {
+    name = 'Jim',
+    text = {
+      "Retriggers every scoring card without enhancements"
+    }
+  },
+  rarity = 1,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 0, y = 0 },
+  cost = 4,
+  calculate = function(self, card, context)
+    if context.cardarea == G.play and context.repetition then
+      if context.other_card.ability.set ~= 'Enhanced' then
+        return 
+        {
+          message = localize("k_again_ex"),
+          repetitions = 1,
+          card = card, 
+        }
+      end
     end
   end
 }
