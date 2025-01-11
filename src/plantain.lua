@@ -320,19 +320,17 @@ SMODS.Joker {
               G.GAME.blind_on_deck = 'Small'
               G.GAME.round_resets.blind_states.Small = 'Current'
               G.GAME.round_resets.blind_states.Big = 'Upcoming'
-              G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
-              card:start_dissolve({G.C.RED}, card)
-              play_sound('whoosh2')
             end
 
             if G.GAME.blind_on_deck == 'Boss' then
               G.GAME.blind_on_deck = 'Big'
               G.GAME.round_resets.blind_states.Big = 'Current'
               G.GAME.round_resets.blind_states.Boss = 'Upcoming'
-              G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil
-              card:start_dissolve({G.C.RED}, card)
-              play_sound('whoosh2')
             end
+            
+            G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
+            card:start_dissolve({G.C.RED}, card)
+            play_sound('whoosh2')
           end
         return true
       end}))
