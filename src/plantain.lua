@@ -215,7 +215,7 @@ SMODS.Joker {
           if removed_card.ability.name == 'Glass Card' then
             removed_card:shatter()
           else
-            removed_card:start_dissolve(nil, removed_card)
+            removed_card:start_dissolve({G.C.GREEN}, removed_card)
           end
 
           G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
@@ -278,7 +278,7 @@ SMODS.Joker {
               if card.ability.extra.reduce_ante then --avoids duping the sound effect
                 play_sound('whoosh2')
               end
-              card:start_dissolve(nil, card)
+              card:start_dissolve({G.C.BLACK}, card)
               return true
             end}))
           return true;
