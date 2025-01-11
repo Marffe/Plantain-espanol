@@ -240,7 +240,7 @@ SMODS.Joker {
   end
 }
 
---TODO: make the 'Ante Down' popup less weird and description ig
+--TODO: description
 SMODS.Joker {
   key = 'raw_meat',
   loc_txt = {
@@ -260,33 +260,29 @@ SMODS.Joker {
   cost = 6,
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual then
-        G.E_MANAGER:add_event(Event({
-          func = function()
-            play_sound('tarot1')
-            card.T.r = -0.2
-            card:juice_up(0.3, 0.4)
-            card.states.drag.is = true
-            card.children.center.pinch.x = true
-            G.E_MANAGER:add_event(Event({
-                func = function()
-                  local other_meat = nil
-                  for i=1, #G.jokers.cards do
-                    other_meat = G.jokers.cards[i]
-                    if other_meat.ability.name == card.ability.name and other_meat ~= card and card.ability.extra.reduce_ante then
-                      other_meat.ability.extra.reduce_ante = false
-                    end
-                  end
-                  if card.ability.extra.reduce_ante then
-                    ease_ante(card.ability.extra.minus_ante)
-                    card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Ante Down', colour = G.C.BLACK})
-                  end
-                  G.jokers:remove_card(card)
-                  card:remove()
-                  card = nil
-                return true; end})) 
-            return true
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          local other_meat = nil
+          for i=1, #G.jokers.cards do
+            other_meat = G.jokers.cards[i]
+            if other_meat.ability.name == card.ability.name and other_meat ~= card and card.ability.extra.reduce_ante then
+              other_meat.ability.extra.reduce_ante = false
+            end
           end
-      }))
+          if card.ability.extra.reduce_ante then
+            ease_ante(card.ability.extra.minus_ante)
+            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Ante Down', colour = G.C.BLACK})
+          end
+          G.E_MANAGER:add_event(Event({
+            func = function()
+              if card.ability.extra.reduce_ante then --avoids duping the sound effect
+                play_sound('whoosh2')
+              end
+              card:start_dissolve(nil, card)
+              return true
+            end}))
+          return true;
+        end}))
     end
   end
 }
