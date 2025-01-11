@@ -370,3 +370,38 @@ SMODS.Joker {
     end
   end
 }
+
+SMODS.Joker {
+  key = 'nametag',
+  loc_txt = {
+    name = 'Nametag',
+    text = {
+      "X2 Mult for each Joker with Joker in its name",
+    }
+  },
+  rarity = 3,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 0, y = 0 },
+  cost = 4,
+  config = { extra = { Xmult = 2 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.Xmult } }
+  end,
+  calculate = function(self, card, context)
+    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker') 
+    or string.find(context.other_joker.ability.name, 'joker')) then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+            context.other_joker:juice_up(0.5, 0.5)
+            return true
+        end
+    })) 
+    return {
+        message = localize{type = 'variable',key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+        Xmult_mod = card.ability.extra.Xmult,
+        focus = context.other_joker
+    }
+    end
+  end
+}
