@@ -286,3 +286,44 @@ SMODS.Joker {
     end
   end
 }
+
+SMODS.Joker {
+  key = 'grape_soda',
+  loc_txt = {
+    name = 'Grape Soda',
+    text = {
+      "Take a skip tag without skipping the blind (self destructs)"
+    }
+  },
+  rarity = 2,
+  atlas = 'plantain',
+  blueprint_compat = false,
+  pos = { x = 0, y = 0 },
+  cost = 6,
+  calculate = function(self, card, context)
+    if context.skip_blind then
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
+        G.E_MANAGER:add_event(Event({
+          func = function()
+            if G.GAME.blind_on_deck == 'Big' then
+              G.GAME.blind_on_deck = 'Small'
+              G.GAME.round_resets.blind_states.Small = 'Current'
+              G.GAME.round_resets.blind_states.Big = 'Upcoming'
+              G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
+              card:start_dissolve({G.C.RED}, card)
+              play_sound('whoosh2')
+            end
+
+            if G.GAME.blind_on_deck == 'Boss' then
+              G.GAME.blind_on_deck = 'Big'
+              G.GAME.round_resets.blind_states.Big = 'Current'
+              G.GAME.round_resets.blind_states.Boss = 'Upcoming'
+              G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil
+              card:start_dissolve({G.C.RED}, card)
+              play_sound('whoosh2')
+            end
+          return true
+        end}))
+    end
+  end
+}
