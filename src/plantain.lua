@@ -143,7 +143,7 @@ SMODS.Joker {
   blueprint_compat = true,
   config = { extra = { chips_mod = 13, chips = 0 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.chips_mod , card.ability.extra.chips}}
+    return { vars = { card.ability.extra.chips_mod , card.ability.extra.chips } }
   end,
   pos = { x = 0, y = 2 },
   cost = 10,
@@ -254,7 +254,7 @@ SMODS.Joker {
   blueprint_compat = false,
   config = { extra = { minus_ante = -1, reduce_ante = true } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { minus_ante, reduce_ante } }
+    return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }
   end,
   pos = { x = 0, y = 0 },
   cost = 6,
@@ -299,7 +299,7 @@ SMODS.Joker {
   atlas = 'plantain',
   config = { extra = { should_destroy = true } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { should_destroy } }
+    return { vars = { card.ability.extra.should_destroy } }
   end,
   blueprint_compat = false,
   pos = { x = 0, y = 0 },
@@ -327,13 +327,46 @@ SMODS.Joker {
               G.GAME.round_resets.blind_states.Big = 'Current'
               G.GAME.round_resets.blind_states.Boss = 'Upcoming'
             end
-            
+
             G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
             card:start_dissolve({G.C.RED}, card)
             play_sound('whoosh2')
           end
         return true
       end}))
+    end
+  end
+}
+
+SMODS.Joker {
+  key = 'plush_joker',
+  loc_txt = {
+    name = 'Plush Joker',
+    text = {
+      "Gains X1 Mult for each Plush Joker sold this run",
+      "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)",
+    }
+  },
+  rarity = 1,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 0, y = 0 },
+  cost = 4,
+  config = { extra = { Xmult = 1 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.Xmult + (G.GAME.plantain_plushies_sold or 0) } }
+  end,
+  calculate = function(self, card, context)
+    if context.selling_self then
+      G.GAME.plantain_plushies_sold = (G.GAME.plantain_plushies_sold or 0) + 1
+    end
+    if context.joker_main and context.cardarea == G.jokers then
+      if G.GAME.plantain_plushies_sold ~= nil then
+        return {
+          Xmult_mod = card.ability.extra.Xmult + G.GAME.plantain_plushies_sold,
+          message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult + G.GAME.plantain_plushies_sold } }
+        }
+      end
     end
   end
 }
