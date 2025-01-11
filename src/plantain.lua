@@ -297,14 +297,25 @@ SMODS.Joker {
   },
   rarity = 2,
   atlas = 'plantain',
+  config = { extra = { should_destroy = true } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { should_destroy } }
+  end,
   blueprint_compat = false,
   pos = { x = 0, y = 0 },
   cost = 6,
   calculate = function(self, card, context)
     if context.skip_blind then
-      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
-        G.E_MANAGER:add_event(Event({
-          func = function()
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          for i=1, #G.jokers.cards do
+            other_soda = G.jokers.cards[i]
+            if other_soda.ability.name == card.ability.name and other_soda ~= card and card.ability.extra.should_destroy then
+              other_soda.ability.extra.should_destroy = false
+            end
+          end
+          if card.ability.extra.should_destroy then
+            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
             if G.GAME.blind_on_deck == 'Big' then
               G.GAME.blind_on_deck = 'Small'
               G.GAME.round_resets.blind_states.Small = 'Current'
@@ -322,8 +333,9 @@ SMODS.Joker {
               card:start_dissolve({G.C.RED}, card)
               play_sound('whoosh2')
             end
-          return true
-        end}))
+          end
+        return true
+      end}))
     end
   end
 }
