@@ -93,9 +93,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Odd Sock',
     text = {
-      'This joker gains {C:mult}+#1#{} Mult',
-      'if played hand {C:attention}does not',
-      'contain a {C:attention}Pair',
+      'This Joker gains {C:mult}+#1#{} Mult',
+      'per consecutive hand that',
+      '{C:attention}does not{} contain a {C:attention}Pair',
       '{C:inactive}(Currently {C:mult}+#2# {C:inactive}Mult)'
     }
   },
@@ -107,22 +107,31 @@ SMODS.Joker {
     return { vars = { card.ability.extra.mult_mod, card.ability.extra.mult } }
   end,
   pos = { x = 2, y = 1 },
-  cost = 10,
+  cost = 6,
   calculate = function(self, card, context)
-    if context.joker_main then
+    if context.joker_main and card.ability.extra.mult > 0 then
       return {
         mult_mod = card.ability.extra.mult,
         message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
       }
     end
 
-    if context.before and not next(context.poker_hands['Pair']) and not context.blueprint then
-      card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
-      return {
-        message = 'Lonely!',
-        colour = G.C.Mult,
-        card = card
-      }
+    if context.before and not context.blueprint then
+      if not next(context.poker_hands['Pair']) then
+        card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
+        return {
+          message = 'Lonely!',
+          colour = G.C.Mult,
+          card = card
+        }
+      elseif next(context.poker_hands['Pair']) then
+        card.ability.extra.mult = 0
+        return {
+          message = 'Reset!',
+          colour = G.C.Mult,
+          card = card
+        }
+      end
     end
   end
 }
@@ -146,7 +155,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.chips_mod , card.ability.extra.chips } }
   end,
   pos = { x = 0, y = 2 },
-  cost = 10,
+  cost = 8,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.individual and not context.blueprint then
       if context.other_card.ability.effect == "Lucky Card" and not context.other_card.lucky_trigger then
@@ -180,7 +189,7 @@ SMODS.Joker {
   atlas = 'plantain',
   blueprint_compat = true,
   pos = { x = 0, y = 0 },
-  cost = 6,
+  cost = 7,
   calculate = function(self, card, context)
     if context.joker_main and context.cardarea == G.jokers then
       return 
@@ -199,14 +208,17 @@ SMODS.Joker {
   loc_txt = {
     name = 'Mossy Joker',
     text = {
-      "On last hand, turn a random card in hand into a copy of a random played card"
+      "On {C:attention}final hand{} of round,",
+      "convert a random card",
+      "held in hand into a",
+      "random scored card"
     }
   },
   rarity = 3,
   atlas = 'plantain',
   blueprint_compat = true,
   pos = { x = 1, y = 2 },
-  cost = 6,
+  cost = 7,
   calculate = function(self, card, context)
     if G.GAME.current_round.hands_left == 0 and context.cardarea == G.jokers and context.final_scoring_step then
       G.E_MANAGER:add_event(Event({
@@ -246,7 +258,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Raw Meat',
     text = {
-      "After beating the Boss Blind, -1 Ante and destroy all Raw Meat Jokers"
+      "After defeating {C:attention}Boss Blind{},",
+      "{C:attention}-1{} Ante and destroy all",
+      "{C:attention}Raw Meat Jokers{}"
     }
   },
   rarity = 3,
@@ -257,7 +271,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }
   end,
   pos = { x = 0, y = 0 },
-  cost = 6,
+  cost = 8,
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual then
       G.E_MANAGER:add_event(Event({
@@ -292,7 +306,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Grape Soda',
     text = {
-      "Take a skip tag without skipping the blind (self destructs)"
+      "After {C:attention}skipping{} a",
+      "{C:attention}Small Blind{} or {C:attention}Big Blind{},",
+      "return to that {C:attention}Blind"
     }
   },
   rarity = 2,
@@ -343,7 +359,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Plush Joker',
     text = {
-      "Gains X1 Mult for each Plush Joker sold this run",
+      "Gains {X:mult,C:white}X1{} Mult for",
+      "each {C:attention}Plush Joker{}",
+      "sold this run",
       "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)",
     }
   },
@@ -376,14 +394,16 @@ SMODS.Joker {
   loc_txt = {
     name = 'Nametag',
     text = {
-      "X2 Mult for each Joker with Joker in its name",
+      "{X:mult,C:white}X2{} Mult for every",
+      "{C:attention}Joker{} with \"Joker\"",
+      "in its name"
     }
   },
   rarity = 3,
   atlas = 'plantain',
   blueprint_compat = true,
-  pos = { x = 0, y = 0 },
-  cost = 4,
+  pos = { x = 2, y = 2 },
+  cost = 8,
   config = { extra = { Xmult = 2 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.Xmult } }
