@@ -87,24 +87,21 @@ SMODS.Joker {
   end,
   --beware: awful code
   set_ability = function(self, card, initial, delay_sprites)
-    if G.playing_cards then
-		  card.ability.extra.lucky1 = 14
-      card.ability.extra.lucky2 = 14
-      local valid_lucky_numbers = {2, 3, 4, 5, 6, 7, 8, 9, 10}
-      local lucky_number = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers'..G.GAME.round_resets.ante))
-      local lucky_number2 = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers2'..G.GAME.round_resets.ante))
-      if lucky_number ~= lucky_number2 then --theres probably a better way to do this
-        card.ability.extra.lucky1 = lucky_number
-        card.ability.extra.lucky2 = lucky_number2
+    local valid_lucky_numbers = {2, 3, 4, 5, 6, 7, 8, 9, 10}
+    local lucky_number = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers'..G.GAME.round_resets.ante))
+    local lucky_number2 = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers2'..G.GAME.round_resets.ante))
+    if lucky_number ~= lucky_number2 then --theres probably a better way to do this
+      card.ability.extra.lucky1 = lucky_number
+      card.ability.extra.lucky2 = lucky_number2
+    else
+      card.ability.extra.lucky1 = lucky_number
+      if lucky_number2 > 2 then
+        card.ability.extra.lucky2 = lucky_number2 - 1
       else
-        card.ability.extra.lucky1 = lucky_number
-        if lucky_number2 > 2 then
-          card.ability.extra.lucky2 = lucky_number2 - 1
-        else
-          card.ability.extra.lucky2 = lucky_number2 + 1
-        end
+        card.ability.extra.lucky2 = lucky_number2 + 1
       end
     end
+    
 	end,
   calculate = function(self, card, context)
     if context.cardarea == G.play then
