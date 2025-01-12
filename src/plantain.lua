@@ -46,7 +46,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Jim',
     text = {
-      "Retriggers every scoring card without enhancements"
+      "Retrigger all played",
+      "cards {C:attention}without",
+      "enhancements"
     }
   },
   rarity = 1,
@@ -73,7 +75,10 @@ SMODS.Joker {
   loc_txt = {
     name = 'Lucky Numbers',
     text = {
-      "Each played #1# and #2# gives +7 Mult when scored, Ranks change every round."
+      "Each played {C:attention}#1#{} and {C:attention}#2#{}",
+      "gives {C:mult}+7{} Mult when scored,",
+      "number cards change",
+      "every round"
     }
   },
   rarity = 1,
@@ -310,26 +315,25 @@ SMODS.Joker {
   loc_txt = {
     name = 'Quarry',
     text = {
-      "Gives $6 per Stone Card scored",
-      "1/3 chance for the card to be destroyed"
+      "{C:attention}Stone{} cards give {C:money}$#1#{},",
+      "{C:green}#2#/#3#{} chance for {C:attention}Stone",
+      "cards to be destroyed"
     }
   },
   rarity = 2,
   atlas = 'plantain',
   config = { extra = { money = 6, chance = 3 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.money, card.ability.extra.chance } }
+    return { vars = { card.ability.extra.money,(G.GAME.probabilities.normal or 1), card.ability.extra.chance } }
   end,
   blueprint_compat = false,
   pos = { x = 0, y = 0 },
   cost = 6,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.other_card.ability.effect == 'Stone Card' and context.individual then
-      G.E_MANAGER:add_event(Event({
-        func = function()
-          ease_dollars(card.ability.extra.money, true)
-        return true
-      end}))
+      return {
+        dollars = card.ability.extra.money
+      }
     end
     if pseudorandom('quarry') < G.GAME.probabilities.normal/card.ability.extra.chance and context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' then
       G.E_MANAGER:add_event(Event({
@@ -382,7 +386,7 @@ SMODS.Joker {
   end
 }
 
---TODO: find a way to change the color
+--TODO: find a way to change the color (not happening)
 SMODS.Joker {
   key = 'calculator',
   loc_txt = {
@@ -408,6 +412,7 @@ SMODS.Joker {
   end
 }
 
+--TODO: fix the sound effect
 SMODS.Joker {
   key = 'mossy_joker',
   loc_txt = {
@@ -425,39 +430,25 @@ SMODS.Joker {
   pos = { x = 1, y = 2 },
   cost = 7,
   calculate = function(self, card, context)
-    if G.GAME.current_round.hands_left == 0 and context.cardarea == G.jokers and context.final_scoring_step then
-      G.E_MANAGER:add_event(Event({
-        func = function()
-          local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
-          if removed_card.ability.name == 'Glass Card' then
-            removed_card:shatter()
-          else
-            removed_card:start_dissolve({G.C.GREEN}, removed_card)
-          end
-
-          G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-            func = function()
-              local copied_card = copy_card(pseudorandom_element(context.scoring_hand, pseudoseed('mossy_joker')), nil, nil, G.playing_card)
-              copied_card:add_to_deck()
-              copied_card:set_sprites(copied_card.config.center, copied_card.config.card)
-              table.insert(G.playing_cards, copied_card)
-              G.hand:emplace(copied_card)
-            return true
-            end
-          }))
-          return true
-        end
-      }))      
+    if G.GAME.current_round.hands_left == 0 and context.cardarea == G.jokers and context.before and #G.hand.cards > 1 then
+      local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
+      local copied_card = pseudorandom_element(context.scoring_hand, pseudoseed('mossy_joker'))
+      G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() removed_card:flip();play_sound('tarot1');removed_card:juice_up(0.3, 0.3);return true end }))
+      delay(0.2)
+      G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.1,func = function()
+        copy_card(copied_card, removed_card)
+        return true end }))
+      G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() removed_card:flip();removed_card:juice_up(0.3, 0.3);return true end }))
+      delay(0.5)
       return {
-        message = localize('k_copied_ex'),
-        colour = G.C.CHIPS,
-        card = card,
-      }
+            message = localize('k_copied_ex'),
+            colour = G.C.GREEN,
+            card = card,
+          }
     end
   end
 }
 
---TODO: description
 SMODS.Joker {
   key = 'raw_meat',
   loc_txt = {
