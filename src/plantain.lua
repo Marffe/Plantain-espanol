@@ -215,8 +215,8 @@ SMODS.Joker {
     name = 'Odd Sock',
     text = {
       'This Joker gains {C:mult}+#1#{} Mult',
-      'per consecutive hand that',
-      '{C:attention}does not{} contain a {C:attention}Pair',
+      'if played hand {C:attention}does not',
+      'contain a {C:attention}Pair',
       '{C:inactive}(Currently {C:mult}+#2# {C:inactive}Mult)'
     }
   },
@@ -242,13 +242,6 @@ SMODS.Joker {
         card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
         return {
           message = 'Lonely!',
-          colour = G.C.Mult,
-          card = card
-        }
-      elseif next(context.poker_hands['Pair']) then
-        card.ability.extra.mult = 0
-        return {
-          message = 'Reset!',
           colour = G.C.Mult,
           card = card
         }
@@ -327,7 +320,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.money,(G.GAME.probabilities.normal or 1), card.ability.extra.chance } }
   end,
   blueprint_compat = false,
-  pos = { x = 0, y = 0 },
+  pos = { x = 3, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.other_card.ability.effect == 'Stone Card' and context.individual then
@@ -418,10 +411,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Mossy Joker',
     text = {
-      "On {C:attention}final hand{} of round,",
-      "convert a random card",
-      "held in hand into a",
-      "random scored card"
+      "Convert a random card",
+      "{C:attention}held in hand{} into a",
+      "random {C:attention}scored{} card"
     }
   },
   rarity = 3,
@@ -430,7 +422,7 @@ SMODS.Joker {
   pos = { x = 1, y = 2 },
   cost = 7,
   calculate = function(self, card, context)
-    if G.GAME.current_round.hands_left == 0 and context.cardarea == G.jokers and context.before and #G.hand.cards > 0 then
+    if context.cardarea == G.jokers and context.before and #G.hand.cards > 0 then
       local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
       local copied_card = pseudorandom_element(context.scoring_hand, pseudoseed('mossy_joker'))
       G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() removed_card:flip();play_sound('tarot1');removed_card:juice_up(0.3, 0.3);return true end }))
