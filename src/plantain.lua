@@ -81,7 +81,7 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 0, y = 0 },
   cost = 4,
-  config = { extra = { mult = 7, lucky1 = 3, lucky2 = 7 } },
+  config = { extra = { mult = 10, lucky1 = 3, lucky2 = 7 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.lucky1, card.ability.extra.lucky2 } }
   end,
@@ -90,25 +90,18 @@ SMODS.Joker {
     if G.playing_cards then
 		  card.ability.extra.lucky1 = 14
       card.ability.extra.lucky2 = 14
-      local valid_lucky_numbers = {}
-      for k, v in ipairs(G.playing_cards) do
-        if v.ability.effect ~= 'Stone Card' and v:get_id() <= 10 then
-          valid_lucky_numbers[#valid_lucky_numbers+1] = v
-        end
-      end
-      if valid_lucky_numbers[1] then 
-        local lucky_number = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers'..G.GAME.round_resets.ante))
-        local lucky_number2 = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers2'..G.GAME.round_resets.ante))
-        if lucky_number:get_id() ~= lucky_number2:get_id() then --theres probably a better way to do this
-          card.ability.extra.lucky1 = lucky_number:get_id()
-          card.ability.extra.lucky2 = lucky_number2:get_id()
+      local valid_lucky_numbers = {2, 3, 4, 5, 6, 7, 8, 9, 10}
+      local lucky_number = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers'..G.GAME.round_resets.ante))
+      local lucky_number2 = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers2'..G.GAME.round_resets.ante))
+      if lucky_number ~= lucky_number2 then --theres probably a better way to do this
+        card.ability.extra.lucky1 = lucky_number
+        card.ability.extra.lucky2 = lucky_number2
+      else
+        card.ability.extra.lucky1 = lucky_number
+        if lucky_number2 > 2 then
+          card.ability.extra.lucky2 = lucky_number2 - 1
         else
-          card.ability.extra.lucky1 = lucky_number:get_id()
-          if lucky_number2:get_id() > 2 then
-            card.ability.extra.lucky2 = lucky_number2:get_id() - 1
-          else
-            card.ability.extra.lucky2 = lucky_number2:get_id() + 1
-          end
+          card.ability.extra.lucky2 = lucky_number2 + 1
         end
       end
     end
