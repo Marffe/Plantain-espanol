@@ -71,12 +71,12 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-  key = 'lucky_numbers',
+  key = 'bingo_card',
   loc_txt = {
-    name = 'Lucky Numbers',
+    name = 'Bingo Card',
     text = {
       "Each played {C:attention}#1#{} and {C:attention}#2#{}",
-      "gives {C:mult}+7{} Mult when scored,",
+      "gives {C:mult}+#3#{} Mult when scored,",
       "number cards change",
       "every round"
     }
@@ -84,11 +84,11 @@ SMODS.Joker {
   rarity = 1,
   atlas = 'plantain',
   blueprint_compat = true,
-  pos = { x = 0, y = 0 },
+  pos = { x = 2, y = 0 },
   cost = 4,
   config = { extra = { mult = 10, lucky1 = 3, lucky2 = 7 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.lucky1, card.ability.extra.lucky2 } }
+    return { vars = { card.ability.extra.lucky1, card.ability.extra.lucky2, card.ability.extra.mult } }
   end,
   --beware: awful code
   set_ability = function(self, card, initial, delay_sprites)
