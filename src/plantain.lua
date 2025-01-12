@@ -69,6 +69,69 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
+  key = 'lucky_numbers',
+  loc_txt = {
+    name = 'Lucky Numbers',
+    text = {
+      "Each played #1# and #2# gives +7 Mult when scored, Ranks change every round."
+    }
+  },
+  rarity = 1,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 0, y = 0 },
+  cost = 4,
+  config = { extra = { mult = 7, lucky1 = 3, lucky2 = 7 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.lucky1, card.ability.extra.lucky2 } }
+  end,
+  --beware: awful code
+  set_ability = function(self, card, initial, delay_sprites)
+    if G.playing_cards then
+		  card.ability.extra.lucky1 = 14
+      card.ability.extra.lucky2 = 14
+      local valid_lucky_numbers = {}
+      for k, v in ipairs(G.playing_cards) do
+        if v.ability.effect ~= 'Stone Card' and v:get_id() <= 10 then
+          valid_lucky_numbers[#valid_lucky_numbers+1] = v
+        end
+      end
+      if valid_lucky_numbers[1] then 
+        local lucky_number = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers'..G.GAME.round_resets.ante))
+        local lucky_number2 = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers2'..G.GAME.round_resets.ante))
+        if lucky_number:get_id() ~= lucky_number2:get_id() then --theres probably a better way to do this
+          card.ability.extra.lucky1 = lucky_number:get_id()
+          card.ability.extra.lucky2 = lucky_number2:get_id()
+        else
+          card.ability.extra.lucky1 = lucky_number:get_id()
+          if lucky_number2:get_id() > 2 then
+            card.ability.extra.lucky2 = lucky_number2:get_id() - 1
+          else
+            card.ability.extra.lucky2 = lucky_number2:get_id() + 1
+          end
+        end
+      end
+    end
+	end,
+  calculate = function(self, card, context)
+    if context.cardarea == G.play then
+      if context.other_card:get_id() == card.ability.extra.lucky1 
+      or context.other_card:get_id() == card.ability.extra.lucky2 then
+        return {
+          mult_mod = card.ability.extra.mult,
+          message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } },
+          card = context.other_card
+        }
+      end
+    end
+    if context.end_of_round and not context.repetition and not context.individual then
+      card:set_ability(self, card, nil, nil)
+    end
+  end
+}
+
+
+SMODS.Joker {
   key = 'apple_pie',
   loc_txt = {
     name = 'Apple Pie',
@@ -318,7 +381,6 @@ SMODS.Joker {
   end
 }
 
---TODO: description
 SMODS.Joker {
   key = 'mossy_joker',
   loc_txt = {
