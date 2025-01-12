@@ -324,21 +324,21 @@ SMODS.Joker {
   pos = { x = 0, y = 0 },
   cost = 6,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.individual then
-      if context.other_card.ability.effect == 'Stone Card' then
-        G.E_MANAGER:add_event(Event({
-          func = function()
-            if pseudorandom('quarry') < G.GAME.probabilities.normal/card.ability.extra.chance then
-              play_sound('whoosh2')
-              context.other_card:start_dissolve({G.C.GOLD}, removed_card)
-            else
-              ease_dollars(card.ability.extra.money, true)
-            end
-          return true
-        end}))
-      end
+    if context.cardarea == G.play and context.other_card.ability.effect == 'Stone Card' and context.individual then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          ease_dollars(card.ability.extra.money, true)
+        return true
+      end}))
     end
-    
+    if pseudorandom('quarry') < G.GAME.probabilities.normal/card.ability.extra.chance and context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          context.destroying_card:start_dissolve({G.C.GOLD}, context.destroying_card)
+          play_sound('whoosh2')
+        return true
+      end}))
+    end
   end
 }
 
