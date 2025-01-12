@@ -430,7 +430,7 @@ SMODS.Joker {
   pos = { x = 1, y = 2 },
   cost = 7,
   calculate = function(self, card, context)
-    if G.GAME.current_round.hands_left == 0 and context.cardarea == G.jokers and context.before and #G.hand.cards > 1 then
+    if G.GAME.current_round.hands_left == 0 and context.cardarea == G.jokers and context.before and #G.hand.cards > 0 then
       local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
       local copied_card = pseudorandom_element(context.scoring_hand, pseudoseed('mossy_joker'))
       G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() removed_card:flip();play_sound('tarot1');removed_card:juice_up(0.3, 0.3);return true end }))
