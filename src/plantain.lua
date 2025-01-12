@@ -306,6 +306,43 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
+  key = 'quarry',
+  loc_txt = {
+    name = 'Quarry',
+    text = {
+      "Gives $6 per Stone Card scored",
+      "1/3 chance for the card to be destroyed"
+    }
+  },
+  rarity = 2,
+  atlas = 'plantain',
+  config = { extra = { money = 6, chance = 3 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.money, card.ability.extra.chance } }
+  end,
+  blueprint_compat = false,
+  pos = { x = 0, y = 0 },
+  cost = 6,
+  calculate = function(self, card, context)
+    if context.cardarea == G.play and context.individual then
+      if context.other_card.ability.effect == 'Stone Card' then
+        G.E_MANAGER:add_event(Event({
+          func = function()
+            if pseudorandom('quarry') < G.GAME.probabilities.normal/card.ability.extra.chance then
+              play_sound('whoosh2')
+              context.other_card:start_dissolve({G.C.GOLD}, removed_card)
+            else
+              ease_dollars(card.ability.extra.money, true)
+            end
+          return true
+        end}))
+      end
+    end
+    
+  end
+}
+
+SMODS.Joker {
   key = 'black_cat',
   loc_txt = {
     name = 'Black Cat',
