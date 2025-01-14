@@ -538,7 +538,7 @@ SMODS.Joker {
   },
   rarity = 1,
   atlas = 'plantain',
-  blueprint_compat = true,
+  blueprint_compat = false,
   pos = { x = 0, y = 0 },
   cost = 3,
   config = { extra = { mimic = nil, mimicname = 'none', info = {} } },

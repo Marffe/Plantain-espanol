@@ -31,7 +31,7 @@ for i=1, #G.jokers.cards do
         end
         local options = {}
         for k, v in pairs(G.P_CENTERS) do
-            if v.unlocked and v.set == 'Joker' and v.blueprint_compat then
+            if v.unlocked and v.set == 'Joker' then
                 table.insert(options, v)
             end
         end
@@ -86,6 +86,32 @@ if other_joker == nil then
             other_joker = G.jokers.cards[i+1]
         end
     end
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = '''local jokers = {}'''
+position = "after"
+payload = '''
+for k, v in pairs(G.jokers.cards) do
+    if v and type(v) == 'table' and v.ability.name == 'j_Plantain_chaos' and v.ability.extra.mimic and v.ability.extra.mimic.ability.name == name then
+        table.insert(jokers, v.ability.extra.mimic)
+    end
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''local ret = G.jokers.cards[i]:calculate_dollar_bonus()'''
+position = "after"
+payload = '''
+if _card.ability.name == 'j_Plantain_chaos' and _card.ability.extra.mimic then
+    ret = _card.ability.extra.mimic:calculate_dollar_bonus()
 end
 '''
 match_indent = true
