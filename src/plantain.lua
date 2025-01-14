@@ -531,9 +531,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Chaos',
     text = {
-      "Mimics a random Joker effect",
+      "Mimics a random {C:attention}Joker",
       "upon selecting a blind",
-      "Currently #1#"
+      "{C:inactive}(Currently #1#)"
     }
   },
   rarity = 1,
