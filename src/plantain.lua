@@ -540,10 +540,13 @@ SMODS.Joker {
   atlas = 'plantain',
   blueprint_compat = true,
   pos = { x = 0, y = 0 },
-  cost = 8,
+  cost = 3,
   config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
   loc_vars = function(self, info_queue, card)
     if card.ability.extra.mimic then
+      if card.ability.extra.mimic.config.center.mod then
+        card.ability.extra.info = card.ability.extra.mimic.config.center:loc_vars(info_queue, card.ability.extra.mimic).vars
+      end
       card.ability.extra.mimic:generate_UIBox_ability_table()
       info_queue[#info_queue+1] = {type = 'descriptions', set = card.ability.extra.mimic.config.center.set, key = card.ability.extra.mimic.config.center.key, specific_vars = card.ability.extra.info }
     end
