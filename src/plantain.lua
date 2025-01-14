@@ -543,7 +543,6 @@ SMODS.Joker {
   cost = 8,
   config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
   loc_vars = function(self, info_queue, card)
-    print(card.config.center.key)
     if card.ability.extra.mimic then
       card.ability.extra.mimic:generate_UIBox_ability_table()
       info_queue[#info_queue+1] = {type = 'descriptions', set = card.ability.extra.mimic.config.center.set, key = card.ability.extra.mimic.config.center.key, specific_vars = card.ability.extra.info }
