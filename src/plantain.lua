@@ -525,3 +525,38 @@ SMODS.Joker {
     end
   end
 }
+
+SMODS.Joker {
+  key = 'chaos',
+  loc_txt = {
+    name = 'Chaos',
+    text = {
+      "Mimics a random Joker effect",
+      "upon selecting a blind",
+      "Currently #1#"
+    }
+  },
+  rarity = 1,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 0, y = 0 },
+  cost = 8,
+  config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
+  loc_vars = function(self, info_queue, card)
+    print(card.config.center.key)
+    if card.ability.extra.mimic then
+      card.ability.extra.mimic:generate_UIBox_ability_table()
+      info_queue[#info_queue+1] = {type = 'descriptions', set = card.ability.extra.mimic.config.center.set, key = card.ability.extra.mimic.config.center.key, specific_vars = card.ability.extra.info }
+    end
+    return { vars = { card.ability.extra.mimicname } }
+  end,
+  calculate = function(self, card, context)
+    if card.ability.extra.mimic then
+      local other_joker_ret = card.ability.extra.mimic:calculate_joker(context)
+      if other_joker_ret then 
+        other_joker_ret.card = card
+        return other_joker_ret
+      end
+    end
+  end
+}
