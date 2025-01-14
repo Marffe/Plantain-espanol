@@ -139,7 +139,7 @@ SMODS.Joker {
   config = { extra = { money = 8, money_loss = 1 } },
   rarity = 2,
   atlas = 'plantain',
-  blueprint_compat = true,
+  blueprint_compat = false,
   pos = { x = 0, y = 1 },
   cost = 6,
 
@@ -544,7 +544,7 @@ SMODS.Joker {
   config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
   loc_vars = function(self, info_queue, card)
     if card.ability.extra.mimic then
-      if card.ability.extra.mimic.config.center.mod then
+      if card.ability.extra.mimic.config.center.mod and card.ability.extra.mimic.config.center.loc_vars and type(card.ability.extra.mimic.config.center.loc_vars) == 'function' then
         card.ability.extra.info = card.ability.extra.mimic.config.center:loc_vars(info_queue, card.ability.extra.mimic).vars
       end
       card.ability.extra.mimic:generate_UIBox_ability_table()

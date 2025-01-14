@@ -29,9 +29,16 @@ for i=1, #G.jokers.cards do
             G.jokers.cards[i].ability.extra.mimic:remove()
             G.jokers.cards[i].ability.extra.mimic = nil
         end
-        G.jokers.cards[i].ability.extra.mimic = SMODS.create_card({set = 'Joker', area = G.jokers, no_edition = true})
+        local options = {}
+        for k, v in pairs(G.P_CENTERS) do
+            if v.unlocked and v.set == 'Joker' and v.blueprint_compat then
+                table.insert(options, v)
+            end
+        end
+        local chosen_key = pseudorandom_element(options, pseudoseed('chaos'..G.GAME.round_resets.ante))
+        G.jokers.cards[i].ability.extra.mimic = SMODS.create_card({set = 'Joker', area = G.jokers, no_edition = true, key = chosen_key.key})
         G.jokers.cards[i].ability.extra.mimic.states.visible = nil
-        G.jokers.cards[i].ability.extra.mimicname = G.jokers.cards[i].ability.extra.mimic.ability.name
+        G.jokers.cards[i].ability.extra.mimicname = localize{type = 'name_text', set = G.jokers.cards[i].ability.extra.mimic.config.center.set, key = G.jokers.cards[i].ability.extra.mimic.config.center.key}
     end
 end'''
 match_indent = true
