@@ -555,7 +555,7 @@ SMODS.Joker {
   calculate = function(self, card, context)
     if card.ability.extra.mimic then
       local other_joker_ret = card.ability.extra.mimic:calculate_joker(context)
-      if other_joker_ret then 
+      if other_joker_ret then
         other_joker_ret.card = card
         return other_joker_ret
       end
