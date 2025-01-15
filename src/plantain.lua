@@ -54,7 +54,7 @@ SMODS.Joker {
   rarity = 1,
   atlas = 'plantain',
   blueprint_compat = true,
-  pos = { x = 0, y = 0 },
+  pos = { x = 1, y = 0 },
   cost = 4,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.repetition then
@@ -138,7 +138,7 @@ SMODS.Joker {
   rarity = 1,
   atlas = 'plantain',
   blueprint_compat = false,
-  pos = { x = 0, y = 0 },
+  pos = { x = 3, y = 0 },
   cost = 3,
   config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
   set_ability = function(self, card, initial, delay_sprites)
