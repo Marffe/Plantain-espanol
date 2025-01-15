@@ -150,7 +150,7 @@ SMODS.Joker {
       end
       local options = {}
       for k, v in pairs(G.P_CENTERS) do
-        if v.unlocked and v.set == 'Joker' then
+        if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' then
           table.insert(options, v)
         end
       end
@@ -574,7 +574,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.Xmult } }
   end,
   calculate = function(self, card, context)
-    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker') 
+    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker')
     or string.find(context.other_joker.ability.name, 'joker')) then
       G.E_MANAGER:add_event(Event({
         func = function()
