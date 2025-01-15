@@ -25,6 +25,7 @@ payload = '''
 if self.ability.name == 'j_Plantain_inkblot_joker' and self.ability.extra.mimic then
     local old = self.ability.extra.mimic
     self:set_ability(old)
+    self.children.front = nil
     self.seal = 'Plantain_inkblot_joker_seal'
 end
 '''
