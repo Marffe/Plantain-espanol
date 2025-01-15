@@ -141,6 +141,25 @@ SMODS.Joker {
   pos = { x = 0, y = 0 },
   cost = 3,
   config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
+  set_ability = function(self, card, initial, delay_sprites)
+    if G.jokers and not G.SETTINGS.paused then
+      if card.ability.extra.mimic then
+        G.jokers:remove_card(card.ability.extra.mimic)
+        card.ability.extra.mimic:remove()
+        card.ability.extra.mimic = nil
+      end
+      local options = {}
+      for k, v in pairs(G.P_CENTERS) do
+        if v.unlocked and v.set == 'Joker' then
+          table.insert(options, v)
+        end
+      end
+      local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
+      card.ability.extra.mimic = SMODS.create_card({set = 'Joker', area = G.jokers, no_edition = true, key = chosen_key.key})
+      card.ability.extra.mimic.states.visible = nil
+      card.ability.extra.mimicname = localize{type = 'name_text', set = card.ability.extra.mimic.config.center.set, key = card.ability.extra.mimic.config.center.key}
+    end
+  end,
   loc_vars = function(self, info_queue, card)
     if card.ability.extra.mimic then
       if card.ability.extra.mimic.config.center.mod and card.ability.extra.mimic.config.center.loc_vars and type(card.ability.extra.mimic.config.center.loc_vars) == 'function' then
@@ -158,6 +177,9 @@ SMODS.Joker {
         other_joker_ret.card = card
         return other_joker_ret
       end
+    end
+    if context.end_of_round and not context.repetition and not context.individual then
+      card:set_ability(self, card, nil, nil)
     end
   end
 }
