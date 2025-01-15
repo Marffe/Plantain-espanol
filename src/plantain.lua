@@ -178,7 +178,7 @@ SMODS.Joker {
         return other_joker_ret
       end
     end
-    if context.end_of_round and not context.repetition and not context.individual then
+    if context.pl_cash_out then
       card:set_ability(self, card, nil, nil)
     end
   end
