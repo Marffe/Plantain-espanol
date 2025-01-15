@@ -19,36 +19,20 @@ end
 [[patches]]
 [patches.pattern]
 target = "card.lua"
-pattern = '''self.removed = true'''
+pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
 if self.ability.name == 'j_Plantain_inkblot_joker' and self.ability.extra.mimic then
-    G.jokers:remove_card(self.ability.extra.mimic)
-    self.ability.extra.mimic:remove()
-    self.ability.extra.mimic = nil
-end'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.extra}
-        end'''
-position = "after"
-payload = '''
-if G.jokers and G.jokers.cards then
-    for i=1, #G.jokers.cards do
-        if G.jokers.cards[i].ability.name == 'j_Plantain_inkblot_joker' and G.jokers.cards[i].ability.extra.mimic and self.ability.name == G.jokers.cards[i].ability.extra.mimic.ability.name and G.jokers.cards[i].ability.extra.mimic.config.center.mod == nil then
-            G.jokers.cards[i].ability.extra.info = loc_vars
-        end
-    end
-    if G.shop_jokers and G.shop_jokers.cards then
-        for k, v in ipairs(G.shop_jokers.cards) do
-            if v.ability.name == 'j_Plantain_inkblot_joker' and v.ability.extra.mimic and self.ability.name == v.ability.extra.mimic.ability.name and v.ability.extra.mimic.config.center.mod == nil then
-                v.ability.extra.info = loc_vars
-            end
-        end
-    end
+    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.15, func = function()
+        self:flip()
+        play_sound('tarot1')
+        ;return true end }))
+    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
+        local old = self.config.center
+        self:set_ability(self.ability.extra.mimic)
+        self:flip()
+        self.mimic = old
+        ;return true end }))
 end
 '''
 match_indent = true
@@ -56,42 +40,20 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = "card.lua"
-pattern = '''if G.jokers.cards[i] == self then other_joker = G.jokers.cards[i+1] end
-            end'''
-position = "after"
+pattern = '''if context.individual then'''
+position = "before"
 payload = '''
-if other_joker == nil then
-    for i = 1, #G.jokers.cards do
-        if G.jokers.cards[i].ability.name == 'j_Plantain_inkblot_joker' and G.jokers.cards[i].ability.extra.mimic and G.jokers.cards[i].ability.extra.mimic == self then 
-            other_joker = G.jokers.cards[i+1]
-        end
-    end
+if self.mimic and not context.individual and not context.repetition then
+    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.15, func = function()
+        self:flip()
+        play_sound('tarot1')
+        ;return true end }))
+    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
+        self:set_ability(self.mimic)
+        self:flip()
+        ;return true end }))
+    
 end
 '''
 match_indent = true
 
-[[patches]]
-[patches.pattern]
-target = "functions/misc_functions.lua"
-pattern = '''local jokers = {}'''
-position = "after"
-payload = '''
-for k, v in pairs(G.jokers.cards) do
-    if v and type(v) == 'table' and v.ability.name == 'j_Plantain_inkblot_joker' and v.ability.extra.mimic and v.ability.extra.mimic.ability.name == name then
-        table.insert(jokers, v.ability.extra.mimic)
-    end
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/state_events.lua"
-pattern = '''local ret = G.jokers.cards[i]:calculate_dollar_bonus()'''
-position = "after"
-payload = '''
-if G.jokers.cards[i].ability.name == 'j_Plantain_inkblot_joker' and G.jokers.cards[i].ability.extra.mimic then
-    ret = G.jokers.cards[i].ability.extra.mimic:calculate_dollar_bonus()
-end
-'''
-match_indent = true

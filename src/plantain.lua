@@ -130,9 +130,8 @@ SMODS.Joker {
   loc_txt = {
     name = 'Inkblot Joker',
     text = {
-      "Mimics a random {C:attention}Joker",
+      "Turns into a random {C:attention}Joker",
       "every round",
-      "{C:inactive}(Currently #1#)"
     }
   },
   rarity = 1,
@@ -140,48 +139,22 @@ SMODS.Joker {
   blueprint_compat = false,
   pos = { x = 3, y = 0 },
   cost = 3,
-  config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
-  set_ability = function(self, card, initial, delay_sprites)
-    if G.jokers and not G.SETTINGS.paused then
-      if card.ability.extra.mimic then
-        G.jokers:remove_card(card.ability.extra.mimic)
-        card.ability.extra.mimic:remove()
-        card.ability.extra.mimic = nil
-      end
-      local options = {}
-      for k, v in pairs(G.P_CENTERS) do
-        if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' then
-          table.insert(options, v)
-        end
-      end
-      local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
-      card.ability.extra.mimic = SMODS.create_card({set = 'Joker', area = G.jokers, no_edition = true, key = chosen_key.key})
-      card.ability.extra.mimic.states.visible = nil
-      card.ability.extra.mimicname = localize{type = 'name_text', set = card.ability.extra.mimic.config.center.set, key = card.ability.extra.mimic.config.center.key}
-    end
-  end,
-  loc_vars = function(self, info_queue, card)
-    if card.ability.extra.mimic then
-      if card.ability.extra.mimic.config.center.mod and card.ability.extra.mimic.config.center.loc_vars and type(card.ability.extra.mimic.config.center.loc_vars) == 'function' then
-        card.ability.extra.info = card.ability.extra.mimic.config.center:loc_vars(info_queue, card.ability.extra.mimic).vars
-      end
-      card.ability.extra.mimic:generate_UIBox_ability_table()
-      info_queue[#info_queue+1] = {type = 'descriptions', key = card.ability.extra.mimic.config.center.key, set = 'Joker', specific_vars = card.ability.extra.info or {} }
-    end
-    return { vars = { card.ability.extra.mimicname } }
-  end,
+  config = { extra = { mimic = nil } },
   calculate = function(self, card, context)
-    if card.ability.extra.mimic then
-      local other_joker_ret = card.ability.extra.mimic:calculate_joker(context)
-      if other_joker_ret then
-        other_joker_ret.card = card
-        return other_joker_ret
+    if context.setting_blind and not card.getting_sliced and context.blind == G.GAME.round_resets.blind then
+      if G.jokers and not G.SETTINGS.paused then
+        local options = {}
+        for k, v in pairs(G.P_CENTERS) do
+          if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' then
+            table.insert(options, v)
+          end
+        end
+        local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
+        card.ability.extra.mimic = chosen_key
       end
-    end
-    if context.pl_cash_out then
-      card:set_ability(self, card, nil, nil)
     end
   end
+    
 }
 
 SMODS.Joker {
