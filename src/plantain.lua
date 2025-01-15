@@ -158,7 +158,6 @@ SMODS.Joker {
       card.ability.extra.mimic = SMODS.create_card({set = 'Joker', area = G.jokers, no_edition = true, key = chosen_key.key})
       card.ability.extra.mimic.states.visible = nil
       card.ability.extra.mimicname = localize{type = 'name_text', set = card.ability.extra.mimic.config.center.set, key = card.ability.extra.mimic.config.center.key}
-      card.ability.extra.mimic:generate_UIBox_ability_table()
     end
   end,
   loc_vars = function(self, info_queue, card)
@@ -166,7 +165,8 @@ SMODS.Joker {
       if card.ability.extra.mimic.config.center.mod and card.ability.extra.mimic.config.center.loc_vars and type(card.ability.extra.mimic.config.center.loc_vars) == 'function' then
         card.ability.extra.info = card.ability.extra.mimic.config.center:loc_vars(info_queue, card.ability.extra.mimic).vars
       end
-      --info_queue[#info_queue+1] = {key = card.ability.extra.mimic.config.center, set = 'Joker', specific_vars = card.ability.extra.info }
+      card.ability.extra.mimic:generate_UIBox_ability_table()
+      info_queue[#info_queue+1] = {type = 'descriptions', key = card.ability.extra.mimic.config.center.key, set = 'Joker', specific_vars = card.ability.extra.info }
     end
     return { vars = { card.ability.extra.mimicname } }
   end,

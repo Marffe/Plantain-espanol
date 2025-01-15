@@ -90,8 +90,8 @@ target = "functions/state_events.lua"
 pattern = '''local ret = G.jokers.cards[i]:calculate_dollar_bonus()'''
 position = "after"
 payload = '''
-if _card.ability.name == 'j_Plantain_inkblot_joker' and _card.ability.extra.mimic then
-    ret = _card.ability.extra.mimic:calculate_dollar_bonus()
+if G.jokers.cards[i].ability.name == 'j_Plantain_inkblot_joker' and G.jokers.cards[i].ability.extra.mimic then
+    ret = G.jokers.cards[i].ability.extra.mimic:calculate_dollar_bonus()
 end
 '''
 match_indent = true
