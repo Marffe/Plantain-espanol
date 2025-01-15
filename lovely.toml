@@ -24,17 +24,8 @@ position = "after"
 payload = '''
 if self.ability.name == 'j_Plantain_inkblot_joker' and self.ability.extra.mimic then
     local old = self.ability.extra.mimic
-    G.GAME.plantain_inkbloats = {}
-    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.15, func = function()
-        self:flip()
-        play_sound('tarot1')
-        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 1, func = function()
-            self:set_ability(old)
-            self:flip()
-            table.insert(G.GAME.plantain_inkbloats, old)
-            ;return true end }))
-        ;return true end }))
-    
+    self:set_ability(old)
+    self.seal = 'Plantain_inkblot_joker_seal'
 end
 '''
 match_indent = true
@@ -45,19 +36,10 @@ target = "card.lua"
 pattern = '''if context.individual then'''
 position = "before"
 payload = '''
-if not context.individual and not context.repetition and G.GAME.plantain_inkbloats then
-    for k, v in pairs(G.GAME.plantain_inkbloats) do
-        if v.key == self.config.center.key then
-            table.remove(G.GAME.plantain_inkbloats, k)
-            G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.15, func = function()
-                self:flip()
-                play_sound('tarot1')
-                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
-                    self:set_ability(G.P_CENTERS['j_Plantain_inkblot_joker'])
-                    self:flip()
-                    ;return true end }))
-                ;return true end }))
-        end
+if not context.individual and not context.repetition then
+    if self.seal == 'Plantain_inkblot_joker_seal' then
+        self:set_ability(G.P_CENTERS['j_Plantain_inkblot_joker'])
+        self.seal = nil
     end
 end
 '''

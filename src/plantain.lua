@@ -157,6 +157,21 @@ SMODS.Joker {
     
 }
 
+SMODS.Seal {
+  key = 'inkblot_joker_seal',
+  badge_colour = HEX("545454"),
+  loc_txt = {
+    name = "Inkblot Joker",
+    label = "Inkblot Joker",
+    text = {
+      "Turns into a random {C:attention}Joker",
+      "every round"
+    }
+  },
+  atlas = "plantain",
+  pos = { x = 3, y = 0}
+}
+
 SMODS.Joker {
   key = 'apple_pie',
   loc_txt = {
