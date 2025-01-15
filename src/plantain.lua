@@ -131,7 +131,7 @@ SMODS.Joker {
     name = 'Inkblot Joker',
     text = {
       "Mimics a random {C:attention}Joker",
-      "upon selecting a blind",
+      "every round",
       "{C:inactive}(Currently #1#)"
     }
   },
