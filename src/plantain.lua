@@ -166,7 +166,7 @@ SMODS.Joker {
         card.ability.extra.info = card.ability.extra.mimic.config.center:loc_vars(info_queue, card.ability.extra.mimic).vars
       end
       card.ability.extra.mimic:generate_UIBox_ability_table()
-      info_queue[#info_queue+1] = {type = 'descriptions', key = card.ability.extra.mimic.config.center.key, set = 'Joker', specific_vars = card.ability.extra.info }
+      info_queue[#info_queue+1] = {type = 'descriptions', key = card.ability.extra.mimic.config.center.key, set = 'Joker', specific_vars = card.ability.extra.info or {} }
     end
     return { vars = { card.ability.extra.mimicname } }
   end,
