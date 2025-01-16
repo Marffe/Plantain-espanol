@@ -23,7 +23,7 @@ pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
 if context.setting_blind and not self.getting_sliced and context.blind == G.GAME.round_resets.blind and self.config.center.key == 'j_Plantain_inkblot_joker' then
-      if G.jokers and not G.SETTINGS.paused then
+      if G.jokers then
         local options = {}
         for k, v in pairs(G.P_CENTERS) do
           if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' then
@@ -53,7 +53,6 @@ if context.setting_blind and not self.getting_sliced and context.blind == G.GAME
         self.ability.perma_bonus = self.ability.mimic and self.ability.mimic.perma_bonus or 0
         self.ability.extra = copy_table(self.ability.mimic.config.extra) or nil
         self.ability.enhancement_gate = self.ability.mimic.enhancement_gate or nil
-        self:generate_UIBox_ability_table()
     end
 end
 '''
@@ -68,7 +67,7 @@ position = "after"
 payload = '''
 if G.jokers and G.jokers.cards then
     for i=1, #G.jokers.cards do
-        if G.jokers.cards[i].ability.plantain_info then
+        if G.jokers.cards[i].ability.plantain_info and G.jokers.cards[i].config.center.key == 'j_Plantain_inkblot_joker' and self.ability.name == G.jokers.cards[i].ability.name then
             G.jokers.cards[i].ability.plantain_info = loc_vars
         end
     end
