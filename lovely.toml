@@ -22,11 +22,38 @@ target = "card.lua"
 pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
-if self.ability.name == 'j_Plantain_inkblot_joker' and self.ability.extra.mimic then
-    local old = self.ability.extra.mimic
-    self:set_ability(old)
-    self.children.front = nil
-    self.seal = 'Plantain_inkblot_joker_seal'
+if context.setting_blind and not self.getting_sliced and context.blind == G.GAME.round_resets.blind and self.config.center.key == 'j_Plantain_inkblot_joker' then
+      if G.jokers and not G.SETTINGS.paused then
+        local options = {}
+        for k, v in pairs(G.P_CENTERS) do
+          if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' then
+            table.insert(options, v)
+          end
+        end
+        local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
+        self.ability.mimic = chosen_key
+        self.ability.plantain_info = 'None'
+        self.ability.name = self.ability.mimic.name
+        self.ability.effect = self.ability.mimic.effect
+        self.ability.set = self.ability.mimic.set
+        self.ability.mult = self.ability.mimic.config.mult or 0
+        self.ability.h_mult = self.ability.mimic.config.h_mult or 0
+        self.ability.h_x_mult = self.ability.mimic.config.h_x_mult or 0
+        self.ability.h_dollars = self.ability.mimic.config.h_dollars or 0
+        self.ability.p_dollars = self.ability.mimic.config.p_dollars or 0
+        self.ability.t_mult = self.ability.mimic.config.t_mult or 0
+        self.ability.t_chips = self.ability.mimic.config.t_chips or 0
+        self.ability.x_mult = self.ability.mimic.config.Xmult or 1
+        self.ability.h_size = self.ability.mimic.config.h_size or 0
+        self.ability.d_size = self.ability.mimic.config.d_size or 0
+        self.ability.extra_value = 0
+        self.ability.type = self.ability.mimic.config.type
+        self.ability.order = self.ability.mimic.order or nil
+        self.ability.forced_selection = self.ability.mimic and self.ability.mimic.forced_selection or nil
+        self.ability.perma_bonus = self.ability.mimic and self.ability.mimic.perma_bonus or 0
+        self.ability.extra = copy_table(self.ability.mimic.config.extra) or nil
+        self.ability.enhancement_gate = self.ability.mimic.enhancement_gate or nil
+    end
 end
 '''
 match_indent = true
@@ -34,15 +61,16 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = "card.lua"
-pattern = '''if context.individual then'''
-position = "before"
+pattern = '''elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.extra}
+        end'''
+position = "after"
 payload = '''
-if not context.individual and not context.repetition then
-    if self.seal == 'Plantain_inkblot_joker_seal' then
-        self:set_ability(G.P_CENTERS['j_Plantain_inkblot_joker'])
-        self.seal = nil
+if G.jokers and G.jokers.cards then
+    for i=1, #G.jokers.cards do
+        if G.jokers.cards[i].ability.plantain_info then
+            G.jokers.cards[i].ability.plantain_info = loc_vars
+        end
     end
 end
 '''
 match_indent = true
-

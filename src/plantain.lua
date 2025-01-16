@@ -132,6 +132,7 @@ SMODS.Joker {
     text = {
       "Turns into a random {C:attention}Joker",
       "every round",
+      "{C:inactive}(Currently #1#)"
     }
   },
   rarity = 1,
@@ -140,36 +141,25 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 3,
   config = { extra = { mimic = nil } },
-  calculate = function(self, card, context)
-    if context.setting_blind and not card.getting_sliced and context.blind == G.GAME.round_resets.blind then
-      if G.jokers and not G.SETTINGS.paused then
-        local options = {}
-        for k, v in pairs(G.P_CENTERS) do
-          if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' then
-            table.insert(options, v)
-          end
-        end
-        local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
-        card.ability.extra.mimic = chosen_key
+  loc_vars = function(self, info_queue, card)
+    if card.ability.mimic then
+      if card.ability.mimic.loc_vars and type(card.ability.mimic.loc_vars) == 'function' then
+        card.ability.plantain_info = card.ability.mimic:loc_vars(info_queue, card).vars
       end
+      info_queue[#info_queue+1] = { type = 'descriptions', set = card.config.center.set, key = card.ability.mimic.key, specific_vars = card.ability.plantain_info or {} }
+    end
+    if card.ability.mimic then
+      return { vars = { localize{ type = 'name_text', set = card.config.center.set, key = card.ability.mimic.key } } }
+    else
+      return { vars = { 'none' } }
+    end
+  end,
+  calculate = function(self, card, context)
+    if card.ability.mimic and card.ability.mimic.calculate then
+      card.ability.mimic.calculate(self, card, context)
     end
   end
     
-}
-
-SMODS.Seal {
-  key = 'inkblot_joker_seal',
-  badge_colour = HEX("545454"),
-  loc_txt = {
-    name = "Inkblot Joker",
-    label = "Inkblot Joker",
-    text = {
-      "Turns into a random {C:attention}Joker",
-      "every round"
-    }
-  },
-  atlas = "plantain",
-  pos = { x = 3, y = 0}
 }
 
 SMODS.Joker {
@@ -320,7 +310,7 @@ SMODS.Joker {
       G.E_MANAGER:add_event(Event({
         func = function()
           for i=1, #G.jokers.cards do
-            other_soda = G.jokers.cards[i]
+            local other_soda = G.jokers.cards[i]
             if other_soda.ability.name == card.ability.name and other_soda ~= card and card.ability.extra.should_destroy then
               other_soda.ability.extra.should_destroy = false
             end
