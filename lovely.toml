@@ -23,7 +23,7 @@ pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
 if context.setting_blind and not self.getting_sliced and context.blind == G.GAME.round_resets.blind and self.config.center.key == 'j_Plantain_inkblot_joker' then
-      if G.jokers then
+    if G.jokers then
         local options = {}
         for k, v in pairs(G.P_CENTERS) do
           if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' then
@@ -97,6 +97,35 @@ if context.setting_blind and not self.getting_sliced and context.blind == G.GAME
         end
         if self.ability.name == 'Stuntman' then
             G.hand:change_size(-self.ability.extra.h_size)
+        end
+        if self.ability.name == 'Gold Card' and self.seal == 'Gold' and self.playing_card then 
+            check_for_unlock({type = 'double_gold'})
+        end
+        if self.ability.name == "Invisible Joker" then 
+            self.ability.invis_rounds = 0
+        end
+        if self.ability.name == 'To Do List' then
+            local _poker_hands = {}
+            for k, v in pairs(G.GAME.hands) do
+                if v.visible then _poker_hands[#_poker_hands+1] = k end
+            end
+            local old_hand = self.ability.to_do_poker_hand
+            self.ability.to_do_poker_hand = nil
+
+            while not self.ability.to_do_poker_hand do
+                self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed((self.area and self.area.config.type == 'title') and 'false_to_do' or 'to_do'))
+                if self.ability.to_do_poker_hand == old_hand then self.ability.to_do_poker_hand = nil end
+            end
+        end
+        if self.ability.name == 'Caino' then 
+            self.ability.caino_xmult = 1
+        end
+        if self.ability.name == 'Yorick' then 
+            self.ability.yorick_discards = self.ability.extra.discards
+        end
+        if self.ability.name == 'Loyalty Card' then 
+            self.ability.burnt_hand = 0
+            self.ability.loyalty_remaining = self.ability.extra.every
         end
     end
 end
