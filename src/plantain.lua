@@ -155,8 +155,9 @@ SMODS.Joker {
     end
   end,
   calculate = function(self, card, context)
-    if card.ability.mimic and card.ability.mimic.calculate then
-      card.ability.mimic.calculate(self, card, context)
+    if card.ability.mimic and card.ability.mimic.calculate and context then
+      local mim_func = card.ability.mimic.calculate(card, card, context)
+      return mim_func
     end
   end
     

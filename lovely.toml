@@ -32,7 +32,7 @@ if context.setting_blind and not self.getting_sliced and context.blind == G.GAME
         end
         local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
         self.ability.mimic = chosen_key
-        self.ability.plantain_info = 'None'
+        self.ability.plantain_info = 'Yes'
         self.ability.name = self.ability.mimic.name
         self.ability.effect = self.ability.mimic.effect
         self.ability.set = self.ability.mimic.set
@@ -53,6 +53,7 @@ if context.setting_blind and not self.getting_sliced and context.blind == G.GAME
         self.ability.perma_bonus = self.ability.mimic and self.ability.mimic.perma_bonus or 0
         self.ability.extra = copy_table(self.ability.mimic.config.extra) or nil
         self.ability.enhancement_gate = self.ability.mimic.enhancement_gate or nil
+        self:generate_UIBox_ability_table()
     end
 end
 '''
