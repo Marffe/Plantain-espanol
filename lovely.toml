@@ -127,6 +127,7 @@ if context.setting_blind and not self.getting_sliced and context.blind == G.GAME
             self.ability.burnt_hand = 0
             self.ability.loyalty_remaining = self.ability.extra.every
         end
+        self.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
     end
 end
 '''
