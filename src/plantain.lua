@@ -137,7 +137,7 @@ SMODS.Joker {
   },
   rarity = 1,
   atlas = 'plantain',
-  blueprint_compat = false,
+  blueprint_compat = true,
   pos = { x = 3, y = 0 },
   cost = 3,
   config = { extra = { mimic = nil } },
@@ -156,7 +156,7 @@ SMODS.Joker {
   end,
   calculate = function(self, card, context)
     if card.ability.mimic and card.ability.mimic.calculate and context then
-      local mim_func = card.ability.mimic.calculate(card, card, context)
+      local mim_func = card.ability.mimic.calculate(self, card, context)
       return mim_func
     end
   end
