@@ -47,7 +47,8 @@ if context.setting_blind and not self.getting_sliced and context.blind == G.GAME
         self.ability.h_size = self.ability.mimic.config.h_size or 0
         self.ability.d_size = self.ability.mimic.config.d_size or 0
         self.ability.extra_value = 0
-        self.ability.type = self.ability.mimic.type
+        self.ability.type = self.ability.mimic.config.type
+        self.type = self.ability.mimic.type
         self.ability.order = self.ability.mimic.order or nil
         self.ability.forced_selection = self.ability.mimic and self.ability.mimic.forced_selection or nil
         self.ability.perma_bonus = self.ability.mimic and self.ability.mimic.perma_bonus or 0

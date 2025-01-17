@@ -140,18 +140,21 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 3, y = 0 },
   cost = 3,
-  config = { extra = { mimic = nil } },
   loc_vars = function(self, info_queue, card)
     if card.ability.mimic then
       if card.ability.mimic.loc_vars and type(card.ability.mimic.loc_vars) == 'function' then
         card.ability.plantain_info = card.ability.mimic:loc_vars(info_queue, card).vars
       end
-      info_queue[#info_queue+1] = { type = 'descriptions', set = card.config.center.set, key = card.ability.mimic.key, specific_vars = card.ability.plantain_info or {} }
-    end
-    if card.ability.mimic then
-      return { vars = { localize{ type = 'name_text', set = card.config.center.set, key = card.ability.mimic.key } } }
+      info_queue[#info_queue+1] = { type = 'descriptions', set = card.ability.mimic.set, key = card.ability.mimic.key, specific_vars = card.ability.plantain_info or {} }
+      return { vars = { localize{ type = 'name_text', set = card.ability.mimic.set, key = card.ability.mimic.key } } }
     else
       return { vars = { 'none' } }
+    end
+  end,
+  calc_dollar_bonus = function(self, card)
+    if card.ability.mimic and card.ability.mimic.calc_dollar_bonus then
+      local mim_dollar_func = card.ability.mimic.calc_dollar_bonus(self, card)
+      return mim_dollar_func
     end
   end,
   calculate = function(self, card, context)
@@ -197,15 +200,15 @@ SMODS.Joker {
         G.E_MANAGER:add_event(Event({
           func = function()
               play_sound('tarot1')
-              self.T.r = -0.2
-              self:juice_up(0.3, 0.4)
-              self.states.drag.is = true
-              self.children.center.pinch.x = true
+              card.T.r = -0.2
+              card:juice_up(0.3, 0.4)
+              card.states.drag.is = true
+              card.children.center.pinch.x = true
               G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
                   func = function()
-                          G.jokers:remove_card(self)
-                          self:remove()
-                          self = nil
+                          G.jokers:remove_card(card)
+                          card:remove()
+                          card = nil
                       return true; end})) 
               return true
           end
