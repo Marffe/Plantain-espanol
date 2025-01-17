@@ -27,107 +27,16 @@ if context.setting_blind and not self.getting_sliced and context.blind == G.GAME
         local options = {}
         for k, v in pairs(G.P_CENTERS) do
           if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' and v.name ~= 'Shortcut' then
-            table.insert(options, v)
+            if not v.mod then
+                table.insert(options, v)
+            end
           end
         end
         local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
-        self.ability.mimic = chosen_key
-        self.ability.name = self.ability.mimic.name
-        self.ability.effect = self.ability.mimic.effect
-        self.ability.set = self.ability.mimic.set
-        self.ability.mult = self.ability.mimic.config.mult or 0
-        self.ability.h_mult = self.ability.mimic.config.h_mult or 0
-        self.ability.h_x_mult = self.ability.mimic.config.h_x_mult or 0
-        self.ability.h_dollars = self.ability.mimic.config.h_dollars or 0
-        self.ability.p_dollars = self.ability.mimic.config.p_dollars or 0
-        self.ability.t_mult = self.ability.mimic.config.t_mult or 0
-        self.ability.t_chips = self.ability.mimic.config.t_chips or 0
-        self.ability.x_mult = self.ability.mimic.config.Xmult or 1
-        self.ability.h_size = self.ability.mimic.config.h_size or 0
-        self.ability.d_size = self.ability.mimic.config.d_size or 0
-        self.ability.extra_value = 0
-        self.ability.type = self.ability.mimic.config.type
-        self.type = self.ability.mimic.type
-        self.ability.order = self.ability.mimic.order or nil
-        self.ability.forced_selection = self.ability.mimic and self.ability.mimic.forced_selection or nil
-        self.ability.perma_bonus = self.ability.mimic and self.ability.mimic.perma_bonus or 0
-        self.ability.extra = copy_table(self.ability.mimic.config.extra) or nil
-        self.ability.enhancement_gate = self.ability.mimic.enhancement_gate or nil
-        self.ability.blueprint_compat = self.ability.mimic.blueprint_compat
-        if self.ability.h_size ~= 0 then
-          G.hand:change_size(self.ability.h_size)
-        end
-        if self.ability.d_size > 0 then
-            G.GAME.round_resets.discards = G.GAME.round_resets.discards + self.ability.d_size
-            ease_discard(self.ability.d_size)
-        end
-        if self.ability.name == 'Credit Card' then
-            G.GAME.bankrupt_at = G.GAME.bankrupt_at - self.ability.extra
-        end
-        if self.ability.name == 'Chicot' and G.GAME.blind and G.GAME.blind.boss and not G.GAME.blind.disabled then
-            G.GAME.blind:disable()
-            play_sound('timpani')
-            card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
-        end
-        if self.ability.name == 'Chaos the Clown' then
-            G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + 1
-            calculate_reroll_cost(true)
-        end
-        if self.ability.name == 'Turtle Bean' then
-            G.hand:change_size(self.ability.extra.h_size)
-        end
-        if self.ability.name == 'Oops! All 6s' then
-            for k, v in pairs(G.GAME.probabilities) do 
-                G.GAME.probabilities[k] = v*2
-            end
-        end
-        if self.ability.name == 'To the Moon' then
-            G.GAME.interest_amount = G.GAME.interest_amount + self.ability.extra
-        end
-        if self.ability.name == 'Astronomer' then 
-            G.E_MANAGER:add_event(Event({func = function()
-                for k, v in pairs(G.I.CARD) do
-                    if v.set_cost then v:set_cost() end
-                end
-                return true end }))
-        end
-        if self.ability.name == 'Troubadour' then
-            G.hand:change_size(self.ability.extra.h_size)
-            G.GAME.round_resets.hands = G.GAME.round_resets.hands + self.ability.extra.h_plays
-        end
-        if self.ability.name == 'Stuntman' then
-            G.hand:change_size(-self.ability.extra.h_size)
-        end
-        if self.ability.name == 'Gold Card' and self.seal == 'Gold' and self.playing_card then 
-            check_for_unlock({type = 'double_gold'})
-        end
-        if self.ability.name == "Invisible Joker" then 
-            self.ability.invis_rounds = 0
-        end
-        if self.ability.name == 'To Do List' then
-            local _poker_hands = {}
-            for k, v in pairs(G.GAME.hands) do
-                if v.visible then _poker_hands[#_poker_hands+1] = k end
-            end
-            local old_hand = self.ability.to_do_poker_hand
-            self.ability.to_do_poker_hand = nil
-
-            while not self.ability.to_do_poker_hand do
-                self.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed((self.area and self.area.config.type == 'title') and 'false_to_do' or 'to_do'))
-                if self.ability.to_do_poker_hand == old_hand then self.ability.to_do_poker_hand = nil end
-            end
-        end
-        if self.ability.name == 'Caino' then 
-            self.ability.caino_xmult = 1
-        end
-        if self.ability.name == 'Yorick' then 
-            self.ability.yorick_discards = self.ability.extra.discards
-        end
-        if self.ability.name == 'Loyalty Card' then 
-            self.ability.burnt_hand = 0
-            self.ability.loyalty_remaining = self.ability.extra.every
-        end
-        self.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
+        self:set_ability(chosen_key)
+        self.mimic = G.P_CENTERS[chosen_key.key]
+        self:set_sprites(G.P_CENTERS['j_Plantain_inkblot_joker'])
+        self.config.center = G.P_CENTERS['j_Plantain_inkblot_joker']
     end
 end
 '''

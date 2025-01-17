@@ -109,7 +109,7 @@ SMODS.Joker {
     
 	end,
   calculate = function(self, card, context)
-    if context.cardarea == G.play then
+    if context.cardarea == G.play and context.other_card then
       if context.other_card:get_id() == card.ability.extra.lucky1 
       or context.other_card:get_id() == card.ability.extra.lucky2 then
         return {
@@ -141,26 +141,11 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 3,
   loc_vars = function(self, info_queue, card)
-    if card.ability.mimic then
-      if card.ability.mimic.loc_vars and type(card.ability.mimic.loc_vars) == 'function' then
-        card.ability.plantain_info = card.ability.mimic:loc_vars(info_queue, card).vars
-      end
-      info_queue[#info_queue+1] = G.P_CENTERS[card.ability.mimic.key]
-      return { vars = { localize{ type = 'name_text', set = card.ability.mimic.set, key = card.ability.mimic.key } } }
+    if card.mimic then
+      info_queue[#info_queue+1] = G.P_CENTERS[card.mimic.key]
+      return { vars = { localize{ type = 'name_text', set = card.mimic.set, key = card.mimic.key } } }
     else
       return { vars = { 'none' } }
-    end
-  end,
-  calc_dollar_bonus = function(self, card)
-    if card.ability.mimic and card.ability.mimic.calc_dollar_bonus then
-      local mim_dollar_func = card.ability.mimic.calc_dollar_bonus(self, card)
-      return mim_dollar_func
-    end
-  end,
-  calculate = function(self, card, context)
-    if card.ability.mimic and card.ability.mimic.calculate and context then
-      local mim_func = card.ability.mimic.calculate(self, card, context)
-      return mim_func
     end
   end
     
