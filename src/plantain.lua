@@ -145,7 +145,7 @@ SMODS.Joker {
       if card.ability.mimic.loc_vars and type(card.ability.mimic.loc_vars) == 'function' then
         card.ability.plantain_info = card.ability.mimic:loc_vars(info_queue, card).vars
       end
-      info_queue[#info_queue+1] = { type = 'descriptions', set = card.ability.mimic.set, key = card.ability.mimic.key, specific_vars = card.ability.plantain_info or {} }
+      info_queue[#info_queue+1] = G.P_CENTERS[card.ability.mimic.key]
       return { vars = { localize{ type = 'name_text', set = card.ability.mimic.set, key = card.ability.mimic.key } } }
     else
       return { vars = { 'none' } }
