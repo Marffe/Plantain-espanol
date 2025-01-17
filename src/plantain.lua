@@ -142,12 +142,19 @@ SMODS.Joker {
   cost = 3,
   loc_vars = function(self, info_queue, card)
     if card.mimic then
-      info_queue[#info_queue+1] = G.P_CENTERS[card.mimic.key]
+      if not card.mimic.mod then
+        info_queue[#info_queue+1] = {type = 'descriptions', set = card.mimic.set, key = card.mimic.key, specific_vars = card.plantain_info or {} }
+      else
+        if card.mimic.loc_vars then
+          card.plantain_info = card.mimic:loc_vars(info_queue, card).vars
+        end
+        info_queue[#info_queue+1] = {type = 'descriptions', set = card.mimic.set, key = card.mimic.key, specific_vars = card.plantain_info or {} }
+      end
       return { vars = { localize{ type = 'name_text', set = card.mimic.set, key = card.mimic.key } } }
     else
       return { vars = { 'none' } }
     end
-  end
+  end,
     
 }
 
