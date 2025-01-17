@@ -18,42 +18,50 @@ end
 
 [[patches]]
 [patches.pattern]
-target = "blind.lua"
-pattern = '''if blind and blind.name and blind.name ~= '' then'''
+target = "card.lua"
+pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
-for i=1, #G.jokers.cards do
-    if G.jokers.cards[i].ability.name == 'j_Plantain_chaos' then
-        if G.jokers.cards[i].ability.extra.mimic then
-            G.jokers:remove_card(G.jokers.cards[i].ability.extra.mimic)
-            G.jokers.cards[i].ability.extra.mimic:remove()
-            G.jokers.cards[i].ability.extra.mimic = nil
-        end
+if context.setting_blind and not self.getting_sliced and context.blind == G.GAME.round_resets.blind and self.config.center.key == 'j_Plantain_inkblot_joker' then
         local options = {}
         for k, v in pairs(G.P_CENTERS) do
-            if v.unlocked and v.set == 'Joker' then
+          if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' and v.name ~= 'Shortcut' then
+            if not v.mod then
                 table.insert(options, v)
             end
+          end
         end
-        local chosen_key = pseudorandom_element(options, pseudoseed('chaos'..G.GAME.round_resets.ante))
-        G.jokers.cards[i].ability.extra.mimic = SMODS.create_card({set = 'Joker', area = G.jokers, no_edition = true, key = chosen_key.key})
-        G.jokers.cards[i].ability.extra.mimic.states.visible = nil
-        G.jokers.cards[i].ability.extra.mimicname = localize{type = 'name_text', set = G.jokers.cards[i].ability.extra.mimic.config.center.set, key = G.jokers.cards[i].ability.extra.mimic.config.center.key}
+        local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
+        self:set_ability(chosen_key)
+        self.mimic = chosen_key
+        self.config.center = {}
+        self:set_sprites(G.P_CENTERS['j_Plantain_inkblot_joker'])
+        local table = G.P_CENTERS['j_Plantain_inkblot_joker']
+        for k, j in pairs(chosen_key) do
+          if k ~= 'loc_vars' and k ~= 'loc_txt' and k ~= 'key' and k ~= 'atlas' and k ~= 'pos' and k ~= 'cost' and k ~= 'rarity' then
+            table[k] = j
+          end
+        end
+        self.config.center = table
     end
-end'''
+'''
 match_indent = true
 
 [[patches]]
 [patches.pattern]
-target = "card.lua"
-pattern = '''self.removed = true'''
-position = "after"
+target = "functions/common_events.lua"
+pattern = '''if not card then
+            local ability = copy_table(cfg)
+            ability.set = 'Joker'
+            ability.name = _c.name
+            local ret = {Card.generate_UIBox_ability_table({ ability = ability, config = { center = _c }, bypass_lock = true}, true)}
+            specific_vars = ret[1]
+            if ret[2] then desc_nodes[#desc_nodes+1] = ret[2] end
+            main_end = ret[3]
+        end'''
+position = "at"
 payload = '''
-if self.ability.name == 'j_Plantain_chaos' and self.ability.extra.mimic then
-    G.jokers:remove_card(self.ability.extra.mimic)
-    self.ability.extra.mimic:remove()
-    self.ability.extra.mimic = nil
-end'''
+'''
 match_indent = true
 
 [[patches]]
@@ -65,8 +73,8 @@ position = "after"
 payload = '''
 if G.jokers and G.jokers.cards then
     for i=1, #G.jokers.cards do
-        if G.jokers.cards[i].ability.name == 'j_Plantain_chaos' and G.jokers.cards[i].ability.extra.mimic and self.ability.name == G.jokers.cards[i].ability.extra.mimic.ability.name and G.jokers.cards[i].ability.extra.mimic.config.center.mod == nil then
-            G.jokers.cards[i].ability.extra.info = loc_vars
+        if G.jokers.cards[i].config.center.key == 'j_Plantain_inkblot_joker' and self.ability.name == G.jokers.cards[i].ability.name then
+            G.jokers.cards[i].plantain_info = loc_vars
         end
     end
 end
@@ -76,42 +84,62 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = "card.lua"
-pattern = '''if G.jokers.cards[i] == self then other_joker = G.jokers.cards[i+1] end
+pattern = '''if self.config.center.soul_pos and (self.config.center.discovered or self.bypass_discovery_center) then'''
+position = "at"
+payload = '''if self.config.center.soul_pos and (self.config.center.discovered or self.bypass_discovery_center) and not self.mimic then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if obj.load and type(obj.load) == 'function' then'''
+position = "before"
+payload = '''if not self.mimic then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''self:set_sprites(self.config.center, self.config.card)'''
+position = "after"
+payload = '''end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if center.name == "Half Joker" and (center.discovered or self.bypass_discovery_center) then'''
+position = "before"
+payload = '''if not self.mimic then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if center.name == "Wee Joker" and (center.discovered or self.bypass_discovery_center) then 
+        H = H*0.7
+        W = W*0.7
+        self.T.h = H
+        self.T.w = W
+    end'''
+position = "after"
+payload = '''end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if _center.name == 'Half Joker' and (_center.discovered or self.bypass_discovery_center) then'''
+position = "before"
+payload = '''if not self.mimic then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if _center.name == 'Square Joker' and (_center.discovered or self.bypass_discovery_center) then 
+                self.children.center.scale.y = self.children.center.scale.x
             end'''
 position = "after"
-payload = '''
-if other_joker == nil then
-    for i = 1, #G.jokers.cards do
-        if G.jokers.cards[i].ability.name == 'j_Plantain_chaos' and G.jokers.cards[i].ability.extra.mimic and G.jokers.cards[i].ability.extra.mimic == self then 
-            other_joker = G.jokers.cards[i+1]
-        end
-    end
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/misc_functions.lua"
-pattern = '''local jokers = {}'''
-position = "after"
-payload = '''
-for k, v in pairs(G.jokers.cards) do
-    if v and type(v) == 'table' and v.ability.name == 'j_Plantain_chaos' and v.ability.extra.mimic and v.ability.extra.mimic.ability.name == name then
-        table.insert(jokers, v.ability.extra.mimic)
-    end
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/state_events.lua"
-pattern = '''local ret = G.jokers.cards[i]:calculate_dollar_bonus()'''
-position = "after"
-payload = '''
-if _card.ability.name == 'j_Plantain_chaos' and _card.ability.extra.mimic then
-    ret = _card.ability.extra.mimic:calculate_dollar_bonus()
-end
-'''
+payload = '''end'''
 match_indent = true

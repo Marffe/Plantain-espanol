@@ -54,7 +54,7 @@ SMODS.Joker {
   rarity = 1,
   atlas = 'plantain',
   blueprint_compat = true,
-  pos = { x = 0, y = 0 },
+  pos = { x = 1, y = 0 },
   cost = 4,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.repetition then
@@ -109,7 +109,7 @@ SMODS.Joker {
     
 	end,
   calculate = function(self, card, context)
-    if context.cardarea == G.play then
+    if context.cardarea == G.play and context.other_card then
       if context.other_card:get_id() == card.ability.extra.lucky1 
       or context.other_card:get_id() == card.ability.extra.lucky2 then
         return {
@@ -125,6 +125,38 @@ SMODS.Joker {
   end
 }
 
+SMODS.Joker {
+  key = 'inkblot_joker',
+  loc_txt = {
+    name = 'Inkblot Joker',
+    text = {
+      "Turns into a random {C:attention}Joker",
+      "every round",
+      "{C:inactive}(Currently #1#)"
+    }
+  },
+  rarity = 1,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 3, y = 0 },
+  cost = 3,
+  loc_vars = function(self, info_queue, card)
+    if card.mimic then
+      if not card.mimic.mod then
+        info_queue[#info_queue+1] = {type = 'descriptions', set = card.mimic.set, key = card.mimic.key, specific_vars = card.plantain_info or {} }
+      else
+        if card.mimic.loc_vars then
+          card.plantain_info = card.mimic:loc_vars(info_queue, card).vars
+        end
+        info_queue[#info_queue+1] = {type = 'descriptions', set = card.mimic.set, key = card.mimic.key, specific_vars = card.plantain_info or {} }
+      end
+      return { vars = { localize{ type = 'name_text', set = card.mimic.set, key = card.mimic.key } } }
+    else
+      return { vars = { 'none' } }
+    end
+  end,
+    
+}
 
 SMODS.Joker {
   key = 'apple_pie',
@@ -160,15 +192,15 @@ SMODS.Joker {
         G.E_MANAGER:add_event(Event({
           func = function()
               play_sound('tarot1')
-              self.T.r = -0.2
-              self:juice_up(0.3, 0.4)
-              self.states.drag.is = true
-              self.children.center.pinch.x = true
+              card.T.r = -0.2
+              card:juice_up(0.3, 0.4)
+              card.states.drag.is = true
+              card.children.center.pinch.x = true
               G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
                   func = function()
-                          G.jokers:remove_card(self)
-                          self:remove()
-                          self = nil
+                          G.jokers:remove_card(card)
+                          card:remove()
+                          card = nil
                       return true; end})) 
               return true
           end
@@ -210,42 +242,42 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-  key = 'odd_sock',
+  key = 'mini_crossword',
   loc_txt = {
-    name = 'Odd Sock',
+    name = 'Mini Crossword',
     text = {
-      'This Joker gains {C:mult}+#1#{} Mult',
-      'if played hand {C:attention}does not',
-      'contain a {C:attention}Pair',
-      '{C:inactive}(Currently {C:mult}+#2# {C:inactive}Mult)'
+      'Gains {C:mult}+#1#{} Mult if played',
+      'hand has exactly {C:attention}#2#{} card(s),',
+      'size changes every round',
+      '{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)'
     }
   },
   rarity = 2,
   atlas = 'plantain',
-  blueprint_compat = true,
-  config = { extra = { mult_mod = 2, mult = 0 } },
-  loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.mult_mod, card.ability.extra.mult } }
-  end,
-  pos = { x = 2, y = 1 },
   cost = 6,
+  blueprint_compat = true,
+  pos = { x = 2, y = 1 },
+  config = { extra = { mult_mod = 2, cw_size = 1 , mult = 0} },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.mult_mod, card.ability.extra.cw_size, card.ability.extra.mult} }
+  end,
+  set_ability = function(self, card, initial, delay_sprites)
+    local valid_cw_size = {1, 2, 3, 4, 5}
+    card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('among_ass'..G.GAME.round_resets.ante)) 
+	end,
   calculate = function(self, card, context)
-    if context.joker_main and card.ability.extra.mult > 0 then
+    if context.cardarea == G.jokers and context.before and #context.full_hand == card.ability.extra.cw_size and not context.blueprint then
+      card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
+      return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
+    end
+    if context.joker_main and context.cardarea == G.jokers then
       return {
         mult_mod = card.ability.extra.mult,
         message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
       }
     end
-
-    if context.before and not context.blueprint then
-      if not next(context.poker_hands['Pair']) then
-        card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
-        return {
-          message = 'Lonely!',
-          colour = G.C.Mult,
-          card = card
-        }
-      end
+    if context.end_of_round and not context.repetition and not context.individual then
+      card:set_ability(self, card, nil, nil)
     end
   end
 }
@@ -274,7 +306,7 @@ SMODS.Joker {
       G.E_MANAGER:add_event(Event({
         func = function()
           for i=1, #G.jokers.cards do
-            other_soda = G.jokers.cards[i]
+            local other_soda = G.jokers.cards[i]
             if other_soda.ability.name == card.ability.name and other_soda ~= card and card.ability.extra.should_destroy then
               other_soda.ability.extra.should_destroy = false
             end
@@ -308,33 +340,40 @@ SMODS.Joker {
   loc_txt = {
     name = 'Quarry',
     text = {
-      "{C:attention}Stone{} cards give {C:money}$#1#{},",
-      "{C:green}#2#/#3#{} chance for {C:attention}Stone",
-      "cards to be destroyed"
+      "Gains {X:mult,C:white}X#1#{} Mult each time",
+      "a {C:attention}Stone{} card scores, destroy",
+      "all played {C:attention}Stone{} cards",
+      "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
     }
   },
   rarity = 2,
   atlas = 'plantain',
-  config = { extra = { money = 6, chance = 3 } },
+  config = { extra = { xmult_mod = 0.25, xmult = 1 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.money,(G.GAME.probabilities.normal or 1), card.ability.extra.chance } }
+    return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
   end,
-  blueprint_compat = false,
+  blueprint_compat = true,
   pos = { x = 3, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.other_card.ability.effect == 'Stone Card' and context.individual then
-      return {
-        dollars = card.ability.extra.money
-      }
+      card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
+      return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
     end
-    if pseudorandom('quarry') < G.GAME.probabilities.normal/card.ability.extra.chance and context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' then
+    if context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' then
       G.E_MANAGER:add_event(Event({
         func = function()
           context.destroying_card:start_dissolve({G.C.GOLD}, context.destroying_card)
           play_sound('whoosh2')
         return true
       end}))
+      return true
+    end
+    if context.joker_main and context.cardarea == G.jokers then
+      return {
+        Xmult_mod = card.ability.extra.xmult,
+        message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
+      }
     end
   end
 }
@@ -509,7 +548,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.Xmult } }
   end,
   calculate = function(self, card, context)
-    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker') 
+    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker')
     or string.find(context.other_joker.ability.name, 'joker')) then
       G.E_MANAGER:add_event(Event({
         func = function()
@@ -522,43 +561,6 @@ SMODS.Joker {
         Xmult_mod = card.ability.extra.Xmult,
         focus = context.other_joker
     }
-    end
-  end
-}
-
-SMODS.Joker {
-  key = 'chaos',
-  loc_txt = {
-    name = 'Chaos',
-    text = {
-      "Mimics a random {C:attention}Joker",
-      "upon selecting a blind",
-      "{C:inactive}(Currently #1#)"
-    }
-  },
-  rarity = 1,
-  atlas = 'plantain',
-  blueprint_compat = false,
-  pos = { x = 0, y = 0 },
-  cost = 3,
-  config = { extra = { mimic = nil, mimicname = 'none', info = {} } },
-  loc_vars = function(self, info_queue, card)
-    if card.ability.extra.mimic then
-      if card.ability.extra.mimic.config.center.mod and card.ability.extra.mimic.config.center.loc_vars and type(card.ability.extra.mimic.config.center.loc_vars) == 'function' then
-        card.ability.extra.info = card.ability.extra.mimic.config.center:loc_vars(info_queue, card.ability.extra.mimic).vars
-      end
-      card.ability.extra.mimic:generate_UIBox_ability_table()
-      info_queue[#info_queue+1] = {type = 'descriptions', set = card.ability.extra.mimic.config.center.set, key = card.ability.extra.mimic.config.center.key, specific_vars = card.ability.extra.info }
-    end
-    return { vars = { card.ability.extra.mimicname } }
-  end,
-  calculate = function(self, card, context)
-    if card.ability.extra.mimic then
-      local other_joker_ret = card.ability.extra.mimic:calculate_joker(context)
-      if other_joker_ret then
-        other_joker_ret.card = card
-        return other_joker_ret
-      end
     end
   end
 }
