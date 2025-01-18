@@ -140,6 +140,19 @@ SMODS.Joker {
   blueprint_compat = false,
   pos = { x = 3, y = 0 },
   cost = 3,
+  loc_vars = function(self, info_queue, card)
+    if card.config and card.config.center.mim_key then
+      if card.config.center.mod and card.config.center.plan_loc_vars_2 and card.ability.extra then
+        local specific = card.config.center:plan_loc_vars_2(info_queue, card).vars
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.config.center.mim_key, specific_vars = specific or {}}
+      else
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.config.center.mim_key, specific_vars = card.config.center.plantain_info or {}}
+      end
+      return { vars = {localize{type = 'name_text', set = 'Joker', key = card.config.center.mim_key}} }
+    else
+      return { vars = {"none"}}
+    end
+  end,
 }
 
 SMODS.Joker {

@@ -23,24 +23,30 @@ pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
 if context.setting_blind and not self.getting_sliced and context.blind == G.GAME.round_resets.blind and self.config.center.key == 'j_Plantain_inkblot_joker' then
-      if G.jokers then
-        local options = {}
-        for k, v in pairs(G.P_CENTERS) do
-          if v.unlocked and v.set == 'Joker' and v.key ~= 'j_Plantain_inkblot_joker' then
-            table.insert(options, v)
-          end
-        end
-        local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
-        local mim = chosen_key.key
-        local old = G.P_CENTERS['j_Plantain_inkblot_joker']
-        self:set_ability(chosen_key)
-        self.config.center.key = old.key
-        self.config.center.rarity = old.rarity
-        self:set_sprites(G.P_CENTERS['j_Plantain_inkblot_joker'])
-        self.config.center.loc_txt = old.loc_txt
-        self.config.center.loc_vars = nil
-        self.config.center.mim_key = mim
+  local options = {}
+  for k, v in pairs(G.P_CENTERS) do
+    if v.unlocked and v.set == 'Joker' and v.key ~= 'j_Plantain_inkblot_joker' then
+      table.insert(options, v)
+    end
+  end
+  local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
+  if chosen_key then
+    local mim = chosen_key.key
+    local old = G.P_CENTERS['j_Plantain_inkblot_joker']
+    for k, v in pairs(chosen_key) do
+      if k == 'loc_vars' then
+        old['plan_loc_vars_2'] = v
       end
+    end
+    for k, v in pairs(old) do
+      if k == 'key' or k == 'rarity' or k == 'loc_txt' or k == 'loc_vars' or k == 'plan_loc_vars_2' or k == 'atlas' or k == 'cost' or k == 'pos' then
+        chosen_key[k] = v
+      end
+    end
+    self:set_ability(chosen_key)
+    self:set_sprites(old)
+    self.config.center.mim_key = mim
+  end
 end
 '''
 match_indent = true
@@ -51,32 +57,13 @@ target = "card.lua"
 pattern = '''elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.extra}
         end'''
 position = "after"
-payload = '''
-self.config.center.plantain_info = loc_vars
-if self.config.center.mim_key and self.config.center.loc_vars then
-    self.config.center.plantain_info = self.config.center:loc_vars(info_queue, self).vars
-end
+payload = '''self.config.center.plantain_info = loc_vars
 if self.config.center.mim_key then
     loc_vars = {localize{type = 'name_text', set = 'Joker', key = self.config.center.mim_key}}
 else
     loc_vars = { 'none' } 
-end'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/common_events.lua"
-pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
-position = "before"
-payload = '''if _c.mim_key then info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = _c.mim_key, specific_vars = _c.plantain_info or {}}'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/common_events.lua"
-pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
-position = "at"
-payload = '''elseif _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
+end
+'''
 match_indent = true
 
 [[patches]]
@@ -93,5 +80,21 @@ pattern = '''if not card then
         end'''
 position = "at"
 payload = ''''''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
+position = "before"
+payload = '''if _c.mim_key then info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = _c.mim_key, specific_vars = _c.plantain_info or {}}'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
+position = "at"
+payload = '''elseif _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
 match_indent = true
 
