@@ -132,30 +132,14 @@ SMODS.Joker {
     text = {
       "Turns into a random {C:attention}Joker",
       "every round",
-      "{C:inactive}(Currently #1#)"
+      "Currently #1#"
     }
   },
   rarity = 1,
   atlas = 'plantain',
-  blueprint_compat = true,
+  blueprint_compat = false,
   pos = { x = 3, y = 0 },
   cost = 3,
-  loc_vars = function(self, info_queue, card)
-    if card.mimic then
-      if not card.mimic.mod then
-        info_queue[#info_queue+1] = {type = 'descriptions', set = card.mimic.set, key = card.mimic.key, specific_vars = card.plantain_info or {} }
-      else
-        if card.mimic.loc_vars then
-          card.plantain_info = card.mimic:loc_vars(info_queue, card).vars
-        end
-        info_queue[#info_queue+1] = {type = 'descriptions', set = card.mimic.set, key = card.mimic.key, specific_vars = card.plantain_info or {} }
-      end
-      return { vars = { localize{ type = 'name_text', set = card.mimic.set, key = card.mimic.key } } }
-    else
-      return { vars = { 'none' } }
-    end
-  end,
-    
 }
 
 SMODS.Joker {
@@ -192,15 +176,15 @@ SMODS.Joker {
         G.E_MANAGER:add_event(Event({
           func = function()
               play_sound('tarot1')
-              card.T.r = -0.2
-              card:juice_up(0.3, 0.4)
-              card.states.drag.is = true
-              card.children.center.pinch.x = true
+              self.T.r = -0.2
+              self:juice_up(0.3, 0.4)
+              self.states.drag.is = true
+              self.children.center.pinch.x = true
               G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
                   func = function()
-                          G.jokers:remove_card(card)
-                          card:remove()
-                          card = nil
+                          G.jokers:remove_card(self)
+                          self:remove()
+                          self = nil
                       return true; end})) 
               return true
           end
@@ -306,7 +290,7 @@ SMODS.Joker {
       G.E_MANAGER:add_event(Event({
         func = function()
           for i=1, #G.jokers.cards do
-            local other_soda = G.jokers.cards[i]
+            other_soda = G.jokers.cards[i]
             if other_soda.ability.name == card.ability.name and other_soda ~= card and card.ability.extra.should_destroy then
               other_soda.ability.extra.should_destroy = false
             end
@@ -356,7 +340,7 @@ SMODS.Joker {
   pos = { x = 3, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.other_card.ability.effect == 'Stone Card' and context.individual then
+    if context.cardarea == G.play and context.other_card and context.other_card.ability.effect == 'Stone Card' and context.individual then
       card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
       return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
     end

@@ -23,28 +23,60 @@ pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
 if context.setting_blind and not self.getting_sliced and context.blind == G.GAME.round_resets.blind and self.config.center.key == 'j_Plantain_inkblot_joker' then
+      if G.jokers then
         local options = {}
         for k, v in pairs(G.P_CENTERS) do
-          if v.unlocked and v.set == 'Joker' and v.name ~= 'j_Plantain_inkblot_joker' and v.name ~= 'Shortcut' then
-            if not v.mod then
-                table.insert(options, v)
-            end
+          if v.unlocked and v.set == 'Joker' and v.key ~= 'j_Plantain_inkblot_joker' then
+            table.insert(options, v)
           end
         end
         local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'..G.GAME.round_resets.ante))
+        local mim = chosen_key.key
+        local old = G.P_CENTERS['j_Plantain_inkblot_joker']
         self:set_ability(chosen_key)
-        self.mimic = chosen_key
-        self.config.center = {}
+        self.config.center.key = old.key
+        self.config.center.rarity = old.rarity
         self:set_sprites(G.P_CENTERS['j_Plantain_inkblot_joker'])
-        local table = G.P_CENTERS['j_Plantain_inkblot_joker']
-        for k, j in pairs(chosen_key) do
-          if k ~= 'loc_vars' and k ~= 'loc_txt' and k ~= 'key' and k ~= 'atlas' and k ~= 'pos' and k ~= 'cost' and k ~= 'rarity' then
-            table[k] = j
-          end
-        end
-        self.config.center = table
-    end
+        self.config.center.loc_txt = old.loc_txt
+        self.config.center.loc_vars = nil
+        self.config.center.mim_key = mim
+      end
+end
 '''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.extra}
+        end'''
+position = "after"
+payload = '''
+self.config.center.plantain_info = loc_vars
+if self.config.center.mim_key and self.config.center.loc_vars then
+    self.config.center.plantain_info = self.config.center:loc_vars(info_queue, self).vars
+end
+if self.config.center.mim_key then
+    loc_vars = {localize{type = 'name_text', set = 'Joker', key = self.config.center.mim_key}}
+else
+    loc_vars = { 'none' } 
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
+position = "before"
+payload = '''if _c.mim_key then info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = _c.mim_key, specific_vars = _c.plantain_info or {}}'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
+position = "at"
+payload = '''elseif _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
 match_indent = true
 
 [[patches]]
@@ -60,86 +92,6 @@ pattern = '''if not card then
             main_end = ret[3]
         end'''
 position = "at"
-payload = '''
-'''
+payload = ''''''
 match_indent = true
 
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.extra}
-        end'''
-position = "after"
-payload = '''
-if G.jokers and G.jokers.cards then
-    for i=1, #G.jokers.cards do
-        if G.jokers.cards[i].config.center.key == 'j_Plantain_inkblot_joker' and self.ability.name == G.jokers.cards[i].ability.name then
-            G.jokers.cards[i].plantain_info = loc_vars
-        end
-    end
-end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if self.config.center.soul_pos and (self.config.center.discovered or self.bypass_discovery_center) then'''
-position = "at"
-payload = '''if self.config.center.soul_pos and (self.config.center.discovered or self.bypass_discovery_center) and not self.mimic then'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if obj.load and type(obj.load) == 'function' then'''
-position = "before"
-payload = '''if not self.mimic then'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''self:set_sprites(self.config.center, self.config.card)'''
-position = "after"
-payload = '''end'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if center.name == "Half Joker" and (center.discovered or self.bypass_discovery_center) then'''
-position = "before"
-payload = '''if not self.mimic then'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if center.name == "Wee Joker" and (center.discovered or self.bypass_discovery_center) then 
-        H = H*0.7
-        W = W*0.7
-        self.T.h = H
-        self.T.w = W
-    end'''
-position = "after"
-payload = '''end'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if _center.name == 'Half Joker' and (_center.discovered or self.bypass_discovery_center) then'''
-position = "before"
-payload = '''if not self.mimic then'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if _center.name == 'Square Joker' and (_center.discovered or self.bypass_discovery_center) then 
-                self.children.center.scale.y = self.children.center.scale.x
-            end'''
-position = "after"
-payload = '''end'''
-match_indent = true
