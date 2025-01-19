@@ -39,6 +39,6 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = '''if not card then'''
 position = "at"
-payload = '''if not card and _c.mim_key then'''
+payload = '''if not card and _c.key == 'j_Plantain_inkblot_joker' then'''
 match_indent = true
 

@@ -125,6 +125,7 @@ SMODS.Joker {
   end
 }
 
+--portal to hell
 SMODS.Joker {
   key = 'inkblot_joker',
   loc_txt = {
@@ -141,14 +142,14 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 3,
   loc_vars = function(self, info_queue, card)
-    if card.mim_key then
+    if card.ability.mim_key then
       if card.config.center.mod and card.plan_loc_vars_2 and type(card.ability.extra) == 'table' then
         local specific = card:plan_loc_vars_2(info_queue, card).vars
-        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.mim_key, specific_vars = specific or {}}
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = specific or {}}
       else
-        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.mim_key, specific_vars = card.plantain_info or {}}
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = card.plantain_info or {}}
       end
-      return { vars = {localize{type = 'name_text', set = 'Joker', key = card.mim_key}} }
+      return { vars = {localize{type = 'name_text', set = 'Joker', key = card.ability.mim_key}} }
     else
       return { vars = {"none"}}
     end
@@ -181,9 +182,9 @@ SMODS.Joker {
         card.plan_loc_vars_2 = nil
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
-        card.mim_key = chosen_key.key
         card.ability = nil
         card.ability = deepcopy(car.ability)
+        card.ability.mim_key = chosen_key.key
 
         if G.P_CENTERS[chosen_key.key].calculate then
           card.plan_calc_2 = G.P_CENTERS[chosen_key.key].calculate
@@ -224,7 +225,47 @@ SMODS.Joker {
   
         card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
 
-        car:add_to_deck(false)
+        if card.ability.d_size > 0 then
+          G.GAME.round_resets.discards = G.GAME.round_resets.discards + card.ability.d_size
+          ease_discard(card.ability.d_size)
+      end
+      if card.ability.name == 'Credit Card' then
+          G.GAME.bankrupt_at = G.GAME.bankrupt_at - card.ability.extra
+      end
+      if card.ability.name == 'Chicot' and G.GAME.blind and G.GAME.blind.boss and not G.GAME.blind.disabled then
+          G.GAME.blind:disable()
+          play_sound('timpani')
+          card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
+      end
+      if card.ability.name == 'Chaos the Clown' then
+          G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + 1
+          calculate_reroll_cost(true)
+      end
+      if card.ability.name == 'Turtle Bean' then
+          G.hand:change_size(card.ability.extra.h_size)
+      end
+      if card.ability.name == 'Oops! All 6s' then
+          for k, v in pairs(G.GAME.probabilities) do 
+              G.GAME.probabilities[k] = v*2
+          end
+      end
+      if card.ability.name == 'To the Moon' then
+          G.GAME.interest_amount = G.GAME.interest_amount + card.ability.extra
+      end
+      if card.ability.name == 'Astronomer' then 
+          G.E_MANAGER:add_event(Event({func = function()
+              for k, v in pairs(G.I.CARD) do
+                  if v.set_cost then v:set_cost() end
+              end
+              return true end }))
+      end
+      if card.ability.name == 'Troubadour' then
+          G.hand:change_size(card.ability.extra.h_size)
+          G.GAME.round_resets.hands = G.GAME.round_resets.hands + card.ability.extra.h_plays
+      end
+      if card.ability.name == 'Stuntman' then
+          G.hand:change_size(-card.ability.extra.h_size)
+      end
 
         G.jokers:remove_card(car)
         car:remove()
