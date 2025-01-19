@@ -142,7 +142,7 @@ SMODS.Joker {
   cost = 3,
   loc_vars = function(self, info_queue, card)
     if card.mim_key then
-      if card.config.center.mod and card.plan_loc_vars_2 and card.ability.extra then
+      if card.config.center.mod and card.plan_loc_vars_2 and type(card.ability.extra) == 'table' then
         local specific = card:plan_loc_vars_2(info_queue, card).vars
         info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.mim_key, specific_vars = specific or {}}
       else
@@ -154,7 +154,7 @@ SMODS.Joker {
     end
   end,
   calculate = function(self, card, context)
-    if (context.pl_cash_out or (context.buying_card and context.card == card)) and not card.getting_sliced then
+    if (context.pl_cash_out or (context.buying_card and context.card == card)) and not card.getting_sliced and card.config.center.key == 'j_Plantain_inkblot_joker' then
       local function deepcopy(tbl)
         local copy = {}
         for k, v in pairs(tbl) do
@@ -177,8 +177,10 @@ SMODS.Joker {
 
       local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
       if chosen_key then
+        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
         card.mim_key = chosen_key.key
+
         card.ability = deepcopy(car.ability)
 
         if G.P_CENTERS[chosen_key.key].calculate then
@@ -189,9 +191,45 @@ SMODS.Joker {
           card.plan_loc_vars_2 = G.P_CENTERS[chosen_key.key].loc_vars
         end
 
+        if card.ability.name == "Invisible Joker" then 
+          card.ability.invis_rounds = 0
+        end
+        if card.ability.name == 'To Do List' then
+          local _poker_hands = {}
+          for k, v in pairs(G.GAME.hands) do
+              if v.visible then _poker_hands[#_poker_hands+1] = k end
+          end
+          local old_hand = card.ability.to_do_poker_hand
+          card.ability.to_do_poker_hand = nil
+  
+          while not card.ability.to_do_poker_hand do
+            card.ability.to_do_poker_hand = pseudorandom_element(_poker_hands, pseudoseed((card.area and card.area.config.type == 'title') and 'false_to_do' or 'to_do'))
+              if card.ability.to_do_poker_hand == old_hand then card.ability.to_do_poker_hand = nil end
+          end
+        end
+        if card.ability.name == 'Caino' then 
+          card.ability.caino_xmult = 1
+        end
+        if card.ability.name == 'Yorick' then 
+          card.ability.yorick_discards = card.ability.extra.discards
+        end
+        if card.ability.name == 'Loyalty Card' then 
+          card.ability.burnt_hand = 0
+          card.ability.loyalty_remaining = card.ability.extra.every
+        end
+  
+        card.base_cost = card.config.center.cost or 1
+  
+        card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
+
+        car:add_to_deck(false)
+
         G.jokers:remove_card(car)
         car:remove()
         car = nil
+        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Updated!', colour = G.C.MONEY})
+        return true end
+      }))
 
       end
     end
