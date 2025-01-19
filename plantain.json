@@ -1,7 +1,7 @@
 {
     "id": "plantain",
     "name": "Plantain",
-    "author": ["IcebergLettuce0"],
+    "author": ["TeamToaster"],
     "description": "Introduces a handful of aggressively vanilla-style jokers.",
     "prefix": "Plantain",
     "main_file": "src/plantain.lua",

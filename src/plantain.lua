@@ -6,12 +6,12 @@ SMODS.Atlas {
 }
 
 SMODS.Joker {
-  key = 'plush_joker',
+  key = 'postcard',
   loc_txt = {
-    name = 'Plush Joker',
+    name = 'Postcard',
     text = {
       "Gains {X:mult,C:white}X1{} Mult for",
-      "each {C:attention}Plush Joker{}",
+      "each {C:attention}Postcard{}",
       "sold this run",
       "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)",
     }
@@ -24,17 +24,17 @@ SMODS.Joker {
   cost = 4,
   config = { extra = { Xmult = 1 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.Xmult + (G.GAME.plantain_plushies_sold or 0) } }
+    return { vars = { card.ability.extra.Xmult + (G.GAME.plantain_postcards_sold or 0) } }
   end,
   calculate = function(self, card, context)
     if context.selling_self then
-      G.GAME.plantain_plushies_sold = (G.GAME.plantain_plushies_sold or 0) + 1
+      G.GAME.plantain_postcards_sold = (G.GAME.plantain_postcards_sold or 0) + 1
     end
     if context.joker_main and context.cardarea == G.jokers then
-      if G.GAME.plantain_plushies_sold ~= nil then
+      if G.GAME.plantain_postcards_sold ~= nil then
         return {
-          Xmult_mod = card.ability.extra.Xmult + G.GAME.plantain_plushies_sold,
-          message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult + G.GAME.plantain_plushies_sold } }
+          Xmult_mod = card.ability.extra.Xmult + G.GAME.plantain_postcards_sold,
+          message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult + G.GAME.plantain_postcards_sold } }
         }
       end
     end
@@ -166,10 +166,10 @@ SMODS.Joker {
   },
 
   config = { extra = { money = 8, money_loss = 1 } },
-  rarity = 2,
+  rarity = 1,
   atlas = 'plantain',
   blueprint_compat = false,
-  pos = { x = 0, y = 1 },
+  pos = { x = 4, y = 0 },
   cost = 6,
 
   loc_vars = function(self, info_queue, card)
@@ -205,6 +205,59 @@ SMODS.Joker {
       else
         card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Slice!', colour = G.C.MONEY})
      end
+    end
+  end
+}
+
+SMODS.Joker {
+  key = 'grape_soda',
+  loc_txt = {
+    name = 'Grape Soda',
+    text = {
+      "After {C:attention}skipping{} a",
+      "{C:attention}Small Blind{} or {C:attention}Big Blind{},",
+      "return to that {C:attention}Blind"
+    }
+  },
+  rarity = 2,
+  atlas = 'plantain',
+  config = { extra = { should_destroy = true } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.should_destroy } }
+  end,
+  blueprint_compat = false,
+  pos = { x = 0, y = 1 },
+  cost = 6,
+  calculate = function(self, card, context)
+    if context.skip_blind then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          for i=1, #G.jokers.cards do
+            other_soda = G.jokers.cards[i]
+            if other_soda.ability.name == card.ability.name and other_soda ~= card and card.ability.extra.should_destroy then
+              other_soda.ability.extra.should_destroy = false
+            end
+          end
+          if card.ability.extra.should_destroy then
+            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
+            if G.GAME.blind_on_deck == 'Big' then
+              G.GAME.blind_on_deck = 'Small'
+              G.GAME.round_resets.blind_states.Small = 'Current'
+              G.GAME.round_resets.blind_states.Big = 'Upcoming'
+            end
+
+            if G.GAME.blind_on_deck == 'Boss' then
+              G.GAME.blind_on_deck = 'Big'
+              G.GAME.round_resets.blind_states.Big = 'Current'
+              G.GAME.round_resets.blind_states.Boss = 'Upcoming'
+            end
+
+            G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
+            card:start_dissolve({G.C.RED}, card)
+            play_sound('whoosh2')
+          end
+        return true
+      end}))
     end
   end
 }
@@ -279,58 +332,7 @@ SMODS.Joker {
   end
 }
 
-SMODS.Joker {
-  key = 'grape_soda',
-  loc_txt = {
-    name = 'Grape Soda',
-    text = {
-      "After {C:attention}skipping{} a",
-      "{C:attention}Small Blind{} or {C:attention}Big Blind{},",
-      "return to that {C:attention}Blind"
-    }
-  },
-  rarity = 2,
-  atlas = 'plantain',
-  config = { extra = { should_destroy = true } },
-  loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.should_destroy } }
-  end,
-  blueprint_compat = false,
-  pos = { x = 0, y = 0 },
-  cost = 6,
-  calculate = function(self, card, context)
-    if context.skip_blind then
-      G.E_MANAGER:add_event(Event({
-        func = function()
-          for i=1, #G.jokers.cards do
-            other_soda = G.jokers.cards[i]
-            if other_soda.ability.name == card.ability.name and other_soda ~= card and card.ability.extra.should_destroy then
-              other_soda.ability.extra.should_destroy = false
-            end
-          end
-          if card.ability.extra.should_destroy then
-            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
-            if G.GAME.blind_on_deck == 'Big' then
-              G.GAME.blind_on_deck = 'Small'
-              G.GAME.round_resets.blind_states.Small = 'Current'
-              G.GAME.round_resets.blind_states.Big = 'Upcoming'
-            end
 
-            if G.GAME.blind_on_deck == 'Boss' then
-              G.GAME.blind_on_deck = 'Big'
-              G.GAME.round_resets.blind_states.Big = 'Current'
-              G.GAME.round_resets.blind_states.Boss = 'Upcoming'
-            end
-
-            G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
-            card:start_dissolve({G.C.RED}, card)
-            play_sound('whoosh2')
-          end
-        return true
-      end}))
-    end
-  end
-}
 
 SMODS.Joker {
   key = 'quarry',
@@ -376,6 +378,48 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
+  key = 'el_dorado',
+  loc_txt = {
+    name = 'El Dorado',
+    text = {
+      'Earn {C:money}$#1#{} for each {C:attention}Wild',
+      'card in your {C:attention}full deck',
+      'at end of round',
+      '{C:inactive}(Currently {C:money}$#2#{C:inactive})'
+    }
+  },
+
+  config = { extra = { money_mod = 3, wild_tally = 0} },
+  rarity = 2,
+  atlas = 'plantain',
+  blueprint_compat = false,
+  pos = { x = 4, y = 1 },
+  cost = 6,
+
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.money_mod, card.ability.extra.wild_tally } }
+  end,
+
+  calc_dollar_bonus = function(self, card)
+    local bonus = card.ability.extra.wild_tally
+    if bonus > 0 then return bonus end
+  end
+}
+
+local card_updateref = Card.update
+function Card.update(self, dt)
+  if G.STAGE == G.STAGES.RUN then
+    if self.config.center.key == 'j_Plantain_el_dorado' then 
+      self.ability.extra.wild_tally = 0
+      for k, v in pairs(G.playing_cards) do
+        if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally+self.ability.extra.money_mod end
+      end
+  end
+  end
+  card_updateref(self, dt)
+end
+
+SMODS.Joker {
   key = 'black_cat',
   loc_txt = {
     name = 'Black Cat',
@@ -415,31 +459,7 @@ SMODS.Joker {
   end
 }
 
---TODO: find a way to change the color (not happening)
-SMODS.Joker {
-  key = 'calculator',
-  loc_txt = {
-    name = 'Calculator',
-    text = {
-      "Swaps {C:chips}Chips{} and {C:mult}Mult{}"
-    }
-  },
-  rarity = 3,
-  atlas = 'plantain',
-  blueprint_compat = true,
-  pos = { x = 0, y = 0 },
-  cost = 7,
-  calculate = function(self, card, context)
-    if context.joker_main and context.cardarea == G.jokers then
-      return 
-      {
-        message = 'Swap!',
-        mult_mod = hand_chips - mult,
-        chip_mod = mult - hand_chips
-      }
-    end
-  end
-}
+
 
 --TODO: fix the sound effect
 SMODS.Joker {
@@ -478,6 +498,70 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
+  key = 'nametag',
+  loc_txt = {
+    name = 'Nametag',
+    text = {
+      "{X:mult,C:white}X2{} Mult for every",
+      "{C:attention}Joker{} with \"Joker\"",
+      "in its name"
+    }
+  },
+  rarity = 3,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 2, y = 2 },
+  cost = 7,
+  config = { extra = { Xmult = 2 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.Xmult } }
+  end,
+  calculate = function(self, card, context)
+    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker')
+    or string.find(context.other_joker.ability.name, 'joker')) then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+            context.other_joker:juice_up(0.5, 0.5)
+            return true
+        end
+    })) 
+    return {
+        message = localize{type = 'variable',key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+        Xmult_mod = card.ability.extra.Xmult,
+        focus = context.other_joker
+    }
+    end
+  end
+}
+
+SMODS.Joker {
+  key = 'calculator',
+  loc_txt = {
+    name = 'Calculator',
+    text = {
+      "Add {C:attention}50%{} of {C:mult}Mult",
+      "to {C:chips}Chips"
+    }
+  },
+  rarity = 3,
+  atlas = 'plantain',
+  blueprint_compat = true,
+  pos = { x = 3, y = 2 },
+  cost = 8,
+  calculate = function(self, card, context)
+    if context.joker_main and context.cardarea == G.jokers then
+      local chip_mod = math.ceil(mult * 0.5)
+      return 
+      {
+        message = localize{type='variable',key='a_chips',vars={chip_mod}},
+        chip_mod = chip_mod,
+        colour = G.C.CHIPS
+      }
+    end
+  end
+}
+
+SMODS.Joker {
   key = 'raw_meat',
   loc_txt = {
     name = 'Raw Meat',
@@ -494,7 +578,7 @@ SMODS.Joker {
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }
   end,
-  pos = { x = 0, y = 0 },
+  pos = { x = 4, y = 2 },
   cost = 8,
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual then
@@ -521,43 +605,6 @@ SMODS.Joker {
             end}))
           return true;
         end}))
-    end
-  end
-}
-
-SMODS.Joker {
-  key = 'nametag',
-  loc_txt = {
-    name = 'Nametag',
-    text = {
-      "{X:mult,C:white}X2{} Mult for every",
-      "{C:attention}Joker{} with \"Joker\"",
-      "in its name"
-    }
-  },
-  rarity = 3,
-  atlas = 'plantain',
-  blueprint_compat = true,
-  pos = { x = 2, y = 2 },
-  cost = 8,
-  config = { extra = { Xmult = 2 } },
-  loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.Xmult } }
-  end,
-  calculate = function(self, card, context)
-    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker')
-    or string.find(context.other_joker.ability.name, 'joker')) then
-      G.E_MANAGER:add_event(Event({
-        func = function()
-            context.other_joker:juice_up(0.5, 0.5)
-            return true
-        end
-    })) 
-    return {
-        message = localize{type = 'variable',key = 'a_xmult', vars = { card.ability.extra.Xmult } },
-        Xmult_mod = card.ability.extra.Xmult,
-        focus = context.other_joker
-    }
     end
   end
 }
