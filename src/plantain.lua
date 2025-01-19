@@ -141,18 +141,65 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 3,
   loc_vars = function(self, info_queue, card)
-    if card.config and card.config.center.mim_key then
-      if card.config.center.mod and card.config.center.plan_loc_vars_2 and card.ability.extra then
-        local specific = card.config.center:plan_loc_vars_2(info_queue, card).vars
-        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.config.center.mim_key, specific_vars = specific or {}}
+    if card.mim_key then
+      if card.config.center.mod and card.plan_loc_vars_2 and card.ability.extra then
+        local specific = card:plan_loc_vars_2(info_queue, card).vars
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.mim_key, specific_vars = specific or {}}
       else
-        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.config.center.mim_key, specific_vars = card.config.center.plantain_info or {}}
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.mim_key, specific_vars = card.plantain_info or {}}
       end
-      return { vars = {localize{type = 'name_text', set = 'Joker', key = card.config.center.mim_key}} }
+      return { vars = {localize{type = 'name_text', set = 'Joker', key = card.mim_key}} }
     else
       return { vars = {"none"}}
     end
   end,
+  calculate = function(self, card, context)
+    if (context.pl_cash_out or (context.buying_card and context.card == card)) and not card.getting_sliced then
+      local function deepcopy(tbl)
+        local copy = {}
+        for k, v in pairs(tbl) do
+          if type(v) == "table" then
+            copy[k] = deepcopy(v)
+          else
+            copy[k] = v
+          end
+        end
+        return copy
+      end
+      
+      local options = {}
+
+      for k, v in pairs(G.P_CENTERS) do
+        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked then
+          options[k] = v
+        end
+      end
+
+      local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
+      if chosen_key then
+        local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
+        card.mim_key = chosen_key.key
+        card.ability = deepcopy(car.ability)
+
+        if G.P_CENTERS[chosen_key.key].calculate then
+          card.plan_calc_2 = G.P_CENTERS[chosen_key.key].calculate
+        end
+
+        if G.P_CENTERS[chosen_key.key].loc_vars then
+          card.plan_loc_vars_2 = G.P_CENTERS[chosen_key.key].loc_vars
+        end
+
+        G.jokers:remove_card(car)
+        car:remove()
+        car = nil
+
+      end
+    end
+    if card.plan_calc_2 then
+      local mim_calc = card.plan_calc_2(self, card, context)
+      return mim_calc
+    end
+  end
 }
 
 SMODS.Joker {

@@ -16,51 +16,6 @@ for i=1, #G.jokers.cards do
 end
 '''
 
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
-position = "after"
-payload = '''
-if (context.pl_cash_out or (context.buying_card and context.card == self)) and not self.getting_sliced and self.config.center.key == 'j_Plantain_inkblot_joker' then
-  local function deep_copy(tbl)
-    local copy = {}
-    for k, v in pairs(tbl) do
-      if type(v) == "table" then
-        copy[k] = deep_copy(v)
-      else
-        copy[k] = v
-      end
-    end
-    return copy
-  end
-  local options = deep_copy(G.P_CENTERS)
-  for k, v in pairs(options) do
-    if v.set ~= 'Joker' or v.key == 'j_Plantain_inkblot_joker' or not v.unlocked then
-      options[k] = nil
-    end
-  end
-  local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
-  if chosen_key then
-    local mim = chosen_key.key
-    local old = G.P_CENTERS['j_Plantain_inkblot_joker']
-    for k, v in pairs(chosen_key) do
-      if k == 'loc_vars' then
-        old['plan_loc_vars_2'] = v
-      end
-    end
-    for k, v in pairs(old) do
-      if k == 'key' or k == 'rarity' or k == 'loc_txt' or k == 'loc_vars' or k == 'plan_loc_vars_2' or k == 'atlas' or k == 'cost' or k == 'pos' then
-        chosen_key[k] = v
-      end
-    end
-    self:set_ability(chosen_key)
-    self:set_sprites(old)
-    self.config.center.mim_key = mim
-  end
-end
-'''
-match_indent = true
 
 [[patches]]
 [patches.pattern]
@@ -69,11 +24,12 @@ pattern = '''elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.
         end'''
 position = "after"
 payload = '''
-if self.config.center.key == 'j_Plantain_inkblot_joker' and self.config.center.mim_key then
-    self.config.center.plantain_info = loc_vars
-    loc_vars = {localize{type = 'name_text', set = 'Joker', key = self.config.center.mim_key}}
-elseif self.config.center.key == 'j_Plantain_inkblot_joker' then
-    loc_vars = { 'none' } 
+if G.jokers then
+  for i=1, #G.jokers.cards do
+    if self.ability.name == G.jokers.cards[i].ability.name and G.jokers.cards[i].config.center.key == 'j_Plantain_inkblot_joker' then
+      self.plantain_info = loc_vars
+    end
+  end
 end
 '''
 match_indent = true
@@ -84,21 +40,5 @@ target = "functions/common_events.lua"
 pattern = '''if not card then'''
 position = "at"
 payload = '''if not card and _c.mim_key then'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/common_events.lua"
-pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
-position = "before"
-payload = '''if _c.mim_key then info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = _c.mim_key, specific_vars = _c.plantain_info or {}}'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/common_events.lua"
-pattern = '''if _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
-position = "at"
-payload = '''elseif _c.name == 'Stone Joker' or _c.name == 'Marble Joker' then info_queue[#info_queue+1] = G.P_CENTERS.m_stone'''
 match_indent = true
 
