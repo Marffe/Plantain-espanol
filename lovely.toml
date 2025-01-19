@@ -68,10 +68,11 @@ target = "card.lua"
 pattern = '''elseif self.ability.name == 'Perkeo' then loc_vars = {self.ability.extra}
         end'''
 position = "after"
-payload = '''self.config.center.plantain_info = loc_vars
-if self.config.center.mim_key then
+payload = '''
+if self.config.center.key == 'j_Plantain_inkblot_joker' and self.config.center.mim_key then
+    self.config.center.plantain_info = loc_vars
     loc_vars = {localize{type = 'name_text', set = 'Joker', key = self.config.center.mim_key}}
-else
+elseif self.config.center.key == 'j_Plantain_inkblot_joker' then
     loc_vars = { 'none' } 
 end
 '''
@@ -80,17 +81,9 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = "functions/common_events.lua"
-pattern = '''if not card then
-            local ability = copy_table(cfg)
-            ability.set = 'Joker'
-            ability.name = _c.name
-            local ret = {Card.generate_UIBox_ability_table({ ability = ability, config = { center = _c }, bypass_lock = true}, true)}
-            specific_vars = ret[1]
-            if ret[2] then desc_nodes[#desc_nodes+1] = ret[2] end
-            main_end = ret[3]
-        end'''
+pattern = '''if not card then'''
 position = "at"
-payload = ''''''
+payload = '''if not card and _c.mim_key then'''
 match_indent = true
 
 [[patches]]
