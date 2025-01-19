@@ -22,11 +22,22 @@ target = "card.lua"
 pattern = '''if self.ability.set == "Joker" and not self.debuff then'''
 position = "after"
 payload = '''
-if context.setting_blind and not self.getting_sliced and context.blind == G.GAME.round_resets.blind and self.config.center.key == 'j_Plantain_inkblot_joker' then
-  local options = {}
-  for k, v in pairs(G.P_CENTERS) do
-    if v.unlocked and v.set == 'Joker' and v.key ~= 'j_Plantain_inkblot_joker' then
-      table.insert(options, v)
+if (context.pl_cash_out or (context.buying_card and context.card == self)) and not self.getting_sliced and self.config.center.key == 'j_Plantain_inkblot_joker' then
+  local function deep_copy(tbl)
+    local copy = {}
+    for k, v in pairs(tbl) do
+      if type(v) == "table" then
+        copy[k] = deep_copy(v)
+      else
+        copy[k] = v
+      end
+    end
+    return copy
+  end
+  local options = deep_copy(G.P_CENTERS)
+  for k, v in pairs(options) do
+    if v.set ~= 'Joker' or v.key == 'j_Plantain_inkblot_joker' or not v.unlocked then
+      options[k] = nil
     end
   end
   local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
