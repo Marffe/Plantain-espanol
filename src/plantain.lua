@@ -154,7 +154,7 @@ SMODS.Joker {
     end
   end,
   calculate = function(self, card, context)
-    if (context.pl_cash_out or (context.buying_card and context.card == card)) and not card.getting_sliced and card.config.center.key == 'j_Plantain_inkblot_joker' then
+    if (context.pl_cash_out or (context.buying_card and context.card == card)) and not card.getting_sliced and not context.repetition and not context.individual then
       local function deepcopy(tbl)
         local copy = {}
         for k, v in pairs(tbl) do
@@ -170,17 +170,19 @@ SMODS.Joker {
       local options = {}
 
       for k, v in pairs(G.P_CENTERS) do
-        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked then
+        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' then
           options[k] = v
         end
       end
 
       local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
       if chosen_key then
+        card.plan_calc_2 = nil
+        card.plan_loc_vars_2 = nil
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
         card.mim_key = chosen_key.key
-
+        card.ability = nil
         card.ability = deepcopy(car.ability)
 
         if G.P_CENTERS[chosen_key.key].calculate then
