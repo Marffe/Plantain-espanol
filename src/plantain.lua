@@ -188,10 +188,14 @@ SMODS.Joker {
         card.plan_set_ability_2 = nil
         
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
-        card:remove_from_deck()
         card.ability = nil
         card.ability = deepcopy(car.ability)
         card.ability.mim_key = chosen_key.key
+        G.jokers:remove_card(car)
+        car:remove()
+        car = nil
+
+        card:add_to_deck()
 
         if G.P_CENTERS[chosen_key.key].calculate then
           card.plan_calc_2 = G.P_CENTERS[chosen_key.key].calculate
@@ -239,16 +243,7 @@ SMODS.Joker {
         card.base_cost = card.config.center.cost or 1
   
         card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
-
-        card:add_to_deck()
-
-        G.jokers:remove_card(car)
-        car:remove()
-        car = nil
       end
-    end
-    if card.plan_set_ability_2 then
-      card.plan_set_ability_2(self, card, initial, delay_sprites)
     end
 	end,
   loc_vars = function(self, info_queue, card)
@@ -267,7 +262,10 @@ SMODS.Joker {
   calculate = function(self, card, context)
     if context.pl_cash_out and not card.getting_sliced and not context.repetition and not context.individual and not context.blueprint then
       card:set_ability(self, card, nil, nil)
-      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Updated!', colour = G.C.MONEY})
+      if card.plan_set_ability_2 then
+        card.plan_set_ability_2(self, card, nil, nil)
+      end
+      return card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Updated!', colour = G.C.MONEY})
     end
     if card.plan_calc_2 then
       local mim_calc = card.plan_calc_2(self, card, context)
