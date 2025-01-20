@@ -188,7 +188,7 @@ SMODS.Joker {
 
       for k, v in pairs(G.P_CENTERS) do
         if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers'
-        and v.name ~= 'j_Plantain_el_dorado' and v.name ~= 'j_Plantain_apple_pie' and (not v.mod or (v.mod and v.mod.id == 'plantain')) then
+        and (not v.mod or (v.mod and v.mod.id == 'plantain')) then
           options[k] = v
         end
       end
@@ -197,6 +197,7 @@ SMODS.Joker {
       if chosen_key then
         card.plan_calc_2 = nil
         card.plan_loc_vars_2 = nil
+        card.calc_dollar_bonus = nil
         
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
         card:remove_from_deck()
@@ -210,6 +211,10 @@ SMODS.Joker {
 
         if G.P_CENTERS[chosen_key.key].loc_vars then
           card.plan_loc_vars_2 = G.P_CENTERS[chosen_key.key].loc_vars
+        end
+
+        if G.P_CENTERS[chosen_key.key].calc_dollar_bonus then
+          card.calc_dollar_bonus = G.P_CENTERS[chosen_key.key].calc_dollar_bonus
         end
 
         if card.ability.name == "Invisible Joker" then 
@@ -515,12 +520,12 @@ SMODS.Joker {
 local card_updateref = Card.update
 function Card.update(self, dt)
   if G.STAGE == G.STAGES.RUN then
-    if self.config.center.name == 'j_Plantain_el_dorado' then 
+    if self.ability.name == 'j_Plantain_el_dorado' then 
       self.ability.extra.wild_tally = 0
       for k, v in pairs(G.playing_cards) do
         if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally+self.ability.extra.money_mod end
       end
-  end
+    end
   end
   card_updateref(self, dt)
 end

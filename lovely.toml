@@ -36,6 +36,21 @@ match_indent = true
 
 [[patches]]
 [patches.pattern]
+target = "card.lua"
+pattern = '''if obj.calc_dollar_bonus and type(obj.calc_dollar_bonus) == 'function' then
+            return obj:calc_dollar_bonus(self)
+        end'''
+position = "at"
+payload = '''
+if obj.calc_dollar_bonus and type(obj.calc_dollar_bonus) == 'function' then
+  return obj:calc_dollar_bonus(self)
+elseif self.calc_dollar_bonus and type(self.calc_dollar_bonus) == 'function' then
+  return self:calc_dollar_bonus(self)
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
 target = "functions/common_events.lua"
 pattern = '''if not card then'''
 position = "at"
