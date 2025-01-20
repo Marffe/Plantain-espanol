@@ -147,7 +147,7 @@ SMODS.Joker {
   loc_txt = {
     name = 'Inkblot',
     text = {
-      "Turns into a random {C:attention}Joker",
+      "Mimics a random {C:attention}Joker",
       "every round",
       "{C:inactive}Currently #1#"
     }
