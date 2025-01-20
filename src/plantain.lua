@@ -158,7 +158,7 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 3,
   set_ability = function(self, card, initial, delay_sprites)
-    if G.jokers then
+    if G.jokers and not G.SETTINGS.paused then
       local function deepcopy(tbl)
         local copy = {}
         for k, v in pairs(tbl) do
@@ -246,6 +246,9 @@ SMODS.Joker {
         car:remove()
         car = nil
       end
+    end
+    if card.plan_set_ability_2 then
+      card.plan_set_ability_2(self, card, initial, delay_sprites)
     end
 	end,
   loc_vars = function(self, info_queue, card)
