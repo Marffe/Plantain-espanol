@@ -16,7 +16,6 @@ for i=1, #G.jokers.cards do
 end
 '''
 
-
 [[patches]]
 [patches.pattern]
 target = "card.lua"
@@ -56,4 +55,5 @@ pattern = '''if not card then'''
 position = "at"
 payload = '''if not card and _c.key == 'j_Plantain_inkblot_joker' then'''
 match_indent = true
+
 

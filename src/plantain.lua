@@ -157,21 +157,8 @@ SMODS.Joker {
   blueprint_compat = false,
   pos = { x = 3, y = 0 },
   cost = 3,
-  loc_vars = function(self, info_queue, card)
-    if card.ability.mim_key then
-      if card.config.center.mod and card.plan_loc_vars_2 and type(card.ability.extra) == 'table' then
-        local specific = card:plan_loc_vars_2(info_queue, card).vars
-        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = specific or {}}
-      else
-        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = card.plantain_info or {}}
-      end
-      return { vars = {localize{type = 'name_text', set = 'Joker', key = card.ability.mim_key}} }
-    else
-      return { vars = {"none"}}
-    end
-  end,
-  calculate = function(self, card, context)
-    if (context.pl_cash_out or (context.buying_card and context.card == card)) and not card.getting_sliced and not context.repetition and not context.individual and not context.blueprint then
+  set_ability = function(self, card, initial, delay_sprites)
+    if G.jokers then
       local function deepcopy(tbl)
         local copy = {}
         for k, v in pairs(tbl) do
@@ -198,6 +185,7 @@ SMODS.Joker {
         card.plan_calc_2 = nil
         card.plan_loc_vars_2 = nil
         card.calc_dollar_bonus = nil
+        card.plan_set_ability_2 = nil
         
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
         card:remove_from_deck()
@@ -215,6 +203,10 @@ SMODS.Joker {
 
         if G.P_CENTERS[chosen_key.key].calc_dollar_bonus then
           card.calc_dollar_bonus = G.P_CENTERS[chosen_key.key].calc_dollar_bonus
+        end
+
+        if G.P_CENTERS[chosen_key.key].set_ability then
+          card.plan_set_ability_2 = G.P_CENTERS[chosen_key.key].set_ability
         end
 
         if card.ability.name == "Invisible Joker" then 
@@ -253,9 +245,26 @@ SMODS.Joker {
         G.jokers:remove_card(car)
         car:remove()
         car = nil
-        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Updated!', colour = G.C.MONEY})
-
       end
+    end
+	end,
+  loc_vars = function(self, info_queue, card)
+    if card.ability.mim_key then
+      if card.config.center.mod and card.plan_loc_vars_2 and type(card.ability.extra) == 'table' then
+        local specific = card:plan_loc_vars_2(info_queue, card).vars
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = specific or {}}
+      else
+        info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = card.plantain_info or {}}
+      end
+      return { vars = {localize{type = 'name_text', set = 'Joker', key = card.ability.mim_key}} }
+    else
+      return { vars = {"none"}}
+    end
+  end,
+  calculate = function(self, card, context)
+    if context.pl_cash_out and not card.getting_sliced and not context.repetition and not context.individual and not context.blueprint then
+      card:set_ability(self, card, nil, nil)
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Updated!', colour = G.C.MONEY})
     end
     if card.plan_calc_2 then
       local mim_calc = card.plan_calc_2(self, card, context)
