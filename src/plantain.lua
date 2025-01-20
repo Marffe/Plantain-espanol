@@ -129,11 +129,11 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'inkblot_joker',
   loc_txt = {
-    name = 'Inkblot Joker',
+    name = 'Inkblot',
     text = {
       "Turns into a random {C:attention}Joker",
       "every round",
-      "Currently #1#"
+      "{C:inactive}Currently #1#"
     }
   },
   rarity = 1,
@@ -171,7 +171,8 @@ SMODS.Joker {
       local options = {}
 
       for k, v in pairs(G.P_CENTERS) do
-        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' then
+        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers'
+        and v.name ~= 'j_Plantain_el_dorado' and v.name ~= 'j_Plantain_apple_pie' and (not v.mod or (v.mod and v.mod.id == 'plantain')) then
           options[k] = v
         end
       end
@@ -276,15 +277,15 @@ SMODS.Joker {
         G.E_MANAGER:add_event(Event({
           func = function()
               play_sound('tarot1')
-              self.T.r = -0.2
-              self:juice_up(0.3, 0.4)
-              self.states.drag.is = true
-              self.children.center.pinch.x = true
+              card.T.r = -0.2
+              card:juice_up(0.3, 0.4)
+              card.states.drag.is = true
+              card.children.center.pinch.x = true
               G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
                   func = function()
-                          G.jokers:remove_card(self)
-                          self:remove()
-                          self = nil
+                          G.jokers:remove_card(card)
+                          card:remove()
+                          card = nil
                       return true; end})) 
               return true
           end
@@ -496,7 +497,7 @@ SMODS.Joker {
 local card_updateref = Card.update
 function Card.update(self, dt)
   if G.STAGE == G.STAGES.RUN then
-    if self.config.center.key == 'j_Plantain_el_dorado' then 
+    if self.config.center.name == 'j_Plantain_el_dorado' then 
       self.ability.extra.wild_tally = 0
       for k, v in pairs(G.playing_cards) do
         if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally+self.ability.extra.money_mod end
