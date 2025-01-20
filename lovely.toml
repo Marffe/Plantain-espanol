@@ -29,6 +29,13 @@ if G.jokers then
       self.plantain_info = loc_vars
     end
   end
+  if G.shop_jokers and G.shop_jokers.cards then
+    for i=1, #G.shop_jokers.cards do
+      if self.ability.name == G.shop_jokers.cards[i].ability.name and G.shop_jokers.cards[i].config.center.key == 'j_Plantain_inkblot_joker' then
+        self.plantain_info = loc_vars
+      end
+    end
+  end
 end
 '''
 match_indent = true
@@ -55,5 +62,4 @@ pattern = '''if not card then'''
 position = "at"
 payload = '''if not card and _c.key == 'j_Plantain_inkblot_joker' then'''
 match_indent = true
-
 
