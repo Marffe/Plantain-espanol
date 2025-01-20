@@ -5,6 +5,26 @@ SMODS.Atlas {
   py = 95
 }
 
+PlConfig = SMODS.current_mod.config
+
+SMODS.current_mod.config_tab = function() --Config tab
+  return {
+    n = G.UIT.ROOT,
+    config = {
+      align = "cm",
+      padding = 0.05,
+      colour = G.C.CLEAR,
+    },
+    nodes = {
+      create_toggle({
+          label = "Wave 2 (EXPERIMENTAL)",
+          ref_table = PlConfig,
+          ref_value = "wave2",
+      })
+    },
+  }
+end
+
 SMODS.Joker {
   key = 'postcard',
   loc_txt = {
@@ -76,9 +96,9 @@ SMODS.Joker {
     name = 'Bingo Card',
     text = {
       "Each played {C:attention}#1#{} and {C:attention}#2#{}",
-      "gives {C:mult}+#3#{} Mult when scored,",
-      "number cards change",
-      "every round"
+      "gives {C:chips}+#3#{} Chips and {C:mult}+#4#{} Mult",
+      "when scored, number cards",
+      "change every round"
     }
   },
   rarity = 1,
@@ -86,35 +106,29 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 2, y = 0 },
   cost = 4,
-  config = { extra = { mult = 10, lucky1 = 3, lucky2 = 7 } },
+  config = { extra = { mult = 7, chips = 25, bingo1 = 3, bingo2 = 7 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.lucky1, card.ability.extra.lucky2, card.ability.extra.mult } }
+    return { vars = { card.ability.extra.bingo1, card.ability.extra.bingo2, card.ability.extra.chips, card.ability.extra.mult } }
   end,
-  --beware: awful code
   set_ability = function(self, card, initial, delay_sprites)
-    local valid_lucky_numbers = {2, 3, 4, 5, 6, 7, 8, 9, 10}
-    local lucky_number = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers'..G.GAME.round_resets.ante))
-    local lucky_number2 = pseudorandom_element(valid_lucky_numbers, pseudoseed('lucky_numbers2'..G.GAME.round_resets.ante))
-    if lucky_number ~= lucky_number2 then --theres probably a better way to do this
-      card.ability.extra.lucky1 = lucky_number
-      card.ability.extra.lucky2 = lucky_number2
-    else
-      card.ability.extra.lucky1 = lucky_number
-      if lucky_number2 > 2 then
-        card.ability.extra.lucky2 = lucky_number2 - 1
-      else
-        card.ability.extra.lucky2 = lucky_number2 + 1
-      end
+    local numbers = {2, 3, 4, 5, 6, 7, 8, 9, 10}
+    local bingo1 = pseudorandom_element(numbers, pseudoseed('bingo'..G.GAME.round_resets.ante))
+    table.remove(numbers, bingo1 - 1)
+    local bingo2 = pseudorandom_element(numbers, pseudoseed('bango'..G.GAME.round_resets.ante))
+    if bingo1 > bingo2 then
+      bingo1, bingo2 = bingo2, bingo1
     end
-    
+    card.ability.extra.bingo1 = bingo1
+    card.ability.extra.bingo2 = bingo2
 	end,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.other_card then
-      if context.other_card:get_id() == card.ability.extra.lucky1 
-      or context.other_card:get_id() == card.ability.extra.lucky2 then
+    if context.individual and context.cardarea == G.play then
+      -- :get_id tests for the rank of the card. Other than 2-10, Jack is 11, Queen is 12, King is 13, and Ace is 14.
+      if context.other_card:get_id() == card.ability.extra.bingo1 or context.other_card:get_id() == card.ability.extra.bingo2 then
+        -- Specifically returning to context.other_card is fine with multiple values in a single return value, chips/mult are different from chip_mod and mult_mod, and automatically come with a message which plays in order of return.
         return {
-          mult_mod = card.ability.extra.mult,
-          message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } },
+          chips = card.ability.extra.chips,
+          mult = card.ability.extra.mult,
           card = context.other_card
         }
       end
@@ -124,6 +138,8 @@ SMODS.Joker {
     end
   end
 }
+
+if PlConfig.wave2 then --gay baby jail
 
 --portal to hell
 SMODS.Joker {
@@ -242,6 +258,8 @@ SMODS.Joker {
     end
   end
 }
+
+end
 
 SMODS.Joker {
   key = 'apple_pie',
@@ -384,9 +402,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Mini Crossword',
     text = {
-      'Gains {C:mult}+#1#{} Mult if played',
-      'hand has exactly {C:attention}#2#{} card(s),',
-      'size changes every round',
+      'Gains {C:mult}+#1#{} Mult if played hand',
+      'has exactly {C:attention}#2#{} cards, chooses',
+      'between 3, 4, or 5 every round',
       '{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)'
     }
   },
@@ -400,7 +418,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.mult_mod, card.ability.extra.cw_size, card.ability.extra.mult} }
   end,
   set_ability = function(self, card, initial, delay_sprites)
-    local valid_cw_size = {1, 2, 3, 4, 5}
+    local valid_cw_size = {3, 4, 5}
     card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('among_ass'..G.GAME.round_resets.ante)) 
 	end,
   calculate = function(self, card, context)
@@ -423,9 +441,9 @@ SMODS.Joker {
 
 
 SMODS.Joker {
-  key = 'quarry',
+  key = 'diamond_joker',
   loc_txt = {
-    name = 'Quarry',
+    name = 'Diamond Joker',
     text = {
       "Gains {X:mult,C:white}X#1#{} Mult each time",
       "a {C:attention}Stone{} card scores, destroy",
@@ -435,7 +453,7 @@ SMODS.Joker {
   },
   rarity = 2,
   atlas = 'plantain',
-  config = { extra = { xmult_mod = 0.25, xmult = 1 } },
+  config = { extra = { xmult_mod = 0.5, xmult = 1 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
   end,

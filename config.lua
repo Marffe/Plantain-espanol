@@ -1,0 +1,1 @@
+return {["wave2"]=true}
