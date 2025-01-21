@@ -277,9 +277,13 @@ SMODS.Joker {
 
         card.ability = nil
         card.ability = deepcopy(car.ability)
-        if car.ability.extra then
+
+        if car.ability.extra and type(car.ability.extra) ~= 'table' then
+          card.plan_extra = car.ability.extra
+        elseif car.ability.extra then
           card.plan_extra = deepcopy(car.ability.extra)
         end
+        
         card.ability.mim_key = chosen_key.key
         G.jokers:remove_card(car)
         car:remove()
