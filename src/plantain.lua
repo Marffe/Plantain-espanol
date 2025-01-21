@@ -308,23 +308,23 @@ SMODS.Joker {
         car = nil
 
         if G.P_CENTERS[card.ability.mim_key].calculate then
-          card.plan_calc_2 = G.P_CENTERS[card.ability.mim_key].calculate
+          card.plan_calc_2 = deepcopy(G.P_CENTERS[card.ability.mim_key]).calculate
         end
       
         if G.P_CENTERS[card.ability.mim_key].loc_vars then
-          card.plan_loc_vars_2 = G.P_CENTERS[card.ability.mim_key].loc_vars
+          card.plan_loc_vars_2 = deepcopy(G.P_CENTERS[card.ability.mim_key]).loc_vars
         end
       
         if G.P_CENTERS[card.ability.mim_key].set_ability then
-          card.plan_set_ability_2 = G.P_CENTERS[card.ability.mim_key].set_ability
+          card.plan_set_ability_2 = deepcopy(G.P_CENTERS[card.ability.mim_key]).set_ability
         end
       
         if G.P_CENTERS[card.ability.mim_key].calc_dollar_bonus then
-          card.calc_dollar_bonus = G.P_CENTERS[card.ability.mim_key].calc_dollar_bonus
+          card.calc_dollar_bonus = deepcopy(G.P_CENTERS[card.ability.mim_key]).calc_dollar_bonus
         end
       
         if G.P_CENTERS[card.ability.mim_key].blueprint_compat then
-          card.blueprint_compat = G.P_CENTERS[card.ability.mim_key].blueprint_compat
+          card.blueprint_compat = deepcopy(G.P_CENTERS[card.ability.mim_key]).blueprint_compat
         end
 
         local function value_exists(tbl, value)
@@ -391,26 +391,39 @@ SMODS.Joker {
 	end,
   load = function(self, card, card_table, other_card)
     G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, blockable = false, func = function()
+
+      local function deepcopy(tbl)
+        local copy = {}
+        for k, v in pairs(tbl) do
+          if type(v) == "table" then
+            copy[k] = deepcopy(v)
+          else
+            copy[k] = v
+          end
+        end
+        return copy
+      end
+
       if card and card.ability.mim_key then
   
         if G.P_CENTERS[card.ability.mim_key].calculate then
-          card.plan_calc_2 = G.P_CENTERS[card.ability.mim_key].calculate
+          card.plan_calc_2 = deepcopy(G.P_CENTERS[card.ability.mim_key]).calculate
         end
   
         if G.P_CENTERS[card.ability.mim_key].loc_vars then
-          card.plan_loc_vars_2 = G.P_CENTERS[card.ability.mim_key].loc_vars
+          card.plan_loc_vars_2 = deepcopy(G.P_CENTERS[card.ability.mim_key]).loc_vars
         end
   
         if G.P_CENTERS[card.ability.mim_key].set_ability then
-          card.plan_set_ability_2 = G.P_CENTERS[card.ability.mim_key].set_ability
+          card.plan_set_ability_2 = deepcopy(G.P_CENTERS[card.ability.mim_key]).set_ability
         end
   
         if G.P_CENTERS[card.ability.mim_key].calc_dollar_bonus then
-          card.calc_dollar_bonus = G.P_CENTERS[card.ability.mim_key].calc_dollar_bonus
+          card.calc_dollar_bonus = deepcopy(G.P_CENTERS[card.ability.mim_key]).calc_dollar_bonus
         end
   
         if G.P_CENTERS[card.ability.mim_key].blueprint_compat then
-          card.blueprint_compat = G.P_CENTERS[card.ability.mim_key].blueprint_compat
+          card.blueprint_compat = deepcopy(G.P_CENTERS[card.ability.mim_key]).blueprint_compat
         end
       end
     return true end}))
