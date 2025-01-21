@@ -234,6 +234,8 @@ SMODS.Joker {
   atlas = 'plantain',
   pos = { x = 3, y = 0 },
   cost = 3,
+  eternal_compat = false,
+  perishable_compat = false,
   set_ability = function(self, card, initial, delay_sprites)
     if card.plan_set_ability_2 and not card.from_context then
       if not card.ability.extra then
@@ -270,6 +272,20 @@ SMODS.Joker {
             card[k] = nil
           end
         end
+
+        local et = false
+        local rent = false
+        local perish = false
+        if card.ability and card.ability.eternal then
+          et = true
+        end
+        if card.ability and card.ability.perishable then
+          perish = true
+        end
+        if card.ability and card.ability.rental then
+          rent = true
+        end
+
 
         card.added_to_deck = false
         card:remove_from_deck()
@@ -352,6 +368,19 @@ SMODS.Joker {
         card.base_cost = card.config.center.cost or 1
   
         card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
+
+        if et then
+          card:set_eternal(true)
+        end
+
+        if rent then
+          card:set_rental(true)
+        end
+
+        if perish then
+          card:set_perishable(true)
+        end
+
 
       end
     end
