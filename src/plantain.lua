@@ -262,7 +262,7 @@ SMODS.Joker {
 
       local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
       if chosen_key then
-
+        card.added_to_deck = false
         card.plan_calc_2 = nil
         card.plan_loc_vars_2 = nil
         card.calc_dollar_bonus = nil
