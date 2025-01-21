@@ -63,3 +63,12 @@ position = "at"
 payload = '''if not card and cfg then'''
 match_indent = true
 
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if other_joker and other_joker ~= self and other_joker.config.center.blueprint_compat then'''
+position = "at"
+payload = '''
+if other_joker and other_joker ~= self and (other_joker.config.center.blueprint_compat or other_joker.blueprint_compat) then'''
+match_indent = true
+
