@@ -239,7 +239,7 @@ SMODS.Joker {
   set_ability = function(self, card, initial, delay_sprites)
     if card.plan_set_ability_2 and not card.from_context then
       if not card.ability.extra then
-        card.ability.extra = card.plan_extra or {}
+        card.ability.extra = card.plan_extra
       end
       card.plan_set_ability_2(self, card, initial, delay_sprites)
     elseif G.jokers and not G.SETTINGS.paused then
@@ -259,7 +259,7 @@ SMODS.Joker {
 
       for k, v in pairs(G.P_CENTERS) do
         if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers'
-        and (not v.mod or (v.mod and v.mod.id == 'plantain') or PlConfig.wave2) then --config doesnt work
+        and (not v.mod or (v.mod and v.mod.id == 'plantain') or PlConfig.wave2) then
           options[k] = v
         end
       end
@@ -436,13 +436,16 @@ SMODS.Joker {
     if context.pl_cash_out and not card.getting_sliced and not context.repetition and not context.individual and not context.blueprint then
       card.from_context = true
       card:set_ability(self, card, nil, nil)
-      if card and card.plan_set_ability_2 then
+      if card.plan_set_ability_2 then
+        if not card.ability.extra then
+          card.ability.extra = card.plan_extra
+        end
         card.plan_set_ability_2(self, card, nil, nil)
       end
       card.from_context = false
       return card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Updated!', colour = G.C.MONEY})
     end
-    if card and card.plan_calc_2 then
+    if card.plan_calc_2 then
       local mim_calc = card.plan_calc_2(self, card, context)
       return mim_calc
     end
