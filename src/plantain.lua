@@ -182,11 +182,12 @@ SMODS.Joker {
 
       local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
       if chosen_key then
-        card.added_to_deck = false
+
         card.plan_calc_2 = nil
         card.plan_loc_vars_2 = nil
         card.calc_dollar_bonus = nil
         card.plan_set_ability_2 = nil
+        card:remove_from_deck()
         
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
 
@@ -196,9 +197,6 @@ SMODS.Joker {
         G.jokers:remove_card(car)
         car:remove()
         car = nil
-        
-        card:add_to_deck()
-        card.added_to_deck = true
 
         if G.P_CENTERS[chosen_key.key].calculate then
           card.plan_calc_2 = G.P_CENTERS[chosen_key.key].calculate
@@ -246,6 +244,9 @@ SMODS.Joker {
         card.base_cost = card.config.center.cost or 1
   
         card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
+
+        card.added_to_deck = true
+
       end
     end
 	end,

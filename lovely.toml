@@ -58,16 +58,8 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = "functions/common_events.lua"
-pattern = '''if not card then
-            local ability = copy_table(cfg)
-            ability.set = 'Joker'
-            ability.name = _c.name
-            local ret = {Card.generate_UIBox_ability_table({ ability = ability, config = { center = _c }, bypass_lock = true}, true)}
-            specific_vars = ret[1]
-            if ret[2] then desc_nodes[#desc_nodes+1] = ret[2] end
-            main_end = ret[3]
-        end'''
+pattern = '''if not card then'''
 position = "at"
-payload = ''''''
+payload = '''if not card and cfg then'''
 match_indent = true
 
