@@ -97,7 +97,7 @@ SMODS.current_mod.config_tab = function() --Config tab
     },
     nodes = {
       create_toggle({
-          label = "Wave 2 (EXPERIMENTAL)",
+          label = "Inkblot can copy other Mod Jokers (EXPERIMENTAL)",
           ref_table = PlConfig,
           ref_value = "wave2",
       })
@@ -219,8 +219,6 @@ SMODS.Joker {
   end
 }
 
-if PlConfig.wave2 then --gay baby jail
-
 --portal to hell
 SMODS.Joker {
   key = 'inkblot_joker',
@@ -258,7 +256,8 @@ SMODS.Joker {
       local options = {}
 
       for k, v in pairs(G.P_CENTERS) do
-        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers' then
+        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers'
+        and (not v.mod or (v.mod and v.mod.id == 'plantain') or PlConfig.wave2) then
           options[k] = v
         end
       end
@@ -389,8 +388,6 @@ SMODS.Joker {
     end
   end
 }
-
-end
 
 SMODS.Joker {
   key = 'apple_pie',
