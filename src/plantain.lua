@@ -238,8 +238,8 @@ SMODS.Joker {
   perishable_compat = false,
   set_ability = function(self, card, initial, delay_sprites)
     if card.plan_set_ability_2 and not card.from_context then
-      if not card.extra then
-        card.extra = card.plan_extra
+      if not card.ability.extra then
+        card.ability.extra = card.plan_extra
       end
       card.plan_set_ability_2(self, card, initial, delay_sprites)
     elseif G.jokers and not G.SETTINGS.paused then
