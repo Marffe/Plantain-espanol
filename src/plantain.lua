@@ -238,8 +238,12 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 3,
   set_ability = function(self, card, initial, delay_sprites)
-    if G.jokers and not G.SETTINGS.paused and card.from_context then
-      card.from_context = false
+    if card.plan_set_ability_2 and not card.from_context then
+      if not card.ability.extra then
+        card.ability.extra = card.plan_extra
+      end
+      card.plan_set_ability_2(self, card, initial, delay_sprites)
+    elseif G.jokers and not G.SETTINGS.paused then
       local function deepcopy(tbl)
         local copy = {}
         for k, v in pairs(tbl) do
@@ -344,11 +348,6 @@ SMODS.Joker {
         card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
 
       end
-    elseif card.plan_set_ability_2 then
-      if not card.ability.extra then
-        card.ability.extra = card.plan_extra
-      end
-      card.plan_set_ability_2(self, card, initial, delay_sprites)
     end
 	end,
   loc_vars = function(self, info_queue, card)
@@ -371,6 +370,7 @@ SMODS.Joker {
       if card.plan_set_ability_2 then
         card.plan_set_ability_2(self, card, nil, nil)
       end
+      card.from_context = false
       return card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Updated!', colour = G.C.MONEY})
     end
     if card.plan_calc_2 then
