@@ -255,7 +255,8 @@ SMODS.Joker {
       local options = {}
 
       for k, v in pairs(G.P_CENTERS) do
-        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers' then
+        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers'
+        and (not v.mod or (v.mod and v.mod.id == 'plantain')) then
           options[k] = v
         end
       end
@@ -283,7 +284,7 @@ SMODS.Joker {
         elseif car.ability.extra then
           card.plan_extra = deepcopy(car.ability.extra)
         end
-        
+
         card.ability.mim_key = chosen_key.key
         G.jokers:remove_card(car)
         car:remove()
