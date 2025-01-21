@@ -1,1 +1,1 @@
-return {["wave2"]=true}
+return {["wave2"]=false}
