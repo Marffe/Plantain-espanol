@@ -234,7 +234,6 @@ SMODS.Joker {
   },
   rarity = 1,
   atlas = 'plantain',
-  blueprint_compat = false,
   pos = { x = 3, y = 0 },
   cost = 3,
   set_ability = function(self, card, initial, delay_sprites)
@@ -259,8 +258,7 @@ SMODS.Joker {
       local options = {}
 
       for k, v in pairs(G.P_CENTERS) do
-        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers'
-        and (not v.mod or (v.mod and v.mod.id == 'plantain')) then
+        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers' then
           options[k] = v
         end
       end
@@ -269,7 +267,7 @@ SMODS.Joker {
       if chosen_key then
 
         for k, v in pairs(card) do
-          if type(v) == 'function' and k ~= 'set_ability' and k ~= 'loc_vars' and k ~= 'calculate' then
+          if k == 'plan_calc_2' or k == 'plan_loc_vars_2' or k == 'plan_set_ability_2' or k == 'calc_dollar_bonus' then
             card[k] = nil
           end
         end
@@ -310,9 +308,18 @@ SMODS.Joker {
           card.calc_dollar_bonus = deepcopy(G.P_CENTERS[chosen_key.key]).calc_dollar_bonus
         end
 
+        local function value_exists(tbl, value)
+          for _, v in pairs(tbl) do
+              if v == value then
+                  return true
+              end
+          end
+          return false
+        end
+      
         for k, v in pairs(deepcopy(G.P_CENTERS[chosen_key.key])) do
-          if type(v) == 'function' and k ~= 'set_ability' and k ~= 'loc_vars' and k ~= 'calculate' then
-            card[k] = v
+          if not value_exists(card, v) then
+            table.insert(card, v)
           end
         end
 
@@ -352,8 +359,11 @@ SMODS.Joker {
 	end,
   loc_vars = function(self, info_queue, card)
     if card.ability.mim_key then
-      if card.config.center.mod and card.plan_loc_vars_2 and type(card.ability.extra) == 'table' then
-        local specific = card:plan_loc_vars_2(info_queue, card).vars
+      if card.config.center.mod and card.plan_loc_vars_2 and type(card.plan_loc_vars_2) == 'function' and type(card.ability.extra) == 'table' then
+        local check = card:plan_loc_vars_2(info_queue, card)
+        if check and check.vars then
+          specific = check.vars
+        end
         info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = specific or {}}
       else
         info_queue[#info_queue+1] = {type = 'descriptions', set = 'Joker', key = card.ability.mim_key, specific_vars = card.plantain_info or {}}
