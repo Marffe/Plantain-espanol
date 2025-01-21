@@ -238,7 +238,8 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 3,
   set_ability = function(self, card, initial, delay_sprites)
-    if G.jokers and not G.SETTINGS.paused then
+    if G.jokers and not G.SETTINGS.paused and card.from_context then
+      card.from_context = false
       local function deepcopy(tbl)
         local copy = {}
         for k, v in pairs(tbl) do
@@ -254,19 +255,21 @@ SMODS.Joker {
       local options = {}
 
       for k, v in pairs(G.P_CENTERS) do
-        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers'
-        and (not v.mod or (v.mod and v.mod.id == 'plantain')) then
+        if v.key ~= 'j_Plantain_inkblot_joker' and v.set == 'Joker' and v.unlocked and v.name ~= 'Shortcut' and v.name ~= 'Four Fingers' then
           options[k] = v
         end
       end
 
       local chosen_key = pseudorandom_element(options, pseudoseed('inkblot_joker'))
       if chosen_key then
+
+        for k, v in pairs(card) do
+          if type(v) == 'function' and k ~= 'set_ability' and k ~= 'loc_vars' and k ~= 'calculate' then
+            card[k] = nil
+          end
+        end
+
         card.added_to_deck = false
-        card.plan_calc_2 = nil
-        card.plan_loc_vars_2 = nil
-        card.calc_dollar_bonus = nil
-        card.plan_set_ability_2 = nil
         card:remove_from_deck()
         card.added_to_deck = true
         
@@ -274,25 +277,34 @@ SMODS.Joker {
 
         card.ability = nil
         card.ability = deepcopy(car.ability)
+        if car.ability.extra then
+          card.plan_extra = deepcopy(car.ability.extra)
+        end
         card.ability.mim_key = chosen_key.key
         G.jokers:remove_card(car)
         car:remove()
         car = nil
 
         if G.P_CENTERS[chosen_key.key].calculate then
-          card.plan_calc_2 = G.P_CENTERS[chosen_key.key].calculate
+          card.plan_calc_2 = deepcopy(G.P_CENTERS[chosen_key.key]).calculate
         end
 
         if G.P_CENTERS[chosen_key.key].loc_vars then
-          card.plan_loc_vars_2 = G.P_CENTERS[chosen_key.key].loc_vars
-        end
-
-        if G.P_CENTERS[chosen_key.key].calc_dollar_bonus then
-          card.calc_dollar_bonus = G.P_CENTERS[chosen_key.key].calc_dollar_bonus
+          card.plan_loc_vars_2 = deepcopy(G.P_CENTERS[chosen_key.key]).loc_vars
         end
 
         if G.P_CENTERS[chosen_key.key].set_ability then
-          card.plan_set_ability_2 = G.P_CENTERS[chosen_key.key].set_ability
+          card.plan_set_ability_2 = deepcopy(G.P_CENTERS[chosen_key.key]).set_ability
+        end
+
+        if G.P_CENTERS[chosen_key.key].calc_dollar_bonus then
+          card.calc_dollar_bonus = deepcopy(G.P_CENTERS[chosen_key.key]).calc_dollar_bonus
+        end
+
+        for k, v in pairs(deepcopy(G.P_CENTERS[chosen_key.key])) do
+          if type(v) == 'function' and k ~= 'set_ability' and k ~= 'loc_vars' and k ~= 'calculate' then
+            card[k] = v
+          end
         end
 
         if card.ability.name == "Invisible Joker" then 
@@ -327,6 +339,11 @@ SMODS.Joker {
         card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
 
       end
+    elseif card.plan_set_ability_2 then
+      if not card.ability.extra then
+        card.ability.extra = card.plan_extra
+      end
+      card.plan_set_ability_2(self, card, initial, delay_sprites)
     end
 	end,
   loc_vars = function(self, info_queue, card)
@@ -344,6 +361,7 @@ SMODS.Joker {
   end,
   calculate = function(self, card, context)
     if context.pl_cash_out and not card.getting_sliced and not context.repetition and not context.individual and not context.blueprint then
+      card.from_context = true
       card:set_ability(self, card, nil, nil)
       if card.plan_set_ability_2 then
         card.plan_set_ability_2(self, card, nil, nil)
