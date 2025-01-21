@@ -268,6 +268,7 @@ SMODS.Joker {
         card.calc_dollar_bonus = nil
         card.plan_set_ability_2 = nil
         card:remove_from_deck()
+        card.added_to_deck = true
         
         local car = SMODS.create_card({set = 'Joker', key = chosen_key.key, no_edition = true})
 
@@ -324,8 +325,6 @@ SMODS.Joker {
         card.base_cost = card.config.center.cost or 1
   
         card.ability.hands_played_at_create = G.GAME and G.GAME.hands_played or 0
-
-        card.added_to_deck = true
 
       end
     end
