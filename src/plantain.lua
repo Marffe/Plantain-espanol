@@ -123,6 +123,7 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 0, y = 0 },
   cost = 6,
+  discovered = true,
 
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.chips_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance, (G.GAME.pl_plantain_chips or 0) } }
@@ -186,6 +187,7 @@ SMODS.Joker {
   eternal_compat = false,
   pos = { x = 1, y = 0 },
   cost = 4,
+  discovered = true,
   config = { extra = { Xmult = 1 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.Xmult + (G.GAME.pl_postcards_sold or 0) } }
@@ -220,6 +222,7 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 2, y = 0 },
   cost = 4,
+  discovered = true,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.repetition then
       if context.other_card.ability.set ~= 'Enhanced' then
@@ -250,6 +253,7 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 3, y = 0 },
   cost = 4,
+  discovered = true,
   config = { extra = { mult = 7, chips = 25, bingo1 = 3, bingo2 = 7 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.bingo1, card.ability.extra.bingo2, card.ability.extra.chips, card.ability.extra.mult } }
@@ -297,6 +301,7 @@ SMODS.Joker {
   blueprint_compat = false,
   pos = { x = 4, y = 0 },
   cost = 6,
+  discovered = true,
 
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.money, card.ability.extra.money_loss } }
@@ -348,6 +353,7 @@ SMODS.Joker {
   rarity = 2,
   atlas = 'plantain',
   config = { extra = { should_destroy = true } },
+  discovered = true,
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.should_destroy } }
   end,
@@ -404,6 +410,7 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 1, y = 1 },
   cost = 6,
+  discovered = true,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.repetition and not context.repetition_only then
       if next(context.poker_hands['Straight']) then
@@ -431,6 +438,7 @@ SMODS.Joker {
   rarity = 2,
   atlas = 'plantain',
   cost = 6,
+  discovered = true,
   blueprint_compat = true,
   pos = { x = 2, y = 1 },
   config = { extra = { mult_mod = 2, cw_size = 1 , mult = 0} },
@@ -475,6 +483,7 @@ SMODS.Joker {
   },
   rarity = 2,
   atlas = 'plantain',
+  discovered = true,
   config = { extra = { xmult_mod = 0.5, xmult = 1 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
@@ -519,6 +528,7 @@ SMODS.Joker {
 
   config = { extra = { money_mod = 3, wild_tally = 0} },
   rarity = 2,
+  discovered = true,
   atlas = 'plantain',
   blueprint_compat = false,
   pos = { x = 4, y = 1 },
@@ -560,6 +570,7 @@ SMODS.Joker {
   },
   rarity = 3,
   atlas = 'plantain',
+  discovered = true,
   blueprint_compat = true,
   config = { extra = { chips_mod = 13, chips = 0 } },
   loc_vars = function(self, info_queue, card)
@@ -602,6 +613,7 @@ SMODS.Joker {
   },
   rarity = 3,
   atlas = 'plantain',
+  discovered = true,
   blueprint_compat = true,
   pos = { x = 1, y = 2 },
   cost = 7,
@@ -640,6 +652,7 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 2, y = 2 },
   cost = 7,
+  discovered = true,
   config = { extra = { Xmult = 2 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.Xmult } }
@@ -677,6 +690,7 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 3, y = 2 },
   cost = 8,
+  discovered = true,
   config = { extra = { is_odd = 'Even', next_round = 'Odd', Xmult = 1.5 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult } }
@@ -735,6 +749,7 @@ SMODS.Joker {
   end,
   pos = { x = 4, y = 2 },
   cost = 8,
+  discovered = true,
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual then
       G.E_MANAGER:add_event(Event({
