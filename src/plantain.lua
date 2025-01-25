@@ -439,7 +439,7 @@ SMODS.Joker {
   end,
   set_ability = function(self, card, initial, delay_sprites)
     local valid_cw_size = {3, 4, 5}
-    card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('among_ass'..G.GAME.round_resets.ante)) 
+    card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('crossword'..G.GAME.round_resets.ante)) 
 	end,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.before and #context.full_hand == card.ability.extra.cw_size and not context.blueprint then
@@ -453,7 +453,9 @@ SMODS.Joker {
       }
     end
     if context.end_of_round and not context.repetition and not context.individual then
-      card:set_ability(self, card, nil, nil)
+      local valid_cw_size = {3, 4, 5}
+      table.remove(valid_cw_size, card.ability.extra.cw_size - 2)
+      card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('crossword'..G.GAME.round_resets.ante)) 
     end
   end
 }
