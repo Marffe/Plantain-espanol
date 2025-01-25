@@ -667,8 +667,9 @@ SMODS.Joker {
   loc_txt = {
     name = 'Calculator',
     text = {
-      "Add {C:attention}50%{} of {C:mult}Mult",
-      "to {C:chips}Chips"
+      "{X:mult,C:white}X#3#{} Mult when",
+      "scoring an {C:attention}#1#{} card,",
+      "swaps to {C:attention}#2#{} next round"
     }
   },
   rarity = 3,
@@ -676,15 +677,41 @@ SMODS.Joker {
   blueprint_compat = true,
   pos = { x = 3, y = 2 },
   cost = 8,
+  config = { extra = { is_odd = 'Even', next_round = 'Odd', Xmult = 1.5 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult } }
+  end,
   calculate = function(self, card, context)
-    if context.joker_main and context.cardarea == G.jokers then
-      local chip_mod = math.ceil(mult * 0.5)
-      return 
-      {
-        message = localize{type='variable',key='a_chips',vars={chip_mod}},
-        chip_mod = chip_mod,
-        colour = G.C.CHIPS
-      }
+    if context.end_of_round and not context.repetition and not context.individual then
+      if card.ability.extra.is_odd == 'Odd' then
+        card.ability.extra.is_odd = 'Even'
+        card.ability.extra.next_round = 'Odd'
+      else
+        card.ability.extra.is_odd = 'Odd'
+        card.ability.extra.next_round = 'Even'
+      end
+    end
+
+    if context.cardarea == G.play and context.other_card and context.individual then
+      if card.ability.extra.is_odd == 'Odd' then
+        if ((context.other_card:get_id() <= 10 and context.other_card:get_id() >= 0
+        and context.other_card:get_id()%2 == 1) or (context.other_card:get_id() == 14)) then
+          return {
+            Xmult_mod = card.ability.extra.Xmult,
+            message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+            card = context.other_card
+          }
+        end
+      else
+        if context.other_card:get_id() <= 10 and context.other_card:get_id() >= 0
+        and context.other_card:get_id()%2 == 0 then
+          return {
+            Xmult_mod = card.ability.extra.Xmult,
+            message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+            card = context.other_card
+          }
+        end
+      end
     end
   end
 }
