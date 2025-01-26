@@ -6,7 +6,7 @@
     "prefix": "Plantain",
     "main_file": "src/plantain.lua",
     "priority": 1,
-    "badge_colour": "eeb10f",
+    "badge_colour": "9DC157",
     "dependencies": [
         "Steamodded (>=1.0.0~ALPHA-1225a)"
     ],
