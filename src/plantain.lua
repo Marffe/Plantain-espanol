@@ -430,8 +430,8 @@ SMODS.Joker {
     name = 'Mini Crossword',
     text = {
       'Gains {C:mult}+#1#{} Mult if played hand',
-      'has exactly {C:attention}#2#{} cards, chooses',
-      'between 3, 4, or 5 every round',
+      'has exactly {C:attention}#2#{} cards',
+      '{s:0.8}Chooses between 3, 4, or 5 every round',
       '{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)'
     }
   },
@@ -680,9 +680,10 @@ SMODS.Joker {
   loc_txt = {
     name = 'Calculator',
     text = {
-      "{X:mult,C:white}X#3#{} Mult when",
-      "scoring an {C:attention}#1#{} card,",
-      "swaps to {C:attention}#2#{} next round"
+      'Each played card with',
+      '{C:attention}#1#{} rank gives',
+      '{X:mult,C:white}X#3#{} Mult when scored',
+      '{s:0.8}Changes to #2# next round'
     }
   },
   rarity = 3,
@@ -691,23 +692,17 @@ SMODS.Joker {
   pos = { x = 3, y = 2 },
   cost = 8,
   discovered = true,
-  config = { extra = { is_odd = 'Even', next_round = 'Odd', Xmult = 1.5 } },
+  config = { extra = { is_odd = 'even', next_round = 'odd', Xmult = 2} },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult } }
+    return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult} }
   end,
   calculate = function(self, card, context)
     if context.end_of_round and not context.repetition and not context.individual then
-      if card.ability.extra.is_odd == 'Odd' then
-        card.ability.extra.is_odd = 'Even'
-        card.ability.extra.next_round = 'Odd'
-      else
-        card.ability.extra.is_odd = 'Odd'
-        card.ability.extra.next_round = 'Even'
-      end
+      card.ability.extra.is_odd, card.ability.extra.next_round = card.ability.extra.next_round, card.ability.extra.is_odd
     end
 
     if context.cardarea == G.play and context.other_card and context.individual then
-      if card.ability.extra.is_odd == 'Odd' then
+      if card.ability.extra.is_odd == 'odd' then
         if ((context.other_card:get_id() <= 10 and context.other_card:get_id() >= 0
         and context.other_card:get_id()%2 == 1) or (context.other_card:get_id() == 14)) then
           return {
