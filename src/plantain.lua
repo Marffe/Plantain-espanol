@@ -471,9 +471,9 @@ SMODS.Joker {
 
 
 SMODS.Joker {
-  key = 'diamond_joker',
+  key = 'crystal_joker',
   loc_txt = {
-    name = 'Diamond Joker',
+    name = 'Crystal Joker',
     text = {
       "Gains {X:mult,C:white}X#1#{} Mult each time",
       "a {C:attention}Stone{} card scores, destroy",
