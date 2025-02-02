@@ -193,7 +193,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.Xmult + (G.GAME.pl_postcards_sold or 0) } }
   end,
   calculate = function(self, card, context)
-    if context.selling_self then
+    if context.selling_self and not context.blueprint then
       G.GAME.pl_postcards_sold = (G.GAME.pl_postcards_sold or 0) + 1
     end
     if context.joker_main and context.cardarea == G.jokers then
@@ -279,7 +279,7 @@ SMODS.Joker {
         }
       end
     end
-    if context.end_of_round and not context.repetition and not context.individual then
+    if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
       card:set_ability(self, card, nil, nil)
     end
   end
@@ -370,7 +370,7 @@ SMODS.Joker {
               other_soda.ability.extra.should_destroy = false
             end
           end
-          if card.ability.extra.should_destroy then
+          if card.ability.extra.should_destroy and not context.blueprint then
             card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
             if G.GAME.blind_on_deck == 'Big' then
               G.GAME.blind_on_deck = 'Small'
@@ -492,17 +492,11 @@ SMODS.Joker {
   pos = { x = 3, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.other_card and context.other_card.ability.effect == 'Stone Card' and context.individual then
+    if context.cardarea == G.play and context.other_card and context.other_card.ability.effect == 'Stone Card' and context.individual and not context.blueprint then
       card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
       return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
     end
-    if context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' then
-      G.E_MANAGER:add_event(Event({
-        func = function()
-          context.destroying_card:start_dissolve({G.C.GOLD}, context.destroying_card)
-          play_sound('whoosh2')
-        return true
-      end}))
+    if context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' and not context.blueprint then
       return true
     end
     if context.joker_main and context.cardarea == G.jokers then
@@ -697,7 +691,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult} }
   end,
   calculate = function(self, card, context)
-    if context.end_of_round and not context.repetition and not context.individual then
+    if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
       card.ability.extra.is_odd, card.ability.extra.next_round = card.ability.extra.next_round, card.ability.extra.is_odd
     end
 
@@ -746,7 +740,7 @@ SMODS.Joker {
   cost = 8,
   discovered = true,
   calculate = function(self, card, context)
-    if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual then
+    if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual and not context.blueprint then
       G.E_MANAGER:add_event(Event({
         func = function()
           local other_meat = nil
