@@ -126,7 +126,7 @@ SMODS.Joker {
   discovered = true,
 
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.chips_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance, (G.GAME.pl_plantain_chips or 0) } }
+    return { vars = { card.ability.extra.chips_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance, (G.GAME.pl_plantain_chips or 25) } }
   end,
 
   calculate = function(self, card, context)
@@ -152,7 +152,7 @@ SMODS.Joker {
             message = 'Cooked!'
         }
       else
-        G.GAME.pl_plantain_chips = (G.GAME.pl_plantain_chips or 0) + card.ability.extra.chips_mod
+        G.GAME.pl_plantain_chips = (G.GAME.pl_plantain_chips or 25) + card.ability.extra.chips_mod
         return {
             message = localize('k_upgrade_ex')
         }
@@ -193,7 +193,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.Xmult + (G.GAME.pl_postcards_sold or 0) } }
   end,
   calculate = function(self, card, context)
-    if context.selling_self and not context.blueprint then
+    if context.selling_self then
       G.GAME.pl_postcards_sold = (G.GAME.pl_postcards_sold or 0) + 1
     end
     if context.joker_main and context.cardarea == G.jokers then
@@ -217,6 +217,7 @@ SMODS.Joker {
       "enhancements"
     }
   },
+  config = { extra = { repetitions = 1 } },
   rarity = 1,
   atlas = 'plantain',
   blueprint_compat = true,
@@ -229,7 +230,7 @@ SMODS.Joker {
         return 
         {
           message = localize("k_again_ex"),
-          repetitions = 1,
+          repetitions = card.ability.extra.repetitions,
           card = card, 
         }
       end
@@ -254,7 +255,7 @@ SMODS.Joker {
   pos = { x = 3, y = 0 },
   cost = 4,
   discovered = true,
-  config = { extra = { mult = 7, chips = 25, bingo1 = 3, bingo2 = 7 } },
+  config = { extra = { mult = 5, chips = 25, bingo1 = 3, bingo2 = 7 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.bingo1, card.ability.extra.bingo2, card.ability.extra.chips, card.ability.extra.mult } }
   end,
@@ -275,11 +276,11 @@ SMODS.Joker {
         return {
           chips = card.ability.extra.chips,
           mult = card.ability.extra.mult,
-          card = context.other_card
+          card = card
         }
       end
     end
-    if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
+    if context.end_of_round and not context.repetition and not context.individual then
       card:set_ability(self, card, nil, nil)
     end
   end
@@ -316,7 +317,6 @@ SMODS.Joker {
     if context.pl_cash_out and not context.blueprint then
       card.ability.extra.money = card.ability.extra.money - card.ability.extra.money_loss
       if card.ability.extra.money == 0 then
-        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Sold Out!', colour = G.C.MONEY})
         G.E_MANAGER:add_event(Event({
           func = function()
               play_sound('tarot1')
@@ -326,13 +326,14 @@ SMODS.Joker {
               card.children.center.pinch.x = true
               G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
                   func = function()
-                          G.jokers:remove_card(card)
+                          G.jokers:remove_card(self)
                           card:remove()
                           card = nil
                       return true; end})) 
               return true
           end
-      }))
+        })) 
+        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Sold Out!', colour = G.C.MONEY})
       else
         card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Slice!', colour = G.C.MONEY})
      end
@@ -347,7 +348,8 @@ SMODS.Joker {
     text = {
       "After {C:attention}skipping{} a",
       "{C:attention}Small Blind{} or {C:attention}Big Blind{},",
-      "return to that {C:attention}Blind"
+      "return to that {C:attention}Blind{} and",
+      "destroy this card"
     }
   },
   rarity = 2,
@@ -370,7 +372,7 @@ SMODS.Joker {
               other_soda.ability.extra.should_destroy = false
             end
           end
-          if card.ability.extra.should_destroy and not context.blueprint then
+          if card.ability.extra.should_destroy then
             card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
             if G.GAME.blind_on_deck == 'Big' then
               G.GAME.blind_on_deck = 'Small'
@@ -390,6 +392,9 @@ SMODS.Joker {
           end
         return true
       end}))
+    end
+    if context.setting_blind then
+      card.ability.extra.should_destroy = true
     end
   end
 }
@@ -415,7 +420,7 @@ SMODS.Joker {
     if context.cardarea == G.play and context.repetition and not context.repetition_only then
       if next(context.poker_hands['Straight']) then
         return {
-          message = 'Yeshcho Raz!',
+          message = localize("k_again_ex"),
           repetitions = card.ability.extra.repetitions,
           card = card,
         }
@@ -686,7 +691,7 @@ SMODS.Joker {
   pos = { x = 3, y = 2 },
   cost = 8,
   discovered = true,
-  config = { extra = { is_odd = 'even', next_round = 'odd', Xmult = 2} },
+  config = { extra = { is_odd = 'even', next_round = 'odd', Xmult = 1.5} },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult} }
   end,
@@ -711,7 +716,7 @@ SMODS.Joker {
           return {
             Xmult_mod = card.ability.extra.Xmult,
             message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult } },
-            card = context.other_card
+            card = card
           }
         end
       end
@@ -725,14 +730,15 @@ SMODS.Joker {
     name = 'Raw Meat',
     text = {
       "After defeating {C:attention}Boss Blind{},",
-      "{C:attention}-1{} Ante and destroy all",
-      "{C:attention}Raw Meat Jokers{}"
+      "sell this Joker to",
+      "go back 1 {C:attention}Ante",
+      "{C:inactive}(#2#)"
     }
   },
   rarity = 3,
   atlas = 'plantain',
   blueprint_compat = false,
-  config = { extra = { minus_ante = -1, reduce_ante = true } },
+  config = { extra = { minus_ante = -1, reduce_ante = "Inactive" } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }
   end,
@@ -741,19 +747,13 @@ SMODS.Joker {
   discovered = true,
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual and not context.blueprint then
+      card.ability.extra.reduce_ante = "Active"
+    end
+    if context.selling_self and not context.blueprint and card.ability.extra.reduce_ante == "Active" then
       G.E_MANAGER:add_event(Event({
         func = function()
-          local other_meat = nil
-          for i=1, #G.jokers.cards do
-            other_meat = G.jokers.cards[i]
-            if other_meat.ability.name == card.ability.name and other_meat ~= card and card.ability.extra.reduce_ante then
-              other_meat.ability.extra.reduce_ante = false
-            end
-          end
-          if card.ability.extra.reduce_ante then
-            ease_ante(card.ability.extra.minus_ante)
-            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Ante Down', colour = G.C.BLACK})
-          end
+          ease_ante(card.ability.extra.minus_ante)
+          card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Ante Down', colour = G.C.BLACK})
           G.E_MANAGER:add_event(Event({
             func = function()
               if card.ability.extra.reduce_ante then --avoids duping the sound effect
