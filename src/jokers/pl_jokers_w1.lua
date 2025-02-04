@@ -1,110 +1,3 @@
-SMODS.Atlas {
-  key = 'plantain',
-  path = 'plantain.png',
-  px = 71,
-  py = 95
-}
-
-SMODS.Atlas{
-  key = "modicon",
-  path = "modicon.png",
-  px = 34,
-  py = 34
-}
-
-SMODS.current_mod.extra_tabs = function()
-  local scale = 0.5
-  return {
-      label = "Credits",
-      tab_definition_function = function()
-      return {
-          n = G.UIT.ROOT,
-          config = {
-          align = "cm",
-          padding = 0.05,
-          colour = G.C.CLEAR,
-          },
-          nodes = {
-          {
-              n = G.UIT.R,
-              config = {
-              padding = 0,
-              align = "cm"
-              },
-              nodes = {
-              {
-                  n = G.UIT.T,
-                  config = {
-                  text = "Programming: IcebergLettuce, NachitoSMO",
-                  shadow = false,
-                  scale = scale,
-                  colour = G.C.GREEN
-                  }
-              }
-              }
-          },
-          {
-              n = G.UIT.R,
-              config = {
-              padding = 0,
-              align = "cm"
-              },
-              nodes = {
-              {
-                  n = G.UIT.T,
-                  config = {
-                  text = "Art: IcebergLettuce",
-                  shadow = false,
-                  scale = scale,
-                  colour = G.C.PURPLE
-                  }
-              },
-              }
-          },
-          {
-              n = G.UIT.R,
-              config = {
-                  padding = 0,
-                  align = "cm"
-              },
-              nodes = {
-                  {
-                  n = G.UIT.T,
-                  config = {
-                      text = "Idea Guys: AtomicLight, BurntFrenchToast, TomatoIcecream",
-                      shadow = false,
-                      scale = scale,
-                      colour = G.C.MONEY
-                  }
-                  },
-              }
-          }
-          }
-      }
-      end
-  }
-end
-
-PlConfig = SMODS.current_mod.config
-
-SMODS.current_mod.config_tab = function() --Config tab
-  return {
-    n = G.UIT.ROOT,
-    config = {
-      align = "cm",
-      padding = 0.05,
-      colour = G.C.CLEAR,
-    },
-    nodes = {
-      create_toggle({
-          label = "does NOTHING",
-          ref_table = PlConfig,
-          ref_value = "wave2",
-      })
-    },
-  }
-end
-
 SMODS.Joker {
   key = 'plantain',
   loc_txt = {
@@ -119,8 +12,10 @@ SMODS.Joker {
 
   config = { extra = { chips_mod = 25, chance = 6} },
   rarity = 1,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = true,
+  eternal_compat = false,
+  perishable_compat = true,
   pos = { x = 0, y = 0 },
   cost = 6,
   discovered = true,
@@ -182,9 +77,10 @@ SMODS.Joker {
     }
   },
   rarity = 1,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = true,
   eternal_compat = false,
+  perishable_compat = true,
   pos = { x = 1, y = 0 },
   cost = 4,
   discovered = true,
@@ -219,8 +115,10 @@ SMODS.Joker {
   },
   config = { extra = { repetitions = 1 } },
   rarity = 1,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 2, y = 0 },
   cost = 4,
   discovered = true,
@@ -250,8 +148,10 @@ SMODS.Joker {
     }
   },
   rarity = 1,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 3, y = 0 },
   cost = 4,
   discovered = true,
@@ -298,8 +198,10 @@ SMODS.Joker {
 
   config = { extra = { money = 8, money_loss = 1 } },
   rarity = 1,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = false,
+  eternal_compat = false,
+  perishable_compat = true,
   pos = { x = 4, y = 0 },
   cost = 6,
   discovered = true,
@@ -353,13 +255,15 @@ SMODS.Joker {
     }
   },
   rarity = 2,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   config = { extra = { should_destroy = true } },
   discovered = true,
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.should_destroy } }
   end,
   blueprint_compat = false,
+  eternal_compat = false,
+  perishable_compat = true,
   pos = { x = 0, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
@@ -411,8 +315,10 @@ SMODS.Joker {
   },
   config = { extra = { repetitions = 1 } },
   rarity = 2,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 1, y = 1 },
   cost = 6,
   discovered = true,
@@ -441,10 +347,12 @@ SMODS.Joker {
     }
   },
   rarity = 2,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   cost = 6,
   discovered = true,
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = false,
   pos = { x = 2, y = 1 },
   config = { extra = { mult_mod = 2, cw_size = 1 , mult = 0} },
   loc_vars = function(self, info_queue, card)
@@ -480,35 +388,46 @@ SMODS.Joker {
   loc_txt = {
     name = 'Crystal Joker',
     text = {
-      "Gains {X:mult,C:white}X#1#{} Mult each time",
-      "a {C:attention}Stone{} card scores, destroy",
-      "all played {C:attention}Stone{} cards",
-      "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
+      "If first played hand",
+      "contains a {C:attention}Stone{} card, create",
+      "a random {C:tarot}Tarot{} card"
     }
   },
   rarity = 2,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   discovered = true,
-  config = { extra = { xmult_mod = 0.5, xmult = 1 } },
+  config = { extra = { stone_played = false} },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
+    return { vars = { card.ability.extra.stone_played} }
   end,
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 3, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.other_card and context.other_card.ability.effect == 'Stone Card' and context.individual and not context.blueprint then
-      card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
-      return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
+    if context.cardarea == G.play and context.individual and not context.blueprint and G.GAME.current_round.hands_played == 0 then
+      if context.other_card.ability.effect == "Stone Card" and not context.other_card.lucky_trigger then
+        card.ability.extra.stone_played = true
+      end
     end
-    if context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' and not context.blueprint then
-      return true
-    end
-    if context.joker_main and context.cardarea == G.jokers then
-      return {
-        Xmult_mod = card.ability.extra.xmult,
-        message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
-      }
+
+    if context.after and not context.repetition and not context.individual and card.ability.extra.stone_played == true then
+      card.ability.extra.stone_played = false
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'before',
+                    delay = 0.0,
+                    func = (function()
+                        local card = create_card('Tarot',G.consumeables, nil, nil, nil, nil, nil, 'crystal')
+                        card:add_to_deck()
+                        G.consumeables:emplace(card)
+                        G.GAME.consumeable_buffer = 0
+                        card:juice_up(0.5, 0.5)
+                        return true
+                    end)}))
+                    card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})
+            
+        
     end
   end
 }
@@ -528,8 +447,10 @@ SMODS.Joker {
   config = { extra = { money_mod = 3, wild_tally = 0} },
   rarity = 2,
   discovered = true,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = false,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 4, y = 1 },
   cost = 6,
 
@@ -543,13 +464,13 @@ SMODS.Joker {
   end
 }
 
-local card_updateref = Card.update
+local card_updateref = Card.update --counts wild cards for el dorado or smth idk
 function Card.update(self, dt)
   if G.STAGE == G.STAGES.RUN then
     if self.ability.name == 'j_Plantain_el_dorado' then 
       self.ability.extra.wild_tally = 0
       for k, v in pairs(G.playing_cards) do
-        if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally+self.ability.extra.money_mod end
+        if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally + self.ability.extra.money_mod end
       end
     end
   end
@@ -568,9 +489,11 @@ SMODS.Joker {
     }
   },
   rarity = 3,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   discovered = true,
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = false,
   config = { extra = { chips_mod = 13, chips = 0 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.chips_mod , card.ability.extra.chips } }
@@ -598,8 +521,6 @@ SMODS.Joker {
 }
 
 
-
---TODO: fix the sound effect
 SMODS.Joker {
   key = 'mossy_joker',
   loc_txt = {
@@ -611,9 +532,11 @@ SMODS.Joker {
     }
   },
   rarity = 3,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   discovered = true,
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 1, y = 2 },
   cost = 7,
   calculate = function(self, card, context)
@@ -647,8 +570,10 @@ SMODS.Joker {
     }
   },
   rarity = 3,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 2, y = 2 },
   cost = 7,
   discovered = true,
@@ -686,8 +611,10 @@ SMODS.Joker {
     }
   },
   rarity = 3,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
   pos = { x = 3, y = 2 },
   cost = 8,
   discovered = true,
@@ -736,8 +663,10 @@ SMODS.Joker {
     }
   },
   rarity = 3,
-  atlas = 'plantain',
+  atlas = 'pl_atlas_w1',
   blueprint_compat = false,
+  eternal_compat = false,
+  perishable_compat = true,
   config = { extra = { minus_ante = -1, reduce_ante = "Inactive" } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }

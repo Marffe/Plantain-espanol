@@ -4,7 +4,7 @@
     "author": ["TeamToaster"],
     "description": "Introduces a handful of aggressively vanilla-style jokers.",
     "prefix": "Plantain",
-    "main_file": "src/plantain.lua",
+    "main_file": "src/pl_main.lua",
     "priority": 1,
     "badge_colour": "9DC157",
     "dependencies": [
