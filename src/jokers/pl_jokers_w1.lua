@@ -388,8 +388,8 @@ SMODS.Joker {
   loc_txt = {
     name = 'Crystal Joker',
     text = {
-      "If first played hand",
-      "contains a {C:attention}Stone{} card, create",
+      "If played hand contains",
+      "a {C:attention}Stone{} card, create",
       "a random {C:tarot}Tarot{} card"
     }
   },
@@ -406,7 +406,7 @@ SMODS.Joker {
   pos = { x = 3, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.individual and not context.blueprint and G.GAME.current_round.hands_played == 0 then
+    if context.cardarea == G.play and context.individual and not context.blueprint then
       if context.other_card.ability.effect == "Stone Card" and not context.other_card.lucky_trigger then
         card.ability.extra.stone_played = true
       end
