@@ -10,18 +10,18 @@ SMODS.Joker {
     }
   },
 
-  config = { extra = { chips_mod = 25, chance = 6} },
+  config = { extra = { chips_mod = 20, chance = 6} },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   blueprint_compat = true,
   eternal_compat = false,
   perishable_compat = true,
   pos = { x = 0, y = 0 },
-  cost = 6,
+  cost = 5,
   discovered = true,
 
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.chips_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance, (G.GAME.pl_plantain_chips or 25) } }
+    return { vars = { card.ability.extra.chips_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance, (G.GAME.pl_plantain_chips or card.ability.extra.chips_mod) } }
   end,
 
   calculate = function(self, card, context)
@@ -47,20 +47,19 @@ SMODS.Joker {
             message = 'Cooked!'
         }
       else
-        G.GAME.pl_plantain_chips = (G.GAME.pl_plantain_chips or 25) + card.ability.extra.chips_mod
+        G.GAME.pl_plantain_chips = (G.GAME.pl_plantain_chips or card.ability.extra.chips_mod) + card.ability.extra.chips_mod
         return {
             message = localize('k_upgrade_ex')
         }
       end
     end
     if context.joker_main and context.cardarea == G.jokers then
-      if G.GAME.pl_plantain_chips ~= nil then
-        return 
-        {
-          chip_mod = G.GAME.pl_plantain_chips,
-          message = localize { type = 'variable', key = 'a_chips', vars = { G.GAME.pl_plantain_chips } }
-        }
-      end
+      local potatochips = (G.GAME.pl_plantain_chips or card.ability.extra.chips_mod)
+      return 
+      {
+        chip_mod = potatochips,
+        message = localize { type = 'variable', key = 'a_chips', vars = { potatochips } }
+      }
     end
   end
 }
@@ -120,7 +119,7 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 2, y = 0 },
-  cost = 4,
+  cost = 6,
   discovered = true,
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.repetition then
@@ -153,7 +152,7 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 3, y = 0 },
-  cost = 4,
+  cost = 5,
   discovered = true,
   config = { extra = { mult = 5, chips = 25, bingo1 = 3, bingo2 = 7 } },
   loc_vars = function(self, info_queue, card)
@@ -452,7 +451,7 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 4, y = 1 },
-  cost = 6,
+  cost = 7,
 
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.money_mod, card.ability.extra.wild_tally } }
@@ -575,7 +574,7 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 2, y = 2 },
-  cost = 7,
+  cost = 8,
   discovered = true,
   config = { extra = { Xmult = 2 } },
   loc_vars = function(self, info_queue, card)
@@ -672,7 +671,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }
   end,
   pos = { x = 4, y = 2 },
-  cost = 8,
+  cost = 9,
   discovered = true,
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual and not context.blueprint then
