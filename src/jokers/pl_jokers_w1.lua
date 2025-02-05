@@ -681,22 +681,16 @@ SMODS.Joker {
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual and not context.blueprint then
       card.ability.extra.reduce_ante = "Active"
+      local eval = function(card) return not card.REMOVED end
+      juice_card_until(card, eval, true)
+      return {
+        message = localize('k_active_ex'),
+        colour = G.C.FILTER
+      }
     end
     if context.selling_self and not context.blueprint and card.ability.extra.reduce_ante == "Active" then
-      G.E_MANAGER:add_event(Event({
-        func = function()
-          ease_ante(card.ability.extra.minus_ante)
-          card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Ante Down', colour = G.C.BLACK})
-          G.E_MANAGER:add_event(Event({
-            func = function()
-              if card.ability.extra.reduce_ante then --avoids duping the sound effect
-                play_sound('whoosh2')
-              end
-              card:start_dissolve({G.C.BLACK}, card)
-              return true
-            end}))
-          return true;
-        end}))
+      ease_ante(card.ability.extra.minus_ante)
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Ante Down', colour = G.C.BLACK})
     end
   end
 }
