@@ -405,14 +405,18 @@ SMODS.Joker {
   pos = { x = 3, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.individual and not context.blueprint then
+    if context.cardarea == G.play and context.individual then
       if context.other_card.ability.effect == "Stone Card" and not context.other_card.lucky_trigger then
         card.ability.extra.stone_played = true
       end
     end
 
-    if context.after and not context.repetition and not context.individual and card.ability.extra.stone_played == true then
-      card.ability.extra.stone_played = false
+    if context.before and context.cardarea == G.jokers then
+      local stone = false
+      for i = 1, #context.scoring_hand do
+        if context.scoring_hand[i].ability.effect == "Stone Card" then stone = true end
+      end
+        if stone then
                 G.E_MANAGER:add_event(Event({
                     trigger = 'before',
                     delay = 0.0,
@@ -425,6 +429,7 @@ SMODS.Joker {
                         return true
                     end)}))
                     card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})
+                  end
             
         
     end
