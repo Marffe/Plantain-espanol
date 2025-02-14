@@ -3,14 +3,15 @@ SMODS.Joker {
   loc_txt = {
     name = 'Plantain',
     text = {
-      'Gains {C:chips}+#1#{} Chips at end',
-      'of round, {C:green}#2# in #3#{} chance',
-      'this card is destroyed',
-      '{C:inactive}(Currently {C:chips}+#4#{C:inactive} Chips)'
+      '{C:chips}+#1#{} Chips',
+      '{C:green}#2# in #3#{} chance this',
+      'card is destroyed',
+      'at end of round'
     }
   },
 
-  config = { extra = { chips_mod = 20, chance = 6} },
+  config = { 
+    extra = {chips = 80, chance = 4, initialized = false} },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   blueprint_compat = true,
@@ -19,14 +20,30 @@ SMODS.Joker {
   pos = { x = 0, y = 0 },
   cost = 5,
   discovered = true,
-
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.chips_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance, (G.GAME.pl_plantain_chips or card.ability.extra.chips_mod) } }
+    return { vars = { (card.ability.extra.real_chips or G.GAME.pl_plantain_chips or card.ability.extra.chips),
+      (G.GAME.probabilities.normal or 1),
+      (card.ability.extra.real_chance or G.GAME.pl_plantain_chance or card.ability.extra.chance),  } }
   end,
 
   calculate = function(self, card, context)
+    if context.setting_blind and not card.ability.extra.initialized then
+      card.ability.extra.initialized = true
+      if G.GAME.pl_plantain_chips == nil then
+        card.ability.extra.real_chips = card.ability.extra.chips
+      else
+        card.ability.extra.real_chips = G.GAME.pl_plantain_chips
+      end
+      if G.GAME.pl_plantain_chance == nil then
+        card.ability.extra.real_chance = card.ability.extra.chance
+      else
+        card.ability.extra.real_chance = G.GAME.pl_plantain_chance
+      end
+    end
     if context.end_of_round and not context.blueprint and not context.repetition and not context.individual then
-      if pseudorandom('plantain') < G.GAME.probabilities.normal/card.ability.extra.chance then 
+      if pseudorandom('plantain') < G.GAME.probabilities.normal/card.ability.extra.real_chance then 
+        G.GAME.pl_plantain_chips = (G.GAME.pl_plantain_chips or card.ability.extra.chips) + card.ability.extra.chips
+        G.GAME.pl_plantain_chance = (G.GAME.pl_plantain_chance or card.ability.extra.chance) + card.ability.extra.chance
         G.E_MANAGER:add_event(Event({
             func = function()
                 play_sound('tarot1')
@@ -47,18 +64,16 @@ SMODS.Joker {
             message = 'Cooked!'
         }
       else
-        G.GAME.pl_plantain_chips = (G.GAME.pl_plantain_chips or card.ability.extra.chips_mod) + card.ability.extra.chips_mod
         return {
-            message = localize('k_upgrade_ex')
+            message = localize('k_safe_ex')
         }
       end
     end
     if context.joker_main and context.cardarea == G.jokers then
-      local potatochips = (G.GAME.pl_plantain_chips or card.ability.extra.chips_mod)
       return 
       {
-        chip_mod = potatochips,
-        message = localize { type = 'variable', key = 'a_chips', vars = { potatochips } }
+        chip_mod = card.ability.extra.real_chips,
+        message = localize { type = 'variable', key = 'a_chips', vars = { card.ability.extra.real_chips } }
       }
     end
   end
@@ -103,34 +118,47 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-  key = 'jim',
+  key = 'mini_crossword',
   loc_txt = {
-    name = 'Jim',
+    name = 'Mini Crossword',
     text = {
-      "Retrigger all played",
-      "cards {C:attention}without",
-      "enhancements"
+      'Gains {C:mult}+#1#{} Mult if played hand',
+      'has exactly {C:attention}#2#{} cards',
+      '{s:0.8}Chooses between 3, 4, or 5 every round',
+      '{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)'
     }
   },
-  config = { extra = { repetitions = 1 } },
   rarity = 1,
   atlas = 'pl_atlas_w1',
+  cost = 5,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
-  perishable_compat = true,
+  perishable_compat = false,
   pos = { x = 2, y = 0 },
-  cost = 6,
-  discovered = true,
+  config = { extra = { mult_mod = 1, cw_size = 1 , mult = 0} },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.mult_mod, card.ability.extra.cw_size, card.ability.extra.mult} }
+  end,
+  set_ability = function(self, card, initial, delay_sprites)
+    local valid_cw_size = {3, 4, 5}
+    card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('crossword'..G.GAME.round_resets.ante)) 
+	end,
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.repetition then
-      if context.other_card.ability.set ~= 'Enhanced' then
-        return 
-        {
-          message = localize("k_again_ex"),
-          repetitions = card.ability.extra.repetitions,
-          card = card, 
-        }
-      end
+    if context.cardarea == G.jokers and context.before and #context.full_hand == card.ability.extra.cw_size and not context.blueprint then
+      card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
+      return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
+    end
+    if context.joker_main and context.cardarea == G.jokers then
+      return {
+        mult_mod = card.ability.extra.mult,
+        message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
+      }
+    end
+    if context.end_of_round and not context.repetition and not context.individual then
+      local valid_cw_size = {3, 4, 5}
+      table.remove(valid_cw_size, card.ability.extra.cw_size - 2)
+      card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('crossword'..G.GAME.round_resets.ante)) 
     end
   end
 }
@@ -335,52 +363,37 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-  key = 'mini_crossword',
+  key = 'jim',
   loc_txt = {
-    name = 'Mini Crossword',
+    name = 'Jim',
     text = {
-      'Gains {C:mult}+#1#{} Mult if played hand',
-      'has exactly {C:attention}#2#{} cards',
-      '{s:0.8}Chooses between 3, 4, or 5 every round',
-      '{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)'
+      "Retrigger all played",
+      "cards {C:attention}without",
+      "enhancements"
     }
   },
+  config = { extra = { repetitions = 1 } },
   rarity = 2,
   atlas = 'pl_atlas_w1',
-  cost = 6,
-  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
-  perishable_compat = false,
+  perishable_compat = true,
   pos = { x = 2, y = 1 },
-  config = { extra = { mult_mod = 2, cw_size = 1 , mult = 0} },
-  loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.mult_mod, card.ability.extra.cw_size, card.ability.extra.mult} }
-  end,
-  set_ability = function(self, card, initial, delay_sprites)
-    local valid_cw_size = {3, 4, 5}
-    card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('crossword'..G.GAME.round_resets.ante)) 
-	end,
+  cost = 6,
+  discovered = true,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.before and #context.full_hand == card.ability.extra.cw_size and not context.blueprint then
-      card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
-      return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
-    end
-    if context.joker_main and context.cardarea == G.jokers then
-      return {
-        mult_mod = card.ability.extra.mult,
-        message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
-      }
-    end
-    if context.end_of_round and not context.repetition and not context.individual then
-      local valid_cw_size = {3, 4, 5}
-      table.remove(valid_cw_size, card.ability.extra.cw_size - 2)
-      card.ability.extra.cw_size = pseudorandom_element(valid_cw_size, pseudoseed('crossword'..G.GAME.round_resets.ante)) 
+    if context.cardarea == G.play and context.repetition then
+      if context.other_card.ability.set ~= 'Enhanced' then
+        return 
+        {
+          message = localize("k_again_ex"),
+          repetitions = card.ability.extra.repetitions,
+          card = card, 
+        }
+      end
     end
   end
 }
-
-
 
 SMODS.Joker {
   key = 'crystal_joker',
@@ -404,6 +417,7 @@ SMODS.Joker {
   perishable_compat = true,
   pos = { x = 3, y = 1 },
   cost = 6,
+  enhancement_gate = 'm_stone',
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.individual then
       if context.other_card.ability.effect == "Stone Card" and not context.other_card.lucky_trigger then
@@ -457,6 +471,7 @@ SMODS.Joker {
   perishable_compat = true,
   pos = { x = 4, y = 1 },
   cost = 7,
+  enhancement_gate = 'm_wild',
 
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.money_mod, card.ability.extra.wild_tally } }
@@ -504,6 +519,8 @@ SMODS.Joker {
   end,
   pos = { x = 0, y = 2 },
   cost = 8,
+  enhancement_gate = 'm_lucky',
+
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.individual and not context.blueprint then
       if context.other_card.ability.effect == "Lucky Card" and not context.other_card.lucky_trigger then
