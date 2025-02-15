@@ -223,7 +223,7 @@ SMODS.Joker {
     }
   },
 
-  config = { extra = { money = 8, money_loss = 1 } },
+  config = { extra = { money = 8, money_loss = 2 } },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   blueprint_compat = false,
