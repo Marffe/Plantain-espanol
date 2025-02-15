@@ -148,10 +148,12 @@ SMODS.Joker {
       return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
     end
     if context.joker_main and context.cardarea == G.jokers then
-      return {
-        mult_mod = card.ability.extra.mult,
-        message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
-      }
+      if card.ability.extra.mult > 0 then
+        return {
+          mult_mod = card.ability.extra.mult,
+          message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
+        }
+      end
     end
     if context.end_of_round and not context.repetition and not context.individual then
       local valid_cw_size = {3, 4, 5}
