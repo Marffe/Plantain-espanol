@@ -221,7 +221,7 @@ SMODS.Joker {
     }
   },
 
-  config = { extra = { money = 8, money_loss = 2 } },
+  config = { extra = { money = 6, money_loss = 1 } },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   blueprint_compat = false,
@@ -646,22 +646,20 @@ SMODS.Joker {
       card.ability.extra.is_odd, card.ability.extra.next_round = card.ability.extra.next_round, card.ability.extra.is_odd
     end
 
-    if context.cardarea == G.play and context.other_card and context.individual then
+    if context.cardarea == G.play and context.individual then
       if card.ability.extra.is_odd == 'odd' then
         if ((context.other_card:get_id() <= 10 and context.other_card:get_id() >= 0
         and context.other_card:get_id()%2 == 1) or (context.other_card:get_id() == 14)) then
           return {
-            Xmult_mod = card.ability.extra.Xmult,
-            message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult } },
-            card = context.other_card
+            Xmult = card.ability.extra.Xmult,
+            card = card
           }
         end
       else
         if context.other_card:get_id() <= 10 and context.other_card:get_id() >= 0
         and context.other_card:get_id()%2 == 0 then
           return {
-            Xmult_mod = card.ability.extra.Xmult,
-            message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+            Xmult = card.ability.extra.Xmult,
             card = card
           }
         end
