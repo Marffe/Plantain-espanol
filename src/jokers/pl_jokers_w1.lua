@@ -11,7 +11,7 @@ SMODS.Joker {
   },
 
   config = { 
-    extra = {chips = 80, chance = 4, initialized = false} },
+    extra = {chips = 80, chance = 4} },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   blueprint_compat = true,
@@ -25,21 +25,19 @@ SMODS.Joker {
       (G.GAME.probabilities.normal or 1),
       (card.ability.extra.real_chance or G.GAME.pl_plantain_chance or card.ability.extra.chance),  } }
   end,
-
-  calculate = function(self, card, context)
-    if context.setting_blind and not card.ability.extra.initialized then
-      card.ability.extra.initialized = true
-      if G.GAME.pl_plantain_chips == nil then
-        card.ability.extra.real_chips = card.ability.extra.chips
-      else
-        card.ability.extra.real_chips = G.GAME.pl_plantain_chips
-      end
-      if G.GAME.pl_plantain_chance == nil then
-        card.ability.extra.real_chance = card.ability.extra.chance
-      else
-        card.ability.extra.real_chance = G.GAME.pl_plantain_chance
-      end
+  add_to_deck = function(self,card,context)
+    if G.GAME.pl_plantain_chips == nil then
+      card.ability.extra.real_chips = card.ability.extra.chips
+    else
+      card.ability.extra.real_chips = G.GAME.pl_plantain_chips
     end
+    if G.GAME.pl_plantain_chance == nil then
+      card.ability.extra.real_chance = card.ability.extra.chance
+    else
+      card.ability.extra.real_chance = G.GAME.pl_plantain_chance
+    end
+  end,
+  calculate = function(self, card, context)
     if context.end_of_round and not context.blueprint and not context.repetition and not context.individual then
       if pseudorandom('plantain') < G.GAME.probabilities.normal/card.ability.extra.real_chance then 
         G.GAME.pl_plantain_chips = (G.GAME.pl_plantain_chips or card.ability.extra.chips) + card.ability.extra.chips
