@@ -5,13 +5,6 @@ SMODS.Atlas {
   py = 95
 }
 
-SMODS.Atlas {
-  key = 'pl_atlas_w2',
-  path = 'pl_atlas_w2.png',
-  px = 71,
-  py = 95
-}
-
 SMODS.Atlas{
   key = "modicon",
   path = "modicon.png",
@@ -92,28 +85,4 @@ SMODS.current_mod.extra_tabs = function()
   }
 end
 
-pl_config = SMODS.current_mod.config
-
-SMODS.current_mod.config_tab = function()
-  return {
-    n = G.UIT.ROOT,
-    config = {
-      align = "cm",
-      padding = 0.05,
-      colour = G.C.CLEAR,
-    },
-    nodes = {
-      create_toggle({
-          label = "Wave 2 (Experimental, requires reset!)",
-          ref_table = pl_config,
-          ref_value = "wave2",
-      })
-    },
-  }
-end
-
 NFS.load(SMODS.current_mod.path .. 'src/jokers/pl_jokers_w1.lua')()
-
-if pl_config.wave2 then
-  NFS.load(SMODS.current_mod.path .. 'src/jokers/pl_jokers_w2.lua')()
-end
