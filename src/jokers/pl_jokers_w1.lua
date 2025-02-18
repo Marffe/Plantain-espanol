@@ -294,7 +294,7 @@ SMODS.Joker {
   pos = { x = 0, y = 1 },
   cost = 6,
   calculate = function(self, card, context)
-    if context.skip_blind then
+    if context.skip_blind and not context.blueprint then
       G.E_MANAGER:add_event(Event({
         func = function()
           for i=1, #G.jokers.cards do
