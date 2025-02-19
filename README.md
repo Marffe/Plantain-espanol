@@ -1,13 +1,15 @@
-![Plantain logo](content/logo.png)
+![Plantain Logo](https://github.com/user-attachments/assets/aa76c7c4-fc07-4bdf-935a-2f739b21f9df)
 An aggressively vanilla Balatro content mod.
 
 *Requires the latest version of [Steamodded!](https://github.com/Steamopollys/Steamodded)*
 
+## PLANTAIN
+
 Plantain is a vanilla Balatro content mod that adds 15 all new Jokers with unique, balanced effects. Great care was taken to make sure these new additions fit the balance, design philosophies, and artstyle of the base game as closely as possible. Feedback? Bug reports? Fun synergies you want to show off? [Come chat on our thread in the official Balatro Discord!](https://discord.com/channels/1116389027176787968/1341225182882299955)
 
 ## ADDITIONS
-  
-  ![Plantain Wave 1 Jokers](assets/2x/pl_atlas_w1.png)
+
+  ![pl_atlas_w1](https://github.com/user-attachments/assets/57b4051b-e2b5-4cfd-a8e7-bcffe7d54040)
 
   - COMMON
     - Plantain - +80 Chips; 1 in 4 chance this card is destroyed at end of round
