@@ -52,9 +52,9 @@ return {
             j_pl_grape_soda = {
                 name = 'Grape Soda',
                 text = {
-                    'After {C:attention}skipping{} a',
-                    '{C:attention}Small Blind{} or {C:attention}Big Blind{},',
-                    'return to that {C:attention}Blind{} and',
+                    'Selecting {C:attention}Skip Blind',
+                    'gives the Skip Tag {C:attention}without',
+                    'skipping the Blind,',
                     'destroy this card'
                 }
             },
@@ -148,7 +148,7 @@ return {
             pl_plantain_cooked = 'Cooked!',
             pl_apple_pie_slice = 'Slice!',
             pl_apple_pie_sold_out = 'Sold Out!',
-            pl_grape_soda_unskip = 'Unskip!',
+            pl_grape_soda_gulp = 'Gulp!',
             pl_raw_meat_ante_down = 'Ante Down!',
         }
     }

@@ -217,9 +217,9 @@ SMODS.Joker {
               return true
           end
         })) 
-        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_apple_pie_slice'), colour = G.C.MONEY})
-      else
         card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_apple_pie_sold_out'), colour = G.C.MONEY})
+      else
+        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_apple_pie_slice'), colour = G.C.MONEY})
      end
     end
   end
@@ -250,7 +250,7 @@ SMODS.Joker {
             end
           end
           if card.ability.extra.should_destroy then
-            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
+            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_grape_soda_gulp'), colour = G.C.RED})
             card:start_dissolve({G.C.RED}, card)
             play_sound('whoosh2')
           end
