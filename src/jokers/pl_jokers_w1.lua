@@ -250,20 +250,7 @@ SMODS.Joker {
             end
           end
           if card.ability.extra.should_destroy then
-            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_grape_soda_unskip'), colour = G.C.RED})
-            if G.GAME.blind_on_deck == 'Big' then
-              G.GAME.blind_on_deck = 'Small'
-              G.GAME.round_resets.blind_states.Small = 'Current'
-              G.GAME.round_resets.blind_states.Big = 'Upcoming'
-            end
-
-            if G.GAME.blind_on_deck == 'Boss' then
-              G.GAME.blind_on_deck = 'Big'
-              G.GAME.round_resets.blind_states.Big = 'Current'
-              G.GAME.round_resets.blind_states.Boss = 'Upcoming'
-            end
-
-            G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
+            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
             card:start_dissolve({G.C.RED}, card)
             play_sound('whoosh2')
           end
@@ -398,7 +385,7 @@ SMODS.Joker {
 local card_updateref = Card.update --counts wild cards for el dorado or smth idk
 function Card.update(self, dt)
   if G.STAGE == G.STAGES.RUN then
-    if self.ability.name == 'j_Plantain_el_dorado' then 
+    if self.config.center.key == 'j_pl_el_dorado' then 
       self.ability.extra.wild_tally = 0
       for k, v in pairs(G.playing_cards) do
         if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally + self.ability.extra.money_mod end
