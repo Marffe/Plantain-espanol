@@ -134,6 +134,24 @@ return {
                     '{C:inactive}(#2#)'
                 }
             },
+            j_pl_quarry = {
+                name = 'Quarry',
+                text = {
+                    'Gains {X:mult,C:white}X#1#{} Mult each time',
+                    'a {C:attention}Stone{} card scores, destroy',
+                    'all played {C:attention}Stone{} cards',
+                    '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
+                }
+            },
+            j_pl_hot_air_balloon = {
+                name = 'Hot Air Balloon',
+                text = {
+                    'Earn {C:money}$1{} at end of round',
+                    '{C:green}1 in 2{} chance for payout',
+                    'to increase by {C:money}$1{} when',
+                    '{C:tarot}Tarot{} card used'
+                }
+            },
         },
         --Other={},
         --Planet={},

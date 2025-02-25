@@ -5,6 +5,13 @@ SMODS.Atlas {
   py = 95
 }
 
+SMODS.Atlas {
+    key = 'pl_atlas_w2',
+    path = 'pl_atlas_w2.png',
+    px = 71,
+    py = 95
+  }
+
 SMODS.Atlas{
   key = "modicon",
   path = "modicon.png",
@@ -86,3 +93,4 @@ SMODS.current_mod.extra_tabs = function()
 end
 
 NFS.load(SMODS.current_mod.path .. 'src/jokers/pl_jokers_w1.lua')()
+NFS.load(SMODS.current_mod.path .. 'src/jokers/pl_jokers_w2.lua')()
