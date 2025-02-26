@@ -32,7 +32,6 @@ if G.jokers and G.jokers.cards then
         func = function()
           delay(0.3)
           SMODS.calculate_context({skip_blind = true})
-          save_run()
           for i = 1, #G.GAME.tags do
             G.GAME.tags[i]:apply_to_run({type = 'immediate'})
           end
