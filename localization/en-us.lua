@@ -146,10 +146,18 @@ return {
             j_pl_hot_air_balloon = {
                 name = 'Hot Air Balloon',
                 text = {
-                    'Earn {C:money}$1{} at end of round',
-                    '{C:green}1 in 2{} chance for payout',
-                    'to increase by {C:money}$1{} when',
-                    '{C:tarot}Tarot{} card used'
+                    'Earn {C:money}$#1#{} at end of round',
+                    'payout increases by {C:money}$#2#{}',
+                    'when {C:tarot}Tarot{} card used'
+                }
+            },
+            j_pl_three_body_problem = {
+                name = 'Three Body Problem',
+                text = {
+                    'If played hand is',
+                    '{C:attention}Three of a Kind{}, upgrade',
+                    'last played hand',
+                    '{C:inactive}Currently {C:attention}#1#'
                 }
             },
         },
