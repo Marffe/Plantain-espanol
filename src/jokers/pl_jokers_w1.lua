@@ -49,7 +49,7 @@ SMODS.Joker {
             end
         })) 
         return {
-            message = localize('pl_cooked')
+            message = localize('pl_plantain_cooked')
         }
       else
         return {
