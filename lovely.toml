@@ -48,3 +48,18 @@ if G.jokers and G.jokers.cards then
     end
 end
 '''
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+match_indent = true
+pattern = '''elseif e.config.id ~= G.GAME.blind_on_deck then'''
+position = "before"
+payload = '''
+if G.GAME.pl_grape_used == G.GAME.blind_on_deck then
+  _tag_container.children[2] = nil
+  _tag_container.children[1] = nil
+else
+  G.GAME.pl_grape_used = nil
+end
+'''

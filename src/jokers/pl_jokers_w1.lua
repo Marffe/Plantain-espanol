@@ -49,7 +49,7 @@ SMODS.Joker {
             end
         })) 
         return {
-            message = localize('pl_cooked')
+            message = localize('pl_plantain_cooked')
         }
       else
         return {
@@ -253,6 +253,12 @@ SMODS.Joker {
             card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_grape_soda_gulp'), colour = G.C.RED})
             card:start_dissolve({G.C.RED}, card)
             play_sound('whoosh2')
+            G.E_MANAGER:add_event(Event({delay = 0.2,
+              func = function()
+                G.GAME.pl_grape_used = G.GAME.blind_on_deck
+                save_run()
+              return true
+            end}))
           end
         return true
       end}))
