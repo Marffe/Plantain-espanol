@@ -54,8 +54,8 @@ return {
                 text = {
                     'Selecting {C:attention}Skip Blind',
                     'gives the Skip Tag {C:attention}without',
-                    'skipping the Blind,',
-                    'destroy this card'
+                    'skipping the Blind, and',
+                    'destroys this card'
                 }
             },
             j_pl_matryoshka = {
