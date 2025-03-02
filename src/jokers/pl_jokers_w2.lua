@@ -78,23 +78,35 @@ SMODS.Joker {
   
   config = { extra = { last_hand = 'none' } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.last_hand } }
+    return { vars = { (G.GAME.last_hand_played or card.ability.extra.last_hand) } }
   end,
 
   blueprint_compat = true,
   eternal_compat = true,
-  perishable_compat = false,
+  perishable_compat = true,
   discovered = true,
 
-  rarity = 2,
+  rarity = 3,
   cost = 6,
 
-  calculate = function(self, card, context)
-    if context.before then
-      if context.scoring_name == 'Three of a Kind' then
-        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.PURPLE})
-      end
+  add_to_deck = function(self,card,context)
+    if not (G.GAME.last_hand_played == nil) then
       card.ability.extra.last_hand = G.GAME.last_hand_played
+    end
+  end,
+
+  calculate = function(self, card, context)
+    if context.before and context.cardarea == G.jokers then
+      if (context.scoring_name == 'Three of a Kind') and not (card.ability.extra.last_hand == 'none') then
+        -- card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.PURPLE})
+        local text,disp_text = card.ability.extra.last_hand
+        local old_text, old_disp_text = context.scoring_name
+        card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_level_up_ex')})
+        update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(text, 'poker_hands'),chips = G.GAME.hands[text].chips, mult = G.GAME.hands[text].mult, level=G.GAME.hands[text].level})
+        level_up_hand(context.blueprint_card or card, text, nil, 1)
+        update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(old_text, 'poker_hands'),chips = G.GAME.hands[old_text].chips, mult = G.GAME.hands[old_text].mult, level=G.GAME.hands[old_text].level})
+      end
+      card.ability.extra.last_hand = context.scoring_name
     end
   end
 }
