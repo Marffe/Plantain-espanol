@@ -1,15 +1,5 @@
 SMODS.Joker {
   key = 'plantain',
-  loc_txt = {
-    name = 'Plantain',
-    text = {
-      '{C:chips}+#1#{} Chips',
-      '{C:green}#2# in #3#{} chance this',
-      'card is destroyed',
-      'at end of round'
-    }
-  },
-
   config = { 
     extra = {chips = 80, chance = 4} },
   rarity = 1,
@@ -59,7 +49,7 @@ SMODS.Joker {
             end
         })) 
         return {
-            message = 'Cooked!'
+            message = localize('pl_plantain_cooked')
         }
       else
         return {
@@ -79,15 +69,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'postcard',
-  loc_txt = {
-    name = 'Postcard',
-    text = {
-      "Gains {X:mult,C:white}X1{} Mult for",
-      "each {C:attention}Postcard{}",
-      "sold this run",
-      "{C:inactive}(Currently {X:mult,C:white} X#1# {C:inactive} Mult)",
-    }
-  },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   blueprint_compat = true,
@@ -117,15 +98,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'mini_crossword',
-  loc_txt = {
-    name = 'Mini Crossword',
-    text = {
-      'Gains {C:mult}+#1#{} Mult if played hand',
-      'has exactly {C:attention}#2#{} cards',
-      '{s:0.8}Chooses between 3, 4, or 5 every round',
-      '{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)'
-    }
-  },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   cost = 5,
@@ -165,15 +137,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'bingo_card',
-  loc_txt = {
-    name = 'Bingo Card',
-    text = {
-      "Each played {C:attention}#1#{} and {C:attention}#2#{}",
-      "gives {C:chips}+#3#{} Chips and {C:mult}+#4#{} Mult",
-      "when scored, number cards",
-      "change every round"
-    }
-  },
   rarity = 1,
   atlas = 'pl_atlas_w1',
   blueprint_compat = true,
@@ -215,14 +178,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'apple_pie',
-  loc_txt = {
-    name = 'Apple Pie',
-    text = {
-      'Earn {C:money}$#1#{} at end of round,',
-      'and decrease by {C:money}$#2#{}'
-    }
-  },
-
   config = { extra = { money = 6, money_loss = 1 } },
   rarity = 1,
   atlas = 'pl_atlas_w1',
@@ -262,9 +217,9 @@ SMODS.Joker {
               return true
           end
         })) 
-        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Sold Out!', colour = G.C.MONEY})
+        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_apple_pie_sold_out'), colour = G.C.MONEY})
       else
-        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Slice!', colour = G.C.MONEY})
+        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_apple_pie_slice'), colour = G.C.MONEY})
      end
     end
   end
@@ -272,15 +227,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'grape_soda',
-  loc_txt = {
-    name = 'Grape Soda',
-    text = {
-      "After {C:attention}skipping{} a",
-      "{C:attention}Small Blind{} or {C:attention}Big Blind{},",
-      "return to that {C:attention}Blind{} and",
-      "destroy this card"
-    }
-  },
   rarity = 2,
   atlas = 'pl_atlas_w1',
   config = { extra = { should_destroy = true } },
@@ -304,22 +250,15 @@ SMODS.Joker {
             end
           end
           if card.ability.extra.should_destroy then
-            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Skipped!', colour = G.C.RED})
-            if G.GAME.blind_on_deck == 'Big' then
-              G.GAME.blind_on_deck = 'Small'
-              G.GAME.round_resets.blind_states.Small = 'Current'
-              G.GAME.round_resets.blind_states.Big = 'Upcoming'
-            end
-
-            if G.GAME.blind_on_deck == 'Boss' then
-              G.GAME.blind_on_deck = 'Big'
-              G.GAME.round_resets.blind_states.Big = 'Current'
-              G.GAME.round_resets.blind_states.Boss = 'Upcoming'
-            end
-
-            G.blind_select_opts[string.lower(G.GAME.blind_on_deck)].children.alert = nil --removes "Skipped" text
+            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_grape_soda_gulp'), colour = G.C.RED})
             card:start_dissolve({G.C.RED}, card)
             play_sound('whoosh2')
+            G.E_MANAGER:add_event(Event({delay = 0.2,
+              func = function()
+                G.GAME.pl_grape_used = G.GAME.blind_on_deck
+                save_run()
+              return true
+            end}))
           end
         return true
       end}))
@@ -332,14 +271,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'matryoshka',
-  loc_txt = {
-    name = 'Matryoshka',
-    text = {
-      'Retrigger all scoring',
-      'cards if played hand',
-      'contains a {C:attention}Straight'
-    }
-  },
   config = { extra = { repetitions = 1 } },
   rarity = 2,
   atlas = 'pl_atlas_w1',
@@ -364,14 +295,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'jim',
-  loc_txt = {
-    name = 'Jim',
-    text = {
-      "Retrigger all played",
-      "cards {C:attention}without",
-      "enhancements"
-    }
-  },
   config = { extra = { repetitions = 1 } },
   rarity = 2,
   atlas = 'pl_atlas_w1',
@@ -397,14 +320,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'crystal_joker',
-  loc_txt = {
-    name = 'Crystal Joker',
-    text = {
-      "If played hand contains",
-      "a {C:attention}Stone{} card, create",
-      "a random {C:tarot}Tarot{} card"
-    }
-  },
   rarity = 2,
   atlas = 'pl_atlas_w1',
   discovered = true,
@@ -452,16 +367,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'el_dorado',
-  loc_txt = {
-    name = 'El Dorado',
-    text = {
-      'Earn {C:money}$#1#{} for each {C:attention}Wild',
-      'card in your {C:attention}full deck',
-      'at end of round',
-      '{C:inactive}(Currently {C:money}$#2#{C:inactive})'
-    }
-  },
-
   config = { extra = { money_mod = 3, wild_tally = 0} },
   rarity = 2,
   discovered = true,
@@ -486,7 +391,7 @@ SMODS.Joker {
 local card_updateref = Card.update --counts wild cards for el dorado or smth idk
 function Card.update(self, dt)
   if G.STAGE == G.STAGES.RUN then
-    if self.ability.name == 'j_Plantain_el_dorado' then 
+    if self.config.center.key == 'j_pl_el_dorado' then 
       self.ability.extra.wild_tally = 0
       for k, v in pairs(G.playing_cards) do
         if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally + self.ability.extra.money_mod end
@@ -498,15 +403,6 @@ end
 
 SMODS.Joker {
   key = 'black_cat',
-  loc_txt = {
-    name = 'Black Cat',
-    text = {
-      'Gains {C:chips}+#1#{} Chips each',
-      'time a {C:attention}Lucky{} card',
-      '{C:attention}fails{} to trigger',
-      '{C:inactive}(Currently {C:chips}+#2# {C:inactive}Chips)'
-    }
-  },
   rarity = 3,
   atlas = 'pl_atlas_w1',
   discovered = true,
@@ -544,14 +440,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'mossy_joker',
-  loc_txt = {
-    name = 'Mossy Joker',
-    text = {
-      "Convert a random card",
-      "{C:attention}held in hand{} into a",
-      "random {C:attention}scored{} card"
-    }
-  },
   rarity = 3,
   atlas = 'pl_atlas_w1',
   discovered = true,
@@ -582,14 +470,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'nametag',
-  loc_txt = {
-    name = 'Nametag',
-    text = {
-      "{X:mult,C:white}X2{} Mult for every",
-      "{C:attention}Joker{} with \"Joker\"",
-      "in its name"
-    }
-  },
   rarity = 3,
   atlas = 'pl_atlas_w1',
   blueprint_compat = true,
@@ -622,15 +502,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'calculator',
-  loc_txt = {
-    name = 'Calculator',
-    text = {
-      'Each played card with',
-      '{C:attention}#1#{} rank gives',
-      '{X:mult,C:white}X#3#{} Mult when scored',
-      '{s:0.8}Changes to #2# next round'
-    }
-  },
   rarity = 3,
   atlas = 'pl_atlas_w1',
   blueprint_compat = true,
@@ -672,15 +543,6 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'raw_meat',
-  loc_txt = {
-    name = 'Raw Meat',
-    text = {
-      "After defeating {C:attention}Boss Blind{},",
-      "sell this Joker to",
-      "go back 1 {C:attention}Ante",
-      "{C:inactive}(#2#)"
-    }
-  },
   rarity = 3,
   atlas = 'pl_atlas_w1',
   blueprint_compat = false,
@@ -705,7 +567,7 @@ SMODS.Joker {
     end
     if context.selling_self and not context.blueprint and card.ability.extra.reduce_ante == "Active" then
       ease_ante(card.ability.extra.minus_ante)
-      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = 'Ante Down', colour = G.C.BLACK})
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_raw_meat_ante_down'), colour = G.C.BLACK})
     end
   end
 }
