@@ -18,7 +18,7 @@ Plantain is a vanilla Balatro content mod that adds 15 all new Jokers with uniqu
     - Bingo Card - Each played 7 and 9 gives +25 Chips and +5 Mult when scored, number cards change every round
     - Apple Pie - Earn $6 at end of round, and decrease by $1
   - UNCOMMON
-    - Grape Soda - After skipping a Small Blind or Big Blind, return to that Blind and destroy this card
+    - Grape Soda - Selecting Skip Blind gives the Skip Tag without skipping the Blind, and destroys this card
     - Matryoshka - Retrigger all scoring cards if played hand contains a Straight
     - Jim - Retrigger all played cards without enhancements
     - Crystal Joker - If played hand contains a Stone card, create a random Tarot card
@@ -52,4 +52,5 @@ Plantain is a vanilla Balatro content mod that adds 15 all new Jokers with uniqu
  - [Extra Credit](https://github.com/GuilloryCraft/ExtraCredit)
  - [KCVanilla](https://github.com/kcgidw/kcvanilla)
  - [Paperback](https://github.com/GitNether/paperback)
+ - [NeatoJokers](https://github.com/neatoqueen/NeatoJokers)
    
