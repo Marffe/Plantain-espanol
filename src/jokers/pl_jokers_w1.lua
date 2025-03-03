@@ -323,10 +323,6 @@ SMODS.Joker {
   rarity = 2,
   atlas = 'pl_atlas_w1',
   discovered = true,
-  config = { extra = { stone_played = false} },
-  loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.stone_played} }
-  end,
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = true,
@@ -334,33 +330,30 @@ SMODS.Joker {
   cost = 6,
   enhancement_gate = 'm_stone',
   calculate = function(self, card, context)
-    if context.cardarea == G.play and context.individual then
-      if context.other_card.ability.effect == "Stone Card" and not context.other_card.lucky_trigger then
-        card.ability.extra.stone_played = true
-      end
-    end
-
-    if context.before and context.cardarea == G.jokers then
+    if context.after and context.cardarea == G.jokers then
       local stone = false
       for i = 1, #context.scoring_hand do
-        if context.scoring_hand[i].ability.effect == "Stone Card" then stone = true end
+        if context.scoring_hand[i].ability.effect == "Stone Card" then stone = true
       end
-        if stone then
-                G.E_MANAGER:add_event(Event({
-                    trigger = 'before',
-                    delay = 0.0,
-                    func = (function()
-                        local card = create_card('Tarot',G.consumeables, nil, nil, nil, nil, nil, 'crystal')
-                        card:add_to_deck()
-                        G.consumeables:emplace(card)
-                        G.GAME.consumeable_buffer = 0
-                        card:juice_up(0.5, 0.5)
-                        return true
-                    end)}))
-                    card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})
-                  end
-            
-        
+    end
+      if stone and (#G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit) then
+        G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+        G.E_MANAGER:add_event(Event({
+          trigger = 'before',
+          delay = 0.0,
+          func = (function()
+                  local card = create_card('Tarot',G.consumeables, nil, nil, nil, nil, nil, 'sup')
+                  card:add_to_deck()
+                  G.consumeables:emplace(card)
+                  G.GAME.consumeable_buffer = 0
+              return true
+          end)}))
+      return {
+          message = localize('k_plus_tarot'),
+          colour = G.C.SECONDARY_SET.Tarot,
+          card = card
+      }
+      end
     end
   end
 }
