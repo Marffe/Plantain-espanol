@@ -134,13 +134,12 @@ return {
                     '{C:inactive}(#2#)'
                 }
             },
-            j_pl_quarry = {
-                name = 'Quarry',
+            j_pl_croissant = {
+                name = 'Croissant',
                 text = {
-                    'Gains {X:mult,C:white}X#1#{} Mult each time',
-                    'a {C:attention}Stone{} card scores, destroy',
-                    'all played {C:attention}Stone{} cards',
-                    '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
+                    'Double levels gained',
+                    'from next 5 hands',
+                    'upgraded'
                 }
             },
             j_pl_hot_air_balloon = {
@@ -158,6 +157,23 @@ return {
                     '{C:attention}Three of a Kind{}, upgrade',
                     'last played hand',
                     '{C:inactive}Currently {C:attention}#1#'
+                }
+            },
+            j_pl_loose_batteries = {
+                name = 'Loose Batteries',
+                text = {
+                    'Retrigger all played {C:attention}Aces,',
+                    '{C:green}#1# in #2#{} chance played Aces',
+                    'are retriggered {C:attention}again'
+                }
+            },
+            j_pl_quarry = {
+                name = 'Quarry',
+                text = {
+                    'Gains {X:mult,C:white}X#1#{} Mult each time',
+                    'a {C:attention}Stone{} card scores, destroy',
+                    'all played {C:attention}Stone{} cards',
+                    '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
                 }
             },
         },

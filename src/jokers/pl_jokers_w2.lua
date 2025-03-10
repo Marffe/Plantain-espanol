@@ -1,47 +1,30 @@
 -- COMMONS
 
---UNCOMMONS
-
 SMODS.Joker {
-  key = 'quarry',
+  key = 'croissant',
   atlas = 'pl_atlas_w2',
-  pos = { x = 0, y = 1 },
+  pos = { x = 0, y = 0 },
   
-  config = { extra = { xmult_mod = 0.5, xmult = 1 } },
+  config = { extra = { upgrades_left = 5 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
+    return { vars = { card.ability.extra.upgrades_left} }
   end,
 
-  blueprint_compat = true,
-  eternal_compat = true,
-  perishable_compat = false,
+  blueprint_compat = false,
+  eternal_compat = false,
+  perishable_compat = true,
   discovered = true,
-  enhancement_gate = 'm_stone',
 
-  rarity = 2,
-  cost = 6,
-
-  calculate = function(self, card, context)
-    if context.cardarea == G.play and context.other_card and context.other_card.ability.effect == 'Stone Card' and context.individual and not context.blueprint then
-      card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
-      return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
-    end
-    if context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' and not context.blueprint then
-      return true
-    end
-    if context.joker_main and context.cardarea == G.jokers then
-      return {
-        Xmult_mod = card.ability.extra.xmult,
-        message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
-      }
-    end
-  end
+  rarity = 1,
+  cost = 5,
 }
+
+--UNCOMMONS
 
 SMODS.Joker {
   key = 'hot_air_balloon',
   atlas = 'pl_atlas_w2',
-  pos = { x = 1, y = 1 },
+  pos = { x = 0, y = 1 },
   
   config = { extra = { money = 1, money_mod = 1 } },
   loc_vars = function(self, info_queue, card)
@@ -69,12 +52,10 @@ SMODS.Joker {
   end
 }
 
---RARES
-
 SMODS.Joker {
   key = 'three_body_problem',
   atlas = 'pl_atlas_w2',
-  pos = { x = 0, y = 2 },
+  pos = { x = 1, y = 1 },
   
   config = { extra = { last_hand = 'none' } },
   loc_vars = function(self, info_queue, card)
@@ -86,7 +67,7 @@ SMODS.Joker {
   perishable_compat = true,
   discovered = true,
 
-  rarity = 3,
+  rarity = 2,
   cost = 6,
 
   add_to_deck = function(self,card,context)
@@ -107,6 +88,79 @@ SMODS.Joker {
         update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(old_text, 'poker_hands'),chips = G.GAME.hands[old_text].chips, mult = G.GAME.hands[old_text].mult, level=G.GAME.hands[old_text].level})
       end
       card.ability.extra.last_hand = context.scoring_name
+    end
+  end
+}
+
+SMODS.Joker {
+  key = 'loose_batteries',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 2, y = 1 },
+  
+  config = { extra = { chance = 2 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.chance } }
+  end,
+
+  blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
+  discovered = true,
+
+  rarity = 2,
+  cost = 6,
+
+  calculate = function(self, card, context)
+    if context.cardarea == G.play and context.repetition then
+      if context.other_card:get_id() == 14 then
+        local retriggers = 1
+        if pseudorandom('batteries') < G.GAME.probabilities.normal/card.ability.extra.chance then 
+          retriggers = 2
+        end
+        return 
+        {
+          message = localize("k_again_ex"),
+          repetitions = retriggers,
+          card = card, 
+        }
+      end
+    end
+  end
+}
+
+--RARES
+
+SMODS.Joker {
+  key = 'quarry',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 0, y = 2 },
+  
+  config = { extra = { xmult_mod = 0.5, xmult = 1 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
+  end,
+
+  blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = false,
+  discovered = true,
+
+  rarity = 3,
+  cost = 6,
+
+  calculate = function(self, card, context)
+    if context.cardarea == G.play and context.other_card and context.other_card.ability.effect == 'Stone Card' and context.individual and not context.blueprint then
+      card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
+      return { message = localize('k_upgrade_ex'), focus = card, colour = G.C.MULT}
+    end
+    if context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' and not context.blueprint then
+      return true
+    end
+    if context.joker_main and context.cardarea == G.jokers then
+      return {
+        Xmult_mod = card.ability.extra.xmult,
+        message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
+      }
     end
   end
 }
