@@ -10,11 +10,18 @@ SMODS.Atlas {
 }
 
 SMODS.Atlas {
-    key = 'pl_atlas_w2',
-    path = 'pl_atlas_w2.png',
-    px = 71,
-    py = 95
-  }
+  key = 'pl_atlas_w2',
+  path = 'pl_atlas_w2.png',
+  px = 71,
+  py = 95
+}
+  
+SMODS.Atlas{
+  key = "pl_atlas_consumables",
+  path = "pl_atlas_consumables.png",
+  px = 65,
+  py = 95
+}
 
 SMODS.Atlas{
   key = "modicon",
@@ -96,5 +103,6 @@ SMODS.current_mod.extra_tabs = function()
   }
 end
 
-NFS.load(SMODS.current_mod.path .. 'src/jokers/pl_jokers_w1.lua')()
-NFS.load(SMODS.current_mod.path .. 'src/jokers/pl_jokers_w2.lua')()
+NFS.load(SMODS.current_mod.path .. 'src/additions/pl_jokers_w1.lua')()
+NFS.load(SMODS.current_mod.path .. 'src/additions/pl_jokers_w2.lua')()
+NFS.load(SMODS.current_mod.path .. 'src/additions/pl_consumables.lua')()
