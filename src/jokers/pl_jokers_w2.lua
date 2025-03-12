@@ -19,6 +19,53 @@ SMODS.Joker {
   cost = 5,
 }
 
+SMODS.Joker {
+  key = 'pop_up_joker',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 1, y = 0 },
+  
+  config = { extra = { chance = 4 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.chance} }
+  end,
+
+  blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = true,
+  discovered = true,
+
+  rarity = 1,
+  cost = 5,
+
+  calculate = function(self, card, context)
+    if context.reroll_shop then
+      if pseudorandom('popup') < G.GAME.probabilities.normal/card.ability.extra.chance then 
+        G.E_MANAGER:add_event(Event {
+          func = function()
+            PL_UTIL.add_booster_pack()
+            return true
+          end
+        })
+
+        local pop_up_options = {
+          'pl_pop_up_joker_winner_1',
+          'pl_pop_up_joker_winner_2',
+          'pl_pop_up_joker_winner_3',
+          'pl_pop_up_joker_winner_4',
+        }
+
+        local pop_up_message = pop_up_options[ math.random( #pop_up_options ) ]
+  
+        return {
+          message = localize(pop_up_message),
+        }
+      end
+    end
+  end
+}
+
+
+
 --UNCOMMONS
 
 SMODS.Joker {

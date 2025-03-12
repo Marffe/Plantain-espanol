@@ -1,3 +1,7 @@
+PL_UTIL = {}
+
+SMODS.load_file("src/utilities/functions.lua")()
+
 SMODS.Atlas {
   key = 'pl_atlas_w1',
   path = 'pl_atlas_w1.png',
