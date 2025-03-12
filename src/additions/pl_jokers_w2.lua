@@ -17,6 +17,32 @@ SMODS.Joker {
 
   rarity = 1,
   cost = 5,
+
+  calculate = function (self, card, context)
+    if context.pl_croissant_upgrade then
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_again_ex'), colour = G.C.SECONDARY_SET.Planet})
+      card.ability.extra.upgrades_left = card.ability.extra.upgrades_left + -1
+    end
+    if context.pl_croissant_done and card.ability.extra.upgrades_left < 1 then
+      G.E_MANAGER:add_event(Event({
+        func = function()
+          play_sound('tarot1')
+          card.T.r = -0.2
+          card:juice_up(0.3, 0.4)
+          card.states.drag.is = true
+          card.children.center.pinch.x = true
+          G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+            func = function()
+                G.jokers:remove_card(self)
+                card:remove()
+                card = nil
+              return true; end})) 
+          return true
+        end
+      }))
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_eaten_ex'), colour = G.C.MONEY})
+    end
+  end
 }
 
 SMODS.Joker {

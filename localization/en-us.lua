@@ -137,9 +137,8 @@ return {
       j_pl_croissant = {
         name = 'Croissant',
         text = {
-          'Double levels gained',
-          'from next 5 hands',
-          'upgraded'
+          'Retrigger next {C:attention}#1#',
+          'hand upgrades'
         }
       },
       j_pl_pop_up_joker = {
