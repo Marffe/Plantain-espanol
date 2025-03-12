@@ -134,10 +134,67 @@ return {
           '{C:inactive}(#2#)'
         }
       },
+      j_pl_croissant = {
+        name = 'Croissant',
+        text = {
+          'Double levels gained',
+          'from next 5 hands',
+          'upgraded'
+        }
+      },
+      j_pl_pop_up_joker = {
+        name = 'Pop-Up Joker',
+        text = {
+          '{C:green}#1# in #2#{} chance to',
+          'add a random {C:attention}Booster Pack',
+          'to the shop after {C:attention}reroll'
+        }
+      },
+      j_pl_hot_air_balloon = {
+        name = 'Hot Air Balloon',
+        text = {
+          'Earn {C:money}$#1#{} at end of round',
+          'payout increases by {C:money}$#2#{}',
+          'when {C:tarot}Tarot{} card used'
+        }
+      },
+      j_pl_three_body_problem = {
+        name = 'Three Body Problem',
+        text = {
+          'If played hand is',
+          '{C:attention}Three of a Kind{}, upgrade',
+          'last played hand',
+          '{C:inactive}Currently {C:attention}#1#'
+        }
+      },
+      j_pl_loose_batteries = {
+        name = 'Loose Batteries',
+        text = {
+          'Retrigger all played {C:attention}Aces,',
+          '{C:green}#1# in #2#{} chance played Aces',
+          'are retriggered {C:attention}again'
+        }
+      },
+      j_pl_quarry = {
+        name = 'Quarry',
+        text = {
+          'Gains {X:mult,C:white}X#1#{} Mult each time',
+          'a {C:attention}Stone{} card scores, destroy',
+          'all played {C:attention}Stone{} cards',
+          '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
+        }
+      },
     },
     --Other={},
     --Planet={},
-    --Spectral={},
+    Spectral={
+      c_pl_spec_aether = {
+        name = 'Aether',
+        text = {
+          '???'
+        }
+      },
+    },
     --Stake={},
     --Tag={},
     --Tarot={},
@@ -150,6 +207,10 @@ return {
       pl_apple_pie_sold_out = 'Sold Out!',
       pl_grape_soda_gulp = 'Gulp!',
       pl_raw_meat_ante_down = 'Ante Down!',
+      pl_pop_up_joker_winner_1 = '100,000th Visitor!',
+      pl_pop_up_joker_winner_2 = 'Congratulations!',
+      pl_pop_up_joker_winner_3 = 'You Win!',
+      pl_pop_up_joker_winner_4 = 'Free Antivirus!',
     }
   }
   --achievement_descriptions={},

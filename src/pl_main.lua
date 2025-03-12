@@ -1,7 +1,25 @@
+PL_UTIL = {}
+
+SMODS.load_file("src/utilities/functions.lua")()
+
 SMODS.Atlas {
   key = 'pl_atlas_w1',
   path = 'pl_atlas_w1.png',
   px = 71,
+  py = 95
+}
+
+SMODS.Atlas {
+  key = 'pl_atlas_w2',
+  path = 'pl_atlas_w2.png',
+  px = 71,
+  py = 95
+}
+  
+SMODS.Atlas{
+  key = "pl_atlas_consumables",
+  path = "pl_atlas_consumables.png",
+  px = 65,
   py = 95
 }
 
@@ -86,3 +104,5 @@ SMODS.current_mod.extra_tabs = function()
 end
 
 SMODS.load_file('src/additions/pl_jokers_w1.lua')()
+SMODS.load_file('src/additions/pl_jokers_w2.lua')()
+SMODS.load_file('src/additions/pl_consumables.lua')()
