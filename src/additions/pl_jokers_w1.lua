@@ -476,19 +476,49 @@ SMODS.Joker {
     return { vars = { card.ability.extra.Xmult } }
   end,
   calculate = function(self, card, context)
-    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker')
-    or string.find(context.other_joker.ability.name, 'joker')) then
-      G.E_MANAGER:add_event(Event({
-        func = function()
+
+    local joker_langs = {
+      ['de'] = {'Joker', 'joker'},
+      ['en-us'] = {'Joker', 'joker'},
+      ['es_419'] = {'Comodín', 'comodín'},
+      ['es_ES'] = {'Comodín', 'comodín'},
+      ['fr'] = {'Joker', 'joker'},
+      ['id'] = {'Joker', 'joker'},
+      ['it'] = {'Jolly', 'jolly'},
+      ['ja'] = {'ジョーカー'},
+      ['ko'] = {'조커'},
+      ['nl'] = {'Joker', 'joker'},
+      ['pl'] = {'Joker', 'joker'},
+      ['pt_BR'] = {'Curinga', 'curinga'},
+      ['ru'] = {'Джокер'},
+      ['zh_CN'] = {'小丑'},
+      ['zh_TW'] = {'小丑'},
+    }
+
+    local give_xmult = false
+
+    if context.other_joker then
+      for i=1, #joker_langs[G.SETTINGS.language] do
+        if string.find(localize{type='name_text',set=context.other_joker.config.center.set,key=context.other_joker.config.center.key}, joker_langs[G.SETTINGS.language][i])
+        or string.find(localize{type='name_text',set=context.other_joker.config.center.set,key=context.other_joker.config.center.key}, "Joker")
+        or string.find(localize{type='name_text',set=context.other_joker.config.center.set,key=context.other_joker.config.center.key}, "joker") then
+          give_xmult = true
+        end
+      end
+
+      if (give_xmult) then
+        G.E_MANAGER:add_event(Event({
+          func = function()
             context.other_joker:juice_up(0.5, 0.5)
             return true
-        end
-    })) 
-    return {
-        message = localize{type = 'variable',key = 'a_xmult', vars = { card.ability.extra.Xmult } },
-        Xmult_mod = card.ability.extra.Xmult,
-        focus = context.other_joker
-    }
+          end
+        })) 
+        return {
+          message = localize{type = 'variable',key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+          Xmult_mod = card.ability.extra.Xmult,
+          focus = context.other_joker
+        }
+      end
     end
   end
 }
