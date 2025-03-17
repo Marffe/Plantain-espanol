@@ -90,35 +90,6 @@ SMODS.Joker {
   end
 }
 
-SMODS.Joker {
-  key = 'painterly_joker',
-  atlas = 'pl_atlas_w2',
-  pos = { x = 1, y = 0 },
-  
-  config = { extra = { chips = 0 } },
-
-  blueprint_compat = true,
-  eternal_compat = true,
-  perishable_compat = true,
-  discovered = true,
-
-  rarity = 2,
-  cost = 5,
-
-  calculate = function(self, card, context)
-    if context.joker_main and context.cardarea == G.jokers then
-      if card.ability.extra.chips > 0 then
-        return 
-          {
-            chip_mod = card.ability.extra.chips,
-            message = localize { type = 'variable', key = 'a_chips', vars = { card.ability.extra.chips } }
-          }
-      end
-    end
-  end
-}
-
-
 --UNCOMMONS
 
 SMODS.Joker {
@@ -223,6 +194,37 @@ SMODS.Joker {
           repetitions = retriggers,
           card = card, 
         }
+      end
+    end
+  end
+}
+
+SMODS.Joker {
+  key = 'painterly_joker',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 3, y = 1 },
+  
+  config = { extra = { chips_mod = 8, chips = 0 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.chips_mod, card.ability.extra.chips } }
+  end,
+
+  blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = false,
+  discovered = true,
+
+  rarity = 2,
+  cost = 5,
+
+  calculate = function(self, card, context)
+    if context.joker_main and context.cardarea == G.jokers then
+      if card.ability.extra.chips > 0 then
+        return 
+          {
+            chip_mod = card.ability.extra.chips,
+            message = localize { type = 'variable', key = 'a_chips', vars = { card.ability.extra.chips } }
+          }
       end
     end
   end

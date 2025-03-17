@@ -174,6 +174,14 @@ return {
           'are retriggered {C:attention}again'
         }
       },
+      j_pl_painterly_joker = {
+        name = 'Painterly Joker',
+        text = {
+          'Gains {C:chips}+#1#{} Chips when',
+          'a card changes suits',
+          '{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)'
+        }
+      },
       j_pl_quarry = {
         name = 'Quarry',
         text = {
@@ -181,12 +189,6 @@ return {
           'a {C:attention}Stone{} card scores, destroy',
           'all played {C:attention}Stone{} cards',
           '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
-        }
-      },
-      j_pl_painterly_joker = {
-        name = 'Painterly Joker',
-        text = {
-          'iceberg do the description'
         }
       },
     },

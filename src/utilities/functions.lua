@@ -35,7 +35,6 @@ function PL_UTIL.add_booster_pack()
     'p_buffoon_mega_1',
   }
   local pack_chosen = pack_watch[ math.random( #pack_watch ) ]
-  -- Create the pack the same way vanilla game does it
   local pack = Card(
     G.shop_booster.T.x + G.shop_booster.T.w / 2,
     G.shop_booster.T.y,
@@ -44,15 +43,10 @@ function PL_UTIL.add_booster_pack()
     G.P_CENTERS[pack_chosen],
     { bypass_discovery_center = true, bypass_discovery_ui = true }
   )
-
   if price then
     pack.cost = price
   end
-
-  -- Create the price tag above the pack
   create_shop_card_ui(pack, 'Booster', G.shop_booster)
-
-  -- Add the pack to the shop
   pack:start_materialize()
   G.shop_booster:emplace(pack)
 end
