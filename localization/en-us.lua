@@ -183,6 +183,12 @@ return {
           '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
         }
       },
+      j_pl_painterly_joker = {
+        name = 'Painterly Joker',
+        text = {
+          'iceberg do the description'
+        }
+      },
     },
     --Other={},
     --Planet={},
