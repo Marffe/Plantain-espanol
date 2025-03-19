@@ -1,9 +1,32 @@
 -- COMMONS
 
 SMODS.Joker {
-  key = 'croissant',
+  key = 'banana_peel',
   atlas = 'pl_atlas_w2',
   pos = { x = 0, y = 0 },
+  
+  config = {},
+  loc_vars = function(self, info_queue, card)
+    return { vars = { } }
+  end,
+
+  blueprint_compat = false,
+  eternal_compat = false,
+  perishable_compat = true,
+  discovered = true,
+
+  rarity = 1,
+  cost = 5,
+
+  calculate = function (self, card, context)
+    
+  end
+}
+
+SMODS.Joker {
+  key = 'croissant',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 1, y = 0 },
   
   config = { extra = { upgrades_left = 5 } },
   loc_vars = function(self, info_queue, card)
@@ -48,7 +71,8 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'pop_up_joker',
   atlas = 'pl_atlas_w2',
-  pos = { x = 1, y = 0 },
+  pos = { x = 2, y = 0 },
+  soul_pos = { x = 0, y = 2},
   
   config = { extra = { chance = 4 } },
   loc_vars = function(self, info_queue, card)
@@ -90,12 +114,35 @@ SMODS.Joker {
   end
 }
 
+SMODS.Joker {
+  key = 'lamp',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 3, y = 0 },
+  
+  config = {},
+  loc_vars = function(self, info_queue, card)
+    return { vars = { } }
+  end,
+
+  blueprint_compat = false,
+  eternal_compat = false,
+  perishable_compat = true,
+  discovered = true,
+
+  rarity = 1,
+  cost = 5,
+
+  calculate = function (self, card, context)
+    
+  end
+}
+
 --UNCOMMONS
 
 SMODS.Joker {
   key = 'hot_air_balloon',
   atlas = 'pl_atlas_w2',
-  pos = { x = 0, y = 1 },
+  pos = { x = 4, y = 0 },
   
   config = { extra = { money = 1, money_mod = 1 } },
   loc_vars = function(self, info_queue, card)
@@ -126,7 +173,7 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'three_body_problem',
   atlas = 'pl_atlas_w2',
-  pos = { x = 1, y = 1 },
+  pos = { x = 0, y = 1 },
   
   config = { extra = { last_hand = 'none' } },
   loc_vars = function(self, info_queue, card)
@@ -166,7 +213,7 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'loose_batteries',
   atlas = 'pl_atlas_w2',
-  pos = { x = 2, y = 1 },
+  pos = { x = 1, y = 1 },
   
   config = { extra = { chance = 2 } },
   loc_vars = function(self, info_queue, card)
@@ -202,11 +249,11 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'painterly_joker',
   atlas = 'pl_atlas_w2',
-  pos = { x = 3, y = 1 },
+  pos = { x = 2, y = 1 },
   
-  config = { extra = { chips_mod = 8, chips = 0 } },
+  config = { extra = { xmult_mod = 0.1, xmult = 1 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.chips_mod, card.ability.extra.chips } }
+    return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
   end,
 
   blueprint_compat = true,
@@ -219,11 +266,11 @@ SMODS.Joker {
 
   calculate = function(self, card, context)
     if context.joker_main and context.cardarea == G.jokers then
-      if card.ability.extra.chips > 0 then
+      if card.ability.extra.xmult > 1 then
         return 
           {
-            chip_mod = card.ability.extra.chips,
-            message = localize { type = 'variable', key = 'a_chips', vars = { card.ability.extra.chips } }
+            Xmult_mod = card.ability.extra.xmult,
+            message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
           }
       end
     end
@@ -235,7 +282,7 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'quarry',
   atlas = 'pl_atlas_w2',
-  pos = { x = 0, y = 2 },
+  pos = { x = 3, y = 1 },
   
   config = { extra = { xmult_mod = 0.5, xmult = 1 } },
   loc_vars = function(self, info_queue, card)
@@ -264,5 +311,28 @@ SMODS.Joker {
         message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
       }
     end
+  end
+}
+
+SMODS.Joker {
+  key = 'cornucopia',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 4, y = 1 },
+  
+  config = {},
+  loc_vars = function(self, info_queue, card)
+    return { vars = { } }
+  end,
+
+  blueprint_compat = false,
+  eternal_compat = false,
+  perishable_compat = true,
+  discovered = true,
+
+  rarity = 3,
+  cost = 5,
+
+  calculate = function (self, card, context)
+    
   end
 }

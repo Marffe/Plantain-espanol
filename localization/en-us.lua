@@ -177,9 +177,9 @@ return {
       j_pl_painterly_joker = {
         name = 'Painterly Joker',
         text = {
-          'Gains {C:chips}+#1#{} Chips when',
+          'Gains {X:mult,C:white}X#1#{} Mult when',
           'a card changes suits',
-          '{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)'
+          '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
         }
       },
       j_pl_quarry = {
