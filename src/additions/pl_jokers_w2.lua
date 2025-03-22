@@ -274,6 +274,10 @@ SMODS.Joker {
           }
       end
     end
+    if context.pl_suit_changed and not context.blueprint then
+      card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.MULT})
+    end
   end
 }
 
