@@ -149,6 +149,15 @@ return {
           'to the shop after {C:attention}reroll'
         }
       },
+      j_pl_lamp = {
+        name = 'Lamp',
+        text = {
+          '{C:mult}+#2#{} Mult when',
+          '{C:attention}Joker{} card sold',
+          '{C:mult}-#3#{} Mult each round',
+          '{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)'
+        }
+      },
       j_pl_hot_air_balloon = {
         name = 'Hot Air Balloon',
         text = {
@@ -163,7 +172,7 @@ return {
           'If played hand is',
           '{C:attention}Three of a Kind{}, upgrade',
           'last played hand',
-          '{C:inactive}Currently {C:attention}#1#'
+          '{C:inactive}(Currently {C:attention}#1#{C:inactive})'
         }
       },
       j_pl_loose_batteries = {

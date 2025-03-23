@@ -28,7 +28,7 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 1, y = 0 },
   
-  config = { extra = { upgrades_left = 5 } },
+  config = { extra = { upgrades_left = 4 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.upgrades_left} }
   end,
@@ -119,9 +119,9 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 3, y = 0 },
   
-  config = {},
+  config = { extra = { mult = 10, mult_gain = 3, mult_loss = 1 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { } }
+    return { vars = { card.ability.extra.mult, card.ability.extra.mult_gain, card.ability.extra.mult_loss } }
   end,
 
   blueprint_compat = false,
@@ -133,7 +133,24 @@ SMODS.Joker {
   cost = 5,
 
   calculate = function (self, card, context)
+    if context.pl_selling_joker then
+      card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize{type='variable',key='a_mult',vars={card.ability.extra.mult_gain}}})
+    end
     
+    if context.end_of_round and not context.blueprint and not context.repetition and not context.individual and card.ability.extra.mult > 0 then
+      card.ability.extra.mult = card.ability.extra.mult - card.ability.extra.mult_loss
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize{type='variable',key='a_mult_minus',vars={card.ability.extra.mult_loss}}})
+    end
+
+    if context.joker_main and context.cardarea == G.jokers then
+      if card.ability.extra.mult > 0 then
+        return {
+          mult_mod = card.ability.extra.mult,
+          message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult } }
+        }
+      end
+    end
   end
 }
 

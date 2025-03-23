@@ -169,3 +169,15 @@ else
   G.GAME.pl_grape_used = nil
 end
 '''
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+match_indent = true
+pattern = '''G.CONTROLLER.locks.selling_card = true'''
+position = "after"
+payload = '''
+for i=1, #G.jokers.cards do
+    eval_card(G.jokers.cards[i], {pl_selling_joker = true})
+end
+'''

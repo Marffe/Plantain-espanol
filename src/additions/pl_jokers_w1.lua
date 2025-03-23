@@ -396,7 +396,7 @@ end
 
 SMODS.Joker {
   key = 'black_cat',
-  rarity = 3,
+  rarity = 2,
   atlas = 'pl_atlas_w1',
   discovered = true,
   blueprint_compat = true,
