@@ -329,6 +329,9 @@ SMODS.Joker {
   pos = { x = 3, y = 1 },
   cost = 6,
   enhancement_gate = 'm_stone',
+  loc_vars = function(self, info_queue, card)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_stone
+  end,
   calculate = function(self, card, context)
     if context.after and context.cardarea == G.jokers then
       local stone = false
@@ -372,6 +375,7 @@ SMODS.Joker {
   enhancement_gate = 'm_wild',
 
   loc_vars = function(self, info_queue, card)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_wild
     return { vars = { card.ability.extra.money_mod, card.ability.extra.wild_tally } }
   end,
 
@@ -404,6 +408,7 @@ SMODS.Joker {
   perishable_compat = false,
   config = { extra = { chips_mod = 13, chips = 0 } },
   loc_vars = function(self, info_queue, card)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_lucky
     return { vars = { card.ability.extra.chips_mod , card.ability.extra.chips } }
   end,
   pos = { x = 0, y = 2 },

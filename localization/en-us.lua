@@ -201,13 +201,31 @@ return {
         }
       },
     },
-    --Other={},
+    Other={
+      pl_lavender_seal = {
+        name = 'Lavender Seal',
+        text = {
+            'Gives you a {C:attention}blowjob'
+        }
+      },
+    },
     --Planet={},
     Spectral={
       c_pl_spec_aether = {
         name = 'Aether',
         text = {
-          '???'
+          "Add a {C:lavender}Lavender Seal{}",
+          "to {C:attention}1{} selected",
+          "card in your hand",
+        },
+      },
+      c_pl_spec_rebirth = {
+        name = 'Rebirth',
+        text = {
+          'Select {C:attention}3{} cards, destroy the',
+          '{C:attention}middle{} card and give its rank',
+          'to the {C:attention}left{} and {C:attention}right{} cards',
+          '{C:inactive}(Drag to rearrange)'
         }
       },
     },
@@ -227,8 +245,7 @@ return {
       pl_pop_up_joker_winner_2 = 'Congratulations!',
       pl_pop_up_joker_winner_3 = 'You Win!',
       pl_pop_up_joker_winner_4 = 'Free Antivirus!',
-    }
-  }
+    },
   --achievement_descriptions={},
   -- achievement_names={},
   --blind_states={},
@@ -236,7 +253,9 @@ return {
   -- collabs={},
   --dictionary={},
   --high_scores={},
-  -- labels={},
+    labels={
+      pl_lavender_seal = "Lavender Seal",
+    },
   -- poker_hand_descriptions={},
   --  poker_hands={},
   --  quips={},
@@ -245,5 +264,5 @@ return {
   -- suits_singular={},
   --  v_dictionary={},
   -- v_text={},
-  --},
+  },
 }

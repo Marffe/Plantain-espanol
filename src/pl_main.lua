@@ -24,6 +24,13 @@ SMODS.Atlas{
 }
 
 SMODS.Atlas{
+  key = "pl_atlas_seals",
+  path = "pl_atlas_seals.png",
+  px = 71,
+  py = 95
+}
+
+SMODS.Atlas{
   key = "modicon",
   path = "modicon.png",
   px = 34,
@@ -106,3 +113,4 @@ end
 SMODS.load_file('src/additions/pl_jokers_w1.lua')()
 SMODS.load_file('src/additions/pl_jokers_w2.lua')()
 SMODS.load_file('src/additions/pl_consumables.lua')()
+SMODS.load_file('src/additions/pl_seals.lua')()

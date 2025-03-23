@@ -307,6 +307,7 @@ SMODS.Joker {
   
   config = { extra = { xmult_mod = 0.5, xmult = 1 } },
   loc_vars = function(self, info_queue, card)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_stone
     return { vars = { card.ability.extra.xmult_mod, card.ability.extra.xmult } }
   end,
 

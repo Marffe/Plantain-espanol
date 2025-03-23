@@ -181,3 +181,13 @@ for i=1, #G.jokers.cards do
     eval_card(G.jokers.cards[i], {pl_selling_joker = true})
 end
 '''
+
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+match_indent = true
+pattern = '''enhanced = G.C.SECONDARY_SET.Enhanced'''
+position = "after"
+payload = ''',
+lavender = HEX('C1A1DF')
+'''
