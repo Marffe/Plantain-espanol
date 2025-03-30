@@ -1,6 +1,7 @@
 PL_UTIL = {}
 
 SMODS.load_file("src/utilities/functions.lua")()
+PL_UTIL.AddNametagJokerNames()
 
 SMODS.Atlas {
   key = 'pl_atlas_w1',
