@@ -5,7 +5,7 @@
     "description": "Introduces a handful of aggressively vanilla-style jokers.",
     "prefix": "pl",
     "main_file": "src/pl_main.lua",
-    "priority": 1,
+    "priority": 0,
     "badge_colour": "9DC157",
     "dependencies": [
         "Steamodded (>=1.0.0~ALPHA-1225a)"
