@@ -35,6 +35,24 @@ if new_code ~= SMODS.Suits[self.base.suit].card_key then
 end
 '''
 
+#lavender seal
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+match_indent = true
+pattern = '''ease_discard(-1)'''
+position = "at"
+payload = '''
+local should_ease_discard = true
+for i=1, #cards do
+  if cards[i].seal == 'pl_lavender' then
+    should_ease_discard = false
+  end
+end
+if should_ease_discard then ease_discard(-1) end
+'''
+
 [[patches]]
 [patches.pattern]
 target = "functions/common_events.lua"
