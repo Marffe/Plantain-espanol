@@ -5,9 +5,9 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 0, y = 0 },
   
-  config = {},
+  config = { extra = { chance = 6, discards = 1 }},
   loc_vars = function(self, info_queue, card)
-    return { vars = { } }
+    return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.chance, card.ability.extra.discards } }
   end,
 
   blueprint_compat = false,
@@ -19,7 +19,31 @@ SMODS.Joker {
   cost = 5,
 
   calculate = function (self, card, context)
-    
+    if context.end_of_round and not context.blueprint and not context.repetition and not context.individual then
+      if pseudorandom(card.config.center.key) < G.GAME.probabilities.normal/card.ability.extra.chance then
+        G.GAME.round_resets.discards = G.GAME.round_resets.discards + card.ability.extra.discards
+        ease_discard(card.ability.extra.discards)
+        G.E_MANAGER:add_event(Event({
+          func = function()
+              play_sound('tarot1')
+              card.T.r = -0.2
+              card:juice_up(0.3, 0.4)
+              card.states.drag.is = true
+              card.children.center.pinch.x = true
+              G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+                  func = function()
+                          G.jokers:remove_card(self)
+                          card:remove()
+                          card = nil
+                      return true; end})) 
+              return true
+          end
+        })) 
+        return {
+          message = localize('pl_plantain_cooked')
+        }
+      end
+    end
   end
 }
 
@@ -341,12 +365,12 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 4, y = 1 },
   
-  config = {},
+  config = { extra = { Xmult = 3, Xmult_loss = 0.5 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { } }
+    return { vars = { card.ability.extra.Xmult, card.ability.extra.Xmult_loss } }
   end,
 
-  blueprint_compat = false,
+  blueprint_compat = true,
   eternal_compat = false,
   perishable_compat = true,
   discovered = true,
@@ -355,6 +379,37 @@ SMODS.Joker {
   cost = 5,
 
   calculate = function (self, card, context)
-    
+    if context.selling_card and not context.blueprint then
+      card.ability.extra.Xmult = card.ability.extra.Xmult - card.ability.extra.Xmult_loss
+      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize{type='variable',key='a_mult_minus',vars={card.ability.extra.Xmult_loss}}})
+      if card.ability.extra.Xmult <= 1 then
+        G.E_MANAGER:add_event(Event({
+          func = function()
+              play_sound('tarot1')
+              card.T.r = -0.2
+              card:juice_up(0.3, 0.4)
+              card.states.drag.is = true
+              card.children.center.pinch.x = true
+              G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+                  func = function()
+                          G.jokers:remove_card(self)
+                          card:remove()
+                          card = nil
+                      return true; end})) 
+              return true
+          end
+        })) 
+        return {
+          message = localize('pl_plantain_cooked')
+        }
+      end
+    end
+
+    if context.joker_main and context.cardarea == G.jokers then
+      return {
+        Xmult_mod = card.ability.extra.Xmult,
+        message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult } }
+      }
+    end
   end
 }

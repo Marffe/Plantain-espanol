@@ -58,7 +58,7 @@ SMODS.Consumable{
 		end
 	end,
 	can_use = function(self, card, area)
-		if G.hand and (#G.hand.highlighted == 1) and G.hand.highlighted[1] and (not G.hand.highlighted[1].seal) then
+		if G.hand and (#G.hand.highlighted == 1) and G.hand.highlighted[1] then
 			return true
 		else
 			return false
