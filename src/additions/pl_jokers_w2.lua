@@ -5,9 +5,9 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 0, y = 0 },
   
-  config = { extra = { chance = 6, discards = 1 }},
+  config = { extra = { discards = 5, discard_reduction = 1 }},
   loc_vars = function(self, info_queue, card)
-    return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.chance, card.ability.extra.discards } }
+    return { vars = { card.ability.extra.discards, card.ability.extra.discard_reduction } }
   end,
 
   blueprint_compat = false,
@@ -18,11 +18,32 @@ SMODS.Joker {
   rarity = 1,
   cost = 5,
 
+  add_to_deck = function (self, card, from_debuff)
+    if not from_debuff then
+      ease_discard(card.ability.extra.discards)
+      G.GAME.round_resets.discards = G.GAME.round_resets.discards + card.ability.extra.discards
+    end
+  end,
+
+  remove_from_deck = function (self, card, from_debuff)
+    if not from_debuff then
+      ease_discard(-card.ability.extra.discards)
+      G.GAME.round_resets.discards = G.GAME.round_resets.discards - card.ability.extra.discards
+    end
+  end,
+
   calculate = function (self, card, context)
     if context.end_of_round and not context.blueprint and not context.repetition and not context.individual then
-      if pseudorandom(card.config.center.key) < G.GAME.probabilities.normal/card.ability.extra.chance then
-        G.GAME.round_resets.discards = G.GAME.round_resets.discards + card.ability.extra.discards
-        ease_discard(card.ability.extra.discards)
+      card.ability.extra.discards = card.ability.extra.discards - card.ability.extra.discard_reduction
+      G.GAME.round_resets.discards = G.GAME.round_resets.discards - card.ability.extra.discard_reduction
+      if card.ability.extra.discards > 0 then
+        G.E_MANAGER:add_event(Event({
+          func = function()
+            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_apple_pie_slice'), colour = G.C.MONEY})
+          return true
+        end
+        }))
+      else
         G.E_MANAGER:add_event(Event({
           func = function()
               play_sound('tarot1')
