@@ -169,7 +169,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.mult, card.ability.extra.mult_gain, card.ability.extra.mult_loss } }
   end,
 
-  blueprint_compat = false,
+  blueprint_compat = true,
   eternal_compat = false,
   perishable_compat = true,
   discovered = true,
@@ -178,7 +178,7 @@ SMODS.Joker {
   cost = 5,
 
   calculate = function (self, card, context)
-    if context.pl_selling_joker then
+    if context.pl_selling_joker and not context.blueprint then
       card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain
       card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize{type='variable',key='a_mult',vars={card.ability.extra.mult_gain}}})
     end
@@ -267,6 +267,8 @@ SMODS.Joker {
         level_up_hand(context.blueprint_card or card, text, nil, 1)
         update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(old_text, 'poker_hands'),chips = G.GAME.hands[old_text].chips, mult = G.GAME.hands[old_text].mult, level=G.GAME.hands[old_text].level})
       end
+    end
+    if context.cardarea == G.jokers and context.joker_main then
       card.ability.extra.last_hand = context.scoring_name
     end
   end
