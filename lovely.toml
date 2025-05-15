@@ -23,13 +23,15 @@ end
 [patches.pattern]
 target = "card.lua"
 match_indent = true
-pattern = '''local new_card = G.P_CARDS[new_code..'_'..new_val]'''
-position = "after"
+pattern = '''self.config.card = card'''
+position = "before"
 payload = '''
-if new_code ~= SMODS.Suits[self.base.suit].card_key then
-  if G.jokers and G.jokers.cards then
-    for i=1, #G.jokers.cards do
-      eval_card(G.jokers.cards[i], {pl_suit_changed = true})
+if self.config.card.suit then
+  if self.config.card.suit ~= card.suit then
+    if G.jokers and G.jokers.cards then
+      for i=1, #G.jokers.cards do
+        eval_card(G.jokers.cards[i], {pl_suit_changed = true})
+      end
     end
   end
 end
