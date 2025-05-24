@@ -138,9 +138,9 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 3, y = 0 },
   
-  config = { extra = { money = 0, money_mod = 1 } },
+  config = { extra = { chips_mod = 5, chips = 0 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.money, card.ability.extra.money_mod } }
+    return { vars = { card.ability.extra.chips_mod, card.ability.extra.chips } }
   end,
 
   blueprint_compat = true,
@@ -152,6 +152,34 @@ SMODS.Joker {
   cost = 6,
 
   calculate = function(self, card, context)
+    if context.pre_discard then
+      local pair = false
+      for k, v in ipairs(context.full_hand) do
+        local first_card = v:get_id()
+        local matches = 0
+        for l, w in ipairs(context.full_hand) do
+          if w:get_id() == first_card then matches = matches + 1 end
+        end
+        if matches > 1 then pair = true end
+      end
+      if not pair then
+        card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chips_mod
+        return {
+          message = localize('k_upgrade_ex'),
+          colour = G.C.Chips,
+          card = card
+        }
+      end
+    end
+
+    if context.joker_main and context.cardarea == G.jokers then
+      if card.ability.extra.chips > 0 then
+        return {
+          chip_mod = card.ability.extra.chips,
+          message = localize { type = 'variable', key = 'a_chips', vars = { card.ability.extra.chips } }
+        }
+      end
+    end
   end
 }
 

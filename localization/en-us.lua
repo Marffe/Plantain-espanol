@@ -161,7 +161,10 @@ return {
       j_pl_odd_sock = {
         name = 'Odd Sock',
         text = {
-          'Gives you a {C:attention}footjob'
+          'Gains {C:chips}+#1#{} Chips if',
+          '{C:attention}discarded{} hand contains',
+          'no {C:attention}Pairs',
+          '{C:inactive}(Currently {C:chips}+#2# {C:inactive}Chips)'
         }
       },
       j_pl_hot_air_balloon = {
