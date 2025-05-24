@@ -206,7 +206,7 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 4, y = 0 },
   
-  config = { extra = { money = 1, money_mod = 1 } },
+  config = { extra = { money = 0, money_mod = 1 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.money, card.ability.extra.money_mod } }
   end,
@@ -225,9 +225,13 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if context.using_consumeable and (context.consumeable.ability.set == "Tarot") and not context.blueprint then
-      card.ability.extra.money = card.ability.extra.money + card.ability.extra.money_mod
-      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.PURPLE})
+    if context.end_of_round and not context.blueprint and not context.repetition and not context.individual then
+      for i=1, #G.consumeables.cards do
+        if G.consumeables.cards[i].ability.set == "Tarot" then
+          card.ability.extra.money = card.ability.extra.money + card.ability.extra.money_mod
+          card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.PURPLE})
+        end
+      end
     end
   end
 }
