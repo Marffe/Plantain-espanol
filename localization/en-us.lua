@@ -158,12 +158,19 @@ return {
           '{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)'
         }
       },
+      j_pl_odd_sock = {
+        name = 'Odd Sock',
+        text = {
+          'Gives you a {C:attention}footjob'
+        }
+      },
       j_pl_hot_air_balloon = {
         name = 'Hot Air Balloon',
         text = {
           'Earn {C:money}$#1#{} at end of round',
-          'payout increases by {C:money}$#2#{}',
-          'when {C:tarot}Tarot{} card used'
+          'Payout increases by {C:money}$#2#{} for',
+          'each {C:attention}unused{} {C:tarot}Tarot{} card',
+          'at end of round'
         }
       },
       j_pl_three_body_problem = {
@@ -200,12 +207,22 @@ return {
           '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)'
         }
       },
+      j_pl_lasagna = {
+        name = 'Lasagna',
+        text = {
+          '{X:mult,C:white}X#1#{} Mult,',
+          'loses {X:mult,C:white}X#2#{} Mult',
+          'per card {C:attention}sold'
+        }
+      },
     },
     Other={
       pl_lavender_seal = {
         name = 'Lavender Seal',
         text = {
-            'Gives you a {C:attention}blowjob'
+            'If {C:attention}discarded hand',
+            'contains this card, do not',
+            'consume a {C:attention}discard'
         }
       },
     },

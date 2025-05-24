@@ -1,77 +1,9 @@
 -- COMMONS
 
 SMODS.Joker {
-  key = 'banana_peel',
-  atlas = 'pl_atlas_w2',
-  pos = { x = 0, y = 0 },
-  
-  config = { extra = { discards = 5, discard_reduction = 1 }},
-  loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.discards, card.ability.extra.discard_reduction } }
-  end,
-
-  blueprint_compat = false,
-  eternal_compat = false,
-  perishable_compat = true,
-  discovered = true,
-
-  rarity = 1,
-  cost = 5,
-
-  add_to_deck = function (self, card, from_debuff)
-    if not from_debuff then
-      ease_discard(card.ability.extra.discards)
-      G.GAME.round_resets.discards = G.GAME.round_resets.discards + card.ability.extra.discards
-    end
-  end,
-
-  remove_from_deck = function (self, card, from_debuff)
-    if not from_debuff then
-      ease_discard(-card.ability.extra.discards)
-      G.GAME.round_resets.discards = G.GAME.round_resets.discards - card.ability.extra.discards
-    end
-  end,
-
-  calculate = function (self, card, context)
-    if context.end_of_round and not context.blueprint and not context.repetition and not context.individual then
-      card.ability.extra.discards = card.ability.extra.discards - card.ability.extra.discard_reduction
-      G.GAME.round_resets.discards = G.GAME.round_resets.discards - card.ability.extra.discard_reduction
-      if card.ability.extra.discards > 0 then
-        G.E_MANAGER:add_event(Event({
-          func = function()
-            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_apple_pie_slice'), colour = G.C.MONEY})
-          return true
-        end
-        }))
-      else
-        G.E_MANAGER:add_event(Event({
-          func = function()
-              play_sound('tarot1')
-              card.T.r = -0.2
-              card:juice_up(0.3, 0.4)
-              card.states.drag.is = true
-              card.children.center.pinch.x = true
-              G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                  func = function()
-                          G.jokers:remove_card(self)
-                          card:remove()
-                          card = nil
-                      return true; end})) 
-              return true
-          end
-        })) 
-        return {
-          message = localize('pl_plantain_cooked')
-        }
-      end
-    end
-  end
-}
-
-SMODS.Joker {
   key = 'croissant',
   atlas = 'pl_atlas_w2',
-  pos = { x = 1, y = 0 },
+  pos = { x = 0, y = 0 },
   
   config = { extra = { upgrades_left = 4 } },
   loc_vars = function(self, info_queue, card)
@@ -116,7 +48,7 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'pop_up_joker',
   atlas = 'pl_atlas_w2',
-  pos = { x = 2, y = 0 },
+  pos = { x = 1, y = 0 },
   soul_pos = { x = 0, y = 2},
   
   config = { extra = { chance = 4 } },
@@ -162,9 +94,9 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'lamp',
   atlas = 'pl_atlas_w2',
-  pos = { x = 3, y = 0 },
+  pos = { x = 2, y = 0 },
   
-  config = { extra = { mult = 10, mult_gain = 3, mult_loss = 1 } },
+  config = { extra = { mult = 3, mult_gain = 3, mult_loss = 1 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.mult, card.ability.extra.mult_gain, card.ability.extra.mult_loss } }
   end,
@@ -202,11 +134,33 @@ SMODS.Joker {
 --UNCOMMONS
 
 SMODS.Joker {
+  key = 'odd_sock',
+  atlas = 'pl_atlas_w2',
+  pos = { x = 3, y = 0 },
+  
+  config = { extra = { money = 0, money_mod = 1 } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = { card.ability.extra.money, card.ability.extra.money_mod } }
+  end,
+
+  blueprint_compat = true,
+  eternal_compat = true,
+  perishable_compat = false,
+  discovered = true,
+
+  rarity = 2,
+  cost = 6,
+
+  calculate = function(self, card, context)
+  end
+}
+
+SMODS.Joker {
   key = 'hot_air_balloon',
   atlas = 'pl_atlas_w2',
   pos = { x = 4, y = 0 },
   
-  config = { extra = { money = 0, money_mod = 1 } },
+  config = { extra = { money = 1, money_mod = 1 } },
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.money, card.ability.extra.money_mod } }
   end,
@@ -388,7 +342,7 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-  key = 'cornucopia',
+  key = 'lasagna',
   atlas = 'pl_atlas_w2',
   pos = { x = 4, y = 1 },
   
