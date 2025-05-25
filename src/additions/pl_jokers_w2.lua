@@ -152,7 +152,7 @@ SMODS.Joker {
   cost = 6,
 
   calculate = function(self, card, context)
-    if context.pre_discard then
+    if context.pre_discard and not context.blueprint then
       local pair = false
       for k, v in ipairs(context.full_hand) do
         local first_card = v:get_id()
@@ -390,7 +390,6 @@ SMODS.Joker {
   calculate = function (self, card, context)
     if context.selling_card and not context.blueprint then
       card.ability.extra.Xmult = card.ability.extra.Xmult - card.ability.extra.Xmult_loss
-      card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize{type='variable',key='a_mult_minus',vars={card.ability.extra.Xmult_loss}}})
       if card.ability.extra.Xmult <= 1 then
         G.E_MANAGER:add_event(Event({
           func = function()
@@ -409,7 +408,12 @@ SMODS.Joker {
           end
         })) 
         return {
-          message = localize('pl_plantain_cooked')
+          message = localize('pl_lasagna_mama_mia')
+        }
+      else
+        return {
+          message = localize{type='variable',key='a_xmult_minus',vars={card.ability.extra.Xmult_loss}},
+          colour = G.C.RED
         }
       end
     end

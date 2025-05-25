@@ -162,8 +162,8 @@ return {
         name = 'Odd Sock',
         text = {
           'Gains {C:chips}+#1#{} Chips if',
-          '{C:attention}discarded{} hand contains',
-          'no {C:attention}Pairs',
+          '{C:attention}discarded{} hand',
+          'contains no {C:attention}Pairs',
           '{C:inactive}(Currently {C:chips}+#2# {C:inactive}Chips)'
         }
       },
@@ -265,6 +265,7 @@ return {
       pl_pop_up_joker_winner_2 = 'Congratulations!',
       pl_pop_up_joker_winner_3 = 'You Win!',
       pl_pop_up_joker_winner_4 = 'Free Antivirus!',
+      pl_lasagna_mama_mia = 'Mama Mia!',
     },
   --achievement_descriptions={},
   -- achievement_names={},
