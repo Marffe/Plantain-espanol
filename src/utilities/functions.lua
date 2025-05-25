@@ -1,3 +1,11 @@
+function PL_UTIL.wild_card_count()
+  local count = 0
+  for k, v in pairs(G.playing_cards) do
+    if v.config.center == G.P_CENTERS.m_wild then count = count + 1 end
+  end
+  return count
+end
+
 function PL_UTIL.add_booster_pack()
   if not G.shop then return end
   local pack_watch = {

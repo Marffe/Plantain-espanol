@@ -97,7 +97,7 @@ SMODS.current_mod.extra_tabs = function()
           {
           n = G.UIT.T,
           config = {
-            text = "Idea Guys: AtomicLight, BurntFrenchToast, TomatoIcecream",
+            text = "Idea Guys: AtomicLight, BurntFrenchToast, TomatoIcecream, SpadeALay",
             shadow = false,
             scale = scale,
             colour = G.C.MONEY

@@ -363,7 +363,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'el_dorado',
-  config = { extra = { money_mod = 3, wild_tally = 0} },
+  config = { extra = { money_mod = 3 } },
   rarity = 2,
   discovered = true,
   atlas = 'pl_atlas_w1',
@@ -375,28 +375,14 @@ SMODS.Joker {
   enhancement_gate = 'm_wild',
 
   loc_vars = function(self, info_queue, card)
-    info_queue[#info_queue + 1] = G.P_CENTERS.m_wild
-    return { vars = { card.ability.extra.money_mod, card.ability.extra.wild_tally } }
+    return { vars = { card.ability.extra.money_mod, PL_UTIL.wild_card_count() * card.ability.extra.money_mod } }
   end,
 
   calc_dollar_bonus = function(self, card)
-    local bonus = card.ability.extra.wild_tally
+    local bonus = PL_UTIL.wild_card_count() * card.ability.extra.money_mod
     if bonus > 0 then return bonus end
   end
 }
-
-local card_updateref = Card.update --counts wild cards for el dorado or smth idk
-function Card.update(self, dt)
-  if G.STAGE == G.STAGES.RUN then
-    if self.config.center.key == 'j_pl_el_dorado' then 
-      self.ability.extra.wild_tally = 0
-      for k, v in pairs(G.playing_cards) do
-        if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally + self.ability.extra.money_mod end
-      end
-    end
-  end
-  card_updateref(self, dt)
-end
 
 SMODS.Joker {
   key = 'black_cat',
