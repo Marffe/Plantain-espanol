@@ -256,6 +256,10 @@ return {
   },
   misc = {
     dictionary = {
+      pl_even = 'even',
+      pl_odd = 'odd',
+      pl_inactive = 'Inactive',
+      pl_active = 'Active',
       pl_plantain_cooked = 'Cooked!',
       pl_apple_pie_slice = 'Slice!',
       pl_apple_pie_sold_out = 'Sold Out!',

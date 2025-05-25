@@ -517,9 +517,9 @@ SMODS.Joker {
   pos = { x = 3, y = 2 },
   cost = 8,
   discovered = true,
-  config = { extra = { is_odd = 'even', next_round = 'odd', Xmult = 1.5} },
+  config = { extra = { is_odd = 'pl_even', next_round = 'pl_odd', Xmult = 1.5} },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult} }
+    return { vars = { localize(card.ability.extra.is_odd), localize(card.ability.extra.next_round), card.ability.extra.Xmult} }
   end,
   calculate = function(self, card, context)
     if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
@@ -527,7 +527,7 @@ SMODS.Joker {
     end
 
     if context.cardarea == G.play and context.individual then
-      if card.ability.extra.is_odd == 'odd' then
+      if card.ability.extra.is_odd == 'pl_odd' then
         if ((context.other_card:get_id() <= 10 and context.other_card:get_id() >= 0
         and context.other_card:get_id()%2 == 1) or (context.other_card:get_id() == 14)) then
           return {
@@ -555,16 +555,16 @@ SMODS.Joker {
   blueprint_compat = false,
   eternal_compat = false,
   perishable_compat = true,
-  config = { extra = { minus_ante = -1, reduce_ante = "Inactive" } },
+  config = { extra = { minus_ante = -1, reduce_ante = "pl_inactive" } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }
+    return { vars = { card.ability.extra.minus_ante, localize(card.ability.extra.reduce_ante) } }
   end,
   pos = { x = 4, y = 2 },
   cost = 9,
   discovered = true,
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual and not context.blueprint then
-      card.ability.extra.reduce_ante = "Active"
+      card.ability.extra.reduce_ante = "pl_active"
       local eval = function(card) return not card.REMOVED end
       juice_card_until(card, eval, true)
       return {
@@ -572,7 +572,7 @@ SMODS.Joker {
         colour = G.C.FILTER
       }
     end
-    if context.selling_self and not context.blueprint and card.ability.extra.reduce_ante == "Active" then
+    if context.selling_self and not context.blueprint and card.ability.extra.reduce_ante == "pl_active" then
       ease_ante(card.ability.extra.minus_ante)
       card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_raw_meat_ante_down'), colour = G.C.BLACK})
     end

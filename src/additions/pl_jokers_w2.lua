@@ -225,7 +225,11 @@ SMODS.Joker {
   
   config = { extra = { last_hand = 'none' } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { (G.GAME.last_hand_played or card.ability.extra.last_hand) } }
+    if G.GAME.last_hand_played then
+      return { vars = { localize(G.GAME.last_hand_played, 'poker_hands') } }
+    else
+      return { vars = { localize('k_none') } }
+    end
   end,
 
   blueprint_compat = true,
@@ -246,8 +250,8 @@ SMODS.Joker {
     if context.before and context.cardarea == G.jokers then
       if (context.scoring_name == 'Three of a Kind') and not (card.ability.extra.last_hand == 'none') then
         -- card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.PURPLE})
-        local text,disp_text = card.ability.extra.last_hand
-        local old_text, old_disp_text = context.scoring_name
+        local text = card.ability.extra.last_hand
+        local old_text = context.scoring_name
         card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_level_up_ex')})
         update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(text, 'poker_hands'),chips = G.GAME.hands[text].chips, mult = G.GAME.hands[text].mult, level=G.GAME.hands[text].level})
         level_up_hand(context.blueprint_card or card, text, nil, 1)
