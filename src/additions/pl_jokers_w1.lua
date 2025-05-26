@@ -10,6 +10,9 @@ SMODS.Joker {
   pos = { x = 0, y = 0 },
   cost = 5,
   discovered = true,
+  pools = {
+    Food = true
+  },
   loc_vars = function(self, info_queue, card)
     return { vars = { (card.ability.extra.real_chips or G.GAME.pl_plantain_chips or card.ability.extra.chips),
       (G.GAME.probabilities.normal or 1),
@@ -195,6 +198,9 @@ SMODS.Joker {
   pos = { x = 4, y = 0 },
   cost = 6,
   discovered = true,
+  pools = {
+    Food = true
+  },
 
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.money, card.ability.extra.money_loss } }
@@ -247,6 +253,9 @@ SMODS.Joker {
   perishable_compat = true,
   pos = { x = 0, y = 1 },
   cost = 6,
+  pools = {
+    Food = true
+  },
   calculate = function(self, card, context)
     if context.skip_blind and not context.blueprint then
       G.E_MANAGER:add_event(Event({
@@ -556,6 +565,9 @@ SMODS.Joker {
   pos = { x = 4, y = 2 },
   cost = 9,
   discovered = true,
+  pools = {
+    Food = true
+  },
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual and not context.blueprint then
       card.ability.extra.reduce_ante = "pl_active"

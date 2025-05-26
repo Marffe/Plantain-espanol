@@ -18,6 +18,10 @@ SMODS.Joker {
   rarity = 1,
   cost = 5,
 
+  pools = {
+    Food = true
+  },
+
   calculate = function (self, card, context)
     if context.pl_croissant_upgrade then
       card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_again_ex'), colour = G.C.SECONDARY_SET.Planet})
@@ -390,6 +394,10 @@ SMODS.Joker {
 
   rarity = 3,
   cost = 5,
+
+  pools = {
+    Food = true
+  },
 
   calculate = function (self, card, context)
     if context.selling_card and not context.blueprint then
