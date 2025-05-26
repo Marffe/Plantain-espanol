@@ -171,7 +171,15 @@ SMODS.Joker {
       end
     end
     if context.end_of_round and not context.repetition and not context.individual then
-      card:set_ability(self, card, nil, nil)
+      local numbers = {2, 3, 4, 5, 6, 7, 8, 9, 10}
+      local bingo1 = pseudorandom_element(numbers, pseudoseed('bingo'..G.GAME.round_resets.ante))
+      table.remove(numbers, bingo1 - 1)
+      local bingo2 = pseudorandom_element(numbers, pseudoseed('bango'..G.GAME.round_resets.ante))
+      if bingo1 > bingo2 then
+        bingo1, bingo2 = bingo2, bingo1
+      end
+      card.ability.extra.bingo1 = bingo1
+      card.ability.extra.bingo2 = bingo2
     end
   end
 }

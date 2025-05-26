@@ -364,7 +364,7 @@ SMODS.Joker {
     if context.destroying_card and context.destroying_card.ability.effect == 'Stone Card' and not context.blueprint then
       return true
     end
-    if context.joker_main and context.cardarea == G.jokers then
+    if context.joker_main and context.cardarea == G.jokers and card.ability.extra.xmult > 1 then
       return {
         Xmult_mod = card.ability.extra.xmult,
         message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } }
