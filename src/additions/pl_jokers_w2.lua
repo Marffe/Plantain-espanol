@@ -239,9 +239,9 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 4, y = 0 },
   
-  config = { extra = { money = 1, money_mod = 1 } },
+  config = { extra = { money = 1, money_gain = 1, money_loss = 3 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.money, card.ability.extra.money_mod } }
+    return { vars = { card.ability.extra.money, card.ability.extra.money_gain, card.ability.extra.money_loss } }
   end,
 
   blueprint_compat = true,
@@ -258,11 +258,21 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if context.end_of_round and not context.blueprint and not context.repetition and not context.individual then
-      for i=1, #G.consumeables.cards do
-        if G.consumeables.cards[i].ability.set == "Tarot" then
-          card.ability.extra.money = card.ability.extra.money + card.ability.extra.money_mod
-          card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.PURPLE})
+    if context.buying_card and not context.blueprint and not context.repetition and not context.individual then
+      if context.card.ability.set == "Tarot" then
+        card.ability.extra.money = card.ability.extra.money + card.ability.extra.money_gain
+        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.MONEY})
+      end
+    end
+    if context.selling_card and not context.blueprint and not context.repetition and not context.individual then
+      if context.card.ability.set == "Tarot" then
+        if card.ability.extra.money > 0 then
+          local adjusted_money_loss = card.ability.extra.money_loss
+          if card.ability.extra.money < adjusted_money_loss then
+            adjusted_money_loss = card.ability.extra.money
+          end
+          card.ability.extra.money = card.ability.extra.money - adjusted_money_loss
+          card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_downgrade')})
         end
       end
     end

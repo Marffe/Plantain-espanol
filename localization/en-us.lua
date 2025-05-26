@@ -171,9 +171,8 @@ return {
         name = 'Hot Air Balloon',
         text = {
           'Earn {C:money}$#1#{} at end of round',
-          'Payout increases by {C:money}$#2#{} for',
-          'each {C:attention}unused{} {C:tarot}Tarot{} card',
-          'at end of round'
+          '{C:money}+$#2#{} for each {C:tarot}Tarot{} card {C:attention}purchased',
+          '{C:money}-$#3#{} for each {C:tarot}Tarot{} card {C:attention}sold'
         }
       },
       j_pl_three_body_problem = {
@@ -256,6 +255,7 @@ return {
   },
   misc = {
     dictionary = {
+      pl_downgrade = 'Downgrade',
       pl_even = 'even',
       pl_odd = 'odd',
       pl_inactive = 'Inactive',
