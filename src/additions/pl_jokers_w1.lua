@@ -8,7 +8,7 @@ SMODS.Joker {
   eternal_compat = false,
   perishable_compat = true,
   pos = { x = 0, y = 0 },
-  cost = 5,
+  cost = 4,
   discovered = true,
   pools = {
     Food = true
@@ -78,7 +78,7 @@ SMODS.Joker {
   eternal_compat = false,
   perishable_compat = true,
   pos = { x = 1, y = 0 },
-  cost = 4,
+  cost = 2,
   discovered = true,
   config = { extra = { Xmult = 1 } },
   loc_vars = function(self, info_queue, card)
@@ -196,7 +196,7 @@ SMODS.Joker {
   eternal_compat = false,
   perishable_compat = true,
   pos = { x = 4, y = 0 },
-  cost = 6,
+  cost = 5,
   discovered = true,
   pools = {
     Food = true
@@ -415,7 +415,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.chips_mod , card.ability.extra.chips } }
   end,
   pos = { x = 0, y = 2 },
-  cost = 8,
+  cost = 6,
   enhancement_gate = 'm_lucky',
 
   calculate = function(self, card, context)
@@ -448,7 +448,7 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 1, y = 2 },
-  cost = 7,
+  cost = 8,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.before and #G.hand.cards > 0 then
       local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
@@ -518,7 +518,7 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 3, y = 2 },
-  cost = 8,
+  cost = 7,
   discovered = true,
   config = { extra = { is_odd = 'pl_even', next_round = 'pl_odd', Xmult = 1.5} },
   loc_vars = function(self, info_queue, card)

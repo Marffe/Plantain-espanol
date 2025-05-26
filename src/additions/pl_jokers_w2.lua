@@ -16,7 +16,7 @@ SMODS.Joker {
   discovered = true,
 
   rarity = 1,
-  cost = 5,
+  cost = 4,
 
   pools = {
     Food = true
@@ -113,7 +113,7 @@ SMODS.Joker {
   discovered = true,
 
   rarity = 1,
-  cost = 5,
+  cost = 4,
 
   calculate = function(self, card, context)
     if context.reroll_shop then
@@ -200,7 +200,7 @@ SMODS.Joker {
   discovered = true,
 
   rarity = 2,
-  cost = 6,
+  cost = 5,
 
   calculate = function(self, card, context)
     if context.pre_discard and not context.blueprint then
