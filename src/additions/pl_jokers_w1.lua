@@ -403,7 +403,7 @@ SMODS.Joker {
 
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.individual and not context.blueprint then
-      if context.other_card.ability.effect == "Lucky Card" and not context.other_card.lucky_trigger then
+      if SMODS.has_enhancement(context.other_card, 'm_lucky') and not context.other_card.lucky_trigger then
         card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chips_mod
         return { message = localize('k_upgrade_ex'), focus = card}
       end
