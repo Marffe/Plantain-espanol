@@ -48,7 +48,7 @@ position = "at"
 payload = '''
 local should_ease_discard = true
 for i=1, #cards do
-  if cards[i].seal == 'pl_lavender' then
+  if cards[i].seal == 'pl_lavender' and not cards[i].debuff then
     should_ease_discard = false
   end
 end
