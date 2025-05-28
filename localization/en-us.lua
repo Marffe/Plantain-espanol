@@ -171,8 +171,9 @@ return {
         name = 'Hot Air Balloon',
         text = {
           'Earn {C:money}$#1#{} at end of round',
-          '{C:money}+$#2#{} for each {C:tarot}Tarot{} card {C:attention}purchased',
-          '{C:money}-$#3#{} for each {C:tarot}Tarot{} card {C:attention}sold'
+          'Payout increases by {C:money}$#2#{} when',
+          '{C:tarot}Tarot{} card used, with a {C:green}#3# in #4#',
+          'chance this card is {C:attention}destroyed'
         }
       },
       j_pl_three_body_problem = {
@@ -269,6 +270,7 @@ return {
       pl_pop_up_joker_winner_2 = 'Congratulations!',
       pl_pop_up_joker_winner_3 = 'You Win!',
       pl_pop_up_joker_winner_4 = 'Free Antivirus!',
+      pl_hot_air_balloon_pop = 'Pop!',
       pl_lasagna_mama_mia = 'Mama Mia!',
     },
   --achievement_descriptions={},

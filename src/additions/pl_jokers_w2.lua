@@ -153,8 +153,8 @@ SMODS.Joker {
   end,
 
   blueprint_compat = true,
-  eternal_compat = false,
-  perishable_compat = true,
+  eternal_compat = true,
+  perishable_compat = false,
   discovered = true,
 
   rarity = 1,
@@ -239,13 +239,13 @@ SMODS.Joker {
   atlas = 'pl_atlas_w2',
   pos = { x = 4, y = 0 },
   
-  config = { extra = { money = 1, money_gain = 1, money_loss = 3 } },
+  config = { extra = { money = 1, money_mod = 1, chance = 15 } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.money, card.ability.extra.money_gain, card.ability.extra.money_loss } }
+    return { vars = { card.ability.extra.money, card.ability.extra.money_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance } }
   end,
 
   blueprint_compat = true,
-  eternal_compat = true,
+  eternal_compat = false,
   perishable_compat = false,
   discovered = true,
 
@@ -258,22 +258,32 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if context.buying_card and not context.blueprint and not context.repetition and not context.individual then
-      if context.card.ability.set == "Tarot" then
-        card.ability.extra.money = card.ability.extra.money + card.ability.extra.money_gain
-        card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.MONEY})
-      end
-    end
-    if context.selling_card and not context.blueprint and not context.repetition and not context.individual then
-      if context.card.ability.set == "Tarot" then
-        if card.ability.extra.money > 0 then
-          local adjusted_money_loss = card.ability.extra.money_loss
-          if card.ability.extra.money < adjusted_money_loss then
-            adjusted_money_loss = card.ability.extra.money
-          end
-          card.ability.extra.money = card.ability.extra.money - adjusted_money_loss
-          card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_downgrade')})
-        end
+    if context.using_consumeable and not context.blueprint and not context.repetition and not context.individual and (context.consumeable.ability.set == "Tarot") then
+      if pseudorandom('balloon') < G.GAME.probabilities.normal/card.ability.extra.chance then
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                play_sound('tarot1')
+                card.T.r = -0.2
+                card:juice_up(0.3, 0.4)
+                card.states.drag.is = true
+                card.children.center.pinch.x = true
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+                    func = function()
+                            G.jokers:remove_card(self)
+                            card:remove()
+                            card = nil
+                        return true; end})) 
+                return true
+            end
+        })) 
+        return {
+            message = localize('pl_hot_air_balloon_pop')
+        }
+      else
+        card.ability.extra.money = card.ability.extra.money + card.ability.extra.money_mod
+        return {
+            message = localize('k_upgrade_ex')
+        }
       end
     end
   end
