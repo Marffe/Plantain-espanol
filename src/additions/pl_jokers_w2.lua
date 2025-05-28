@@ -87,10 +87,6 @@ SMODS.Joker {
               end}))
             return true
           end}))
-
-          return {
-            message = localize('k_eaten_ex')
-          }
         end
       end
     end
