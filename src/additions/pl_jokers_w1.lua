@@ -8,8 +8,11 @@ SMODS.Joker {
   eternal_compat = false,
   perishable_compat = true,
   pos = { x = 0, y = 0 },
-  cost = 5,
+  cost = 4,
   discovered = true,
+  pools = {
+    Food = true
+  },
   loc_vars = function(self, info_queue, card)
     return { vars = { (card.ability.extra.real_chips or G.GAME.pl_plantain_chips or card.ability.extra.chips),
       (G.GAME.probabilities.normal or 1),
@@ -75,7 +78,7 @@ SMODS.Joker {
   eternal_compat = false,
   perishable_compat = true,
   pos = { x = 1, y = 0 },
-  cost = 4,
+  cost = 2,
   discovered = true,
   config = { extra = { Xmult = 1 } },
   loc_vars = function(self, info_queue, card)
@@ -171,7 +174,15 @@ SMODS.Joker {
       end
     end
     if context.end_of_round and not context.repetition and not context.individual then
-      card:set_ability(self, card, nil, nil)
+      local numbers = {2, 3, 4, 5, 6, 7, 8, 9, 10}
+      local bingo1 = pseudorandom_element(numbers, pseudoseed('bingo'..G.GAME.round_resets.ante))
+      table.remove(numbers, bingo1 - 1)
+      local bingo2 = pseudorandom_element(numbers, pseudoseed('bango'..G.GAME.round_resets.ante))
+      if bingo1 > bingo2 then
+        bingo1, bingo2 = bingo2, bingo1
+      end
+      card.ability.extra.bingo1 = bingo1
+      card.ability.extra.bingo2 = bingo2
     end
   end
 }
@@ -185,8 +196,11 @@ SMODS.Joker {
   eternal_compat = false,
   perishable_compat = true,
   pos = { x = 4, y = 0 },
-  cost = 6,
+  cost = 5,
   discovered = true,
+  pools = {
+    Food = true
+  },
 
   loc_vars = function(self, info_queue, card)
     return { vars = { card.ability.extra.money, card.ability.extra.money_loss } }
@@ -239,6 +253,9 @@ SMODS.Joker {
   perishable_compat = true,
   pos = { x = 0, y = 1 },
   cost = 6,
+  pools = {
+    Food = true
+  },
   calculate = function(self, card, context)
     if context.skip_blind and not context.blueprint then
       G.E_MANAGER:add_event(Event({
@@ -329,6 +346,9 @@ SMODS.Joker {
   pos = { x = 3, y = 1 },
   cost = 6,
   enhancement_gate = 'm_stone',
+  loc_vars = function(self, info_queue, card)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_stone
+  end,
   calculate = function(self, card, context)
     if context.after and context.cardarea == G.jokers then
       local stone = false
@@ -360,7 +380,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'el_dorado',
-  config = { extra = { money_mod = 3, wild_tally = 0} },
+  config = { extra = { money_mod = 3 } },
   rarity = 2,
   discovered = true,
   atlas = 'pl_atlas_w1',
@@ -372,31 +392,18 @@ SMODS.Joker {
   enhancement_gate = 'm_wild',
 
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.money_mod, card.ability.extra.wild_tally } }
+    return { vars = { card.ability.extra.money_mod, PL_UTIL.wild_card_count() * card.ability.extra.money_mod } }
   end,
 
   calc_dollar_bonus = function(self, card)
-    local bonus = card.ability.extra.wild_tally
+    local bonus = PL_UTIL.wild_card_count() * card.ability.extra.money_mod
     if bonus > 0 then return bonus end
   end
 }
 
-local card_updateref = Card.update --counts wild cards for el dorado or smth idk
-function Card.update(self, dt)
-  if G.STAGE == G.STAGES.RUN then
-    if self.config.center.key == 'j_pl_el_dorado' then 
-      self.ability.extra.wild_tally = 0
-      for k, v in pairs(G.playing_cards) do
-        if v.config.center == G.P_CENTERS.m_wild then self.ability.extra.wild_tally = self.ability.extra.wild_tally + self.ability.extra.money_mod end
-      end
-    end
-  end
-  card_updateref(self, dt)
-end
-
 SMODS.Joker {
   key = 'black_cat',
-  rarity = 3,
+  rarity = 2,
   atlas = 'pl_atlas_w1',
   discovered = true,
   blueprint_compat = true,
@@ -404,15 +411,16 @@ SMODS.Joker {
   perishable_compat = false,
   config = { extra = { chips_mod = 13, chips = 0 } },
   loc_vars = function(self, info_queue, card)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_lucky
     return { vars = { card.ability.extra.chips_mod , card.ability.extra.chips } }
   end,
   pos = { x = 0, y = 2 },
-  cost = 8,
+  cost = 6,
   enhancement_gate = 'm_lucky',
 
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.individual and not context.blueprint then
-      if context.other_card.ability.effect == "Lucky Card" and not context.other_card.lucky_trigger then
+      if SMODS.has_enhancement(context.other_card, 'm_lucky') and not context.other_card.lucky_trigger then
         card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chips_mod
         return { message = localize('k_upgrade_ex'), focus = card}
       end
@@ -440,7 +448,7 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 1, y = 2 },
-  cost = 7,
+  cost = 8,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.before and #G.hand.cards > 0 then
       local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
@@ -476,19 +484,28 @@ SMODS.Joker {
     return { vars = { card.ability.extra.Xmult } }
   end,
   calculate = function(self, card, context)
-    if context.other_joker and (string.find(context.other_joker.ability.name, 'Joker')
-    or string.find(context.other_joker.ability.name, 'joker')) then
+
+    local give_xmult = false
+
+    if context.other_joker then
+      if NametagCompatible[context.other_joker.config.center.key] or (context.other_joker.config.center.loc_txt and context.other_joker.config.center.loc_txt.name
+      and (string.find(context.other_joker.config.center.loc_txt.name, 'Joker') or string.find(context.other_joker.config.center.loc_txt.name, 'joker'))) then
+        give_xmult = true
+      end
+    end
+
+    if (give_xmult) then
       G.E_MANAGER:add_event(Event({
         func = function()
-            context.other_joker:juice_up(0.5, 0.5)
-            return true
+          context.other_joker:juice_up(0.5, 0.5)
+          return true
         end
-    })) 
-    return {
+      }))
+      return {
         message = localize{type = 'variable',key = 'a_xmult', vars = { card.ability.extra.Xmult } },
         Xmult_mod = card.ability.extra.Xmult,
         focus = context.other_joker
-    }
+      }
     end
   end
 }
@@ -501,11 +518,11 @@ SMODS.Joker {
   eternal_compat = true,
   perishable_compat = true,
   pos = { x = 3, y = 2 },
-  cost = 8,
+  cost = 7,
   discovered = true,
-  config = { extra = { is_odd = 'even', next_round = 'odd', Xmult = 1.5} },
+  config = { extra = { is_odd = 'pl_even', next_round = 'pl_odd', Xmult = 1.5} },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.is_odd, card.ability.extra.next_round, card.ability.extra.Xmult} }
+    return { vars = { localize(card.ability.extra.is_odd), localize(card.ability.extra.next_round), card.ability.extra.Xmult} }
   end,
   calculate = function(self, card, context)
     if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
@@ -513,7 +530,7 @@ SMODS.Joker {
     end
 
     if context.cardarea == G.play and context.individual then
-      if card.ability.extra.is_odd == 'odd' then
+      if card.ability.extra.is_odd == 'pl_odd' then
         if ((context.other_card:get_id() <= 10 and context.other_card:get_id() >= 0
         and context.other_card:get_id()%2 == 1) or (context.other_card:get_id() == 14)) then
           return {
@@ -541,16 +558,19 @@ SMODS.Joker {
   blueprint_compat = false,
   eternal_compat = false,
   perishable_compat = true,
-  config = { extra = { minus_ante = -1, reduce_ante = "Inactive" } },
+  config = { extra = { minus_ante = -1, reduce_ante = "pl_inactive" } },
   loc_vars = function(self, info_queue, card)
-    return { vars = { card.ability.extra.minus_ante, card.ability.extra.reduce_ante } }
+    return { vars = { card.ability.extra.minus_ante, localize(card.ability.extra.reduce_ante) } }
   end,
   pos = { x = 4, y = 2 },
   cost = 9,
   discovered = true,
+  pools = {
+    Food = true
+  },
   calculate = function(self, card, context)
     if context.end_of_round and G.GAME.blind.boss and not context.repetition and not context.individual and not context.blueprint then
-      card.ability.extra.reduce_ante = "Active"
+      card.ability.extra.reduce_ante = "pl_active"
       local eval = function(card) return not card.REMOVED end
       juice_card_until(card, eval, true)
       return {
@@ -558,7 +578,7 @@ SMODS.Joker {
         colour = G.C.FILTER
       }
     end
-    if context.selling_self and not context.blueprint and card.ability.extra.reduce_ante == "Active" then
+    if context.selling_self and not context.blueprint and card.ability.extra.reduce_ante == "pl_active" then
       ease_ante(card.ability.extra.minus_ante)
       card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('pl_raw_meat_ante_down'), colour = G.C.BLACK})
     end
