@@ -71,22 +71,25 @@ SMODS.Joker {
         if card.ability.extra.upgrades_left < 1 then
           G.E_MANAGER:add_event(Event({
           func = function()
-            card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_eaten_ex'), colour = G.C.SECONDARY_SET.Planet})
-            play_sound('tarot1')
-              card.T.r = -0.2
-              card:juice_up(0.3, 0.4)
-              card.states.drag.is = true
-              card.children.center.pinch.x = true
-              G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
-                func = function()
-                  G.jokers:remove_card(self)
-                  card:remove()
-                  card = nil
-                return true; end})) 
-              return true
-            end}))
+            G.E_MANAGER:add_event(Event({
+              func = function()
+                card_eval_status_text(card, 'jokers', nil, nil, nil, {message = localize('k_eaten_ex'), colour = G.C.SECONDARY_SET.Planet})
+                play_sound('tarot1')
+                card.T.r = -0.2
+                card:juice_up(0.3, 0.4)
+                card.states.drag.is = true
+                card.children.center.pinch.x = true
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
+                  func = function()
+                    G.jokers:remove_card(self)
+                    card:remove()
+                    card = nil
+                  return true; end})) 
+                return true
+              end}))
+            return true
+          end}))
 
-            
           return {
             message = localize('k_eaten_ex')
           }
@@ -244,7 +247,7 @@ SMODS.Joker {
     return { vars = { card.ability.extra.money, card.ability.extra.money_mod, (G.GAME.probabilities.normal or 1), card.ability.extra.chance } }
   end,
 
-  blueprint_compat = true,
+  blueprint_compat = false,
   eternal_compat = false,
   perishable_compat = false,
   discovered = true,
