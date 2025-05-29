@@ -453,8 +453,9 @@ SMODS.Joker {
     if context.cardarea == G.jokers and context.before and #G.hand.cards > 0 then
       local removed_card = pseudorandom_element(G.hand.cards, pseudoseed('mossy_joker'))
       local copied_card = pseudorandom_element(context.scoring_hand, pseudoseed('mossy_joker'))
+      removed_card:flip()
       copy_card(copied_card, removed_card)
-      G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() removed_card:flip();play_sound('tarot1');removed_card:juice_up(0.3, 0.3);return true end }))
+      G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() play_sound('tarot1');removed_card:juice_up(0.3, 0.3);return true end }))
       delay(0.3)
       G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() removed_card:flip();removed_card:juice_up(0.3, 0.3);return true end }))
       delay(0.5)
