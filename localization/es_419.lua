@@ -211,7 +211,7 @@ return {
         text = {
           '{X:mult,C:white}X#1#{} Multi.',
           'Pierde {X:mult,C:white}X#2#{} Multi',
-          'cuando {C:money}vnedes{} cartas'
+          'cuando {C:money}vendes{} cartas'
         }
       },
     },
